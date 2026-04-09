@@ -7,7 +7,8 @@ p.text-gray-600.mb-6 Investors and sites in this project
     - if @investors.any?
       ul.list-disc.list-inside.space-y-1
         - @investors.each do |investor|
-          li = investor.email
+          li
+            = "#{investor.full_name} (#{investor.email})"
     - else
       p.text-gray-500 No investors assigned yet.
 
@@ -26,8 +27,12 @@ p.text-gray-600.mb-6 Investors and sites in this project
     .space-y-2
       - @investments.each do |investment|
         .border.border-gray-200.rounded-xl.p-3
-          .font-medium = "Investor: #{investment.user.email}"
-          .text-sm.text-gray-500 = @project.name
+          .font-medium = investment.list_title
+          .text-sm.text-gray-600
+            = number_to_currency(investment.amount_usd, precision: 0)
+            span.text-gray-400.ml-2
+              | since #{l(investment.investor_since, format: :long)}
+          .text-sm.text-gray-500 = investment.user.email
   - else
     p.text-gray-500 No investments in this project yet.
 

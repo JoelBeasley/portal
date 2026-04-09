@@ -2,6 +2,8 @@ class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
+  validates :first_name, :last_name, presence: true
+
   enum :role, { investor: 0, admin: 1, partner: 2, super_admin: 3 }
 
   has_many :investments, dependent: :destroy
@@ -43,6 +45,10 @@ class User < ApplicationRecord
     scope = User.all
     return scope if super_admin?
     scope.where.not(role: :super_admin)
+  end
+
+  def full_name
+    [first_name, last_name].map { |s| s.to_s.strip }.reject(&:blank?).join(" ").presence || email
   end
 
   def can_impersonate?(target_user)

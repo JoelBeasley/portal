@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_09_190000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_09_200000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -57,8 +57,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_190000) do
   end
 
   create_table "investments", force: :cascade do |t|
+    t.decimal "amount_usd", precision: 12, scale: 2, default: "50000.0", null: false
     t.string "bitcoin_address"
+    t.string "company_or_nickname"
     t.datetime "created_at", null: false
+    t.date "investor_since", default: -> { "CURRENT_DATE" }, null: false
     t.bigint "project_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
@@ -87,6 +90,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_190000) do
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
+    t.string "first_name", null: false
+    t.string "last_name", null: false
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"

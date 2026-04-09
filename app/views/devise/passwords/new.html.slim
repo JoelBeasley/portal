@@ -1,0 +1,29 @@
+- content_for :title, "Forgot password - Investor Portal"
+
+.min-h-screen.flex.items-start.justify-center.px-4.pb-16
+  .max-w-md.w-full
+    .text-center.pt-10
+      = image_tag "sovrn_logo_black.png", alt: "Sovrn Capital", class: "mx-auto mb-14 h-24 w-auto"
+
+    .bg-white.rounded-3xl.shadow-xl.p-10
+      h2.text-2xl.font-semibold.text-center.mb-2.text-gray-900 Reset your password
+      p.text-sm.text-center.text-gray-600.mb-8 Enter your email and we’ll send you a link to choose a new password.
+
+      - if resource.errors.any?
+        .mb-6.rounded-xl.border.border-red-200.bg-red-50.p-4
+          p.text-sm.font-semibold.text-red-800 Something went wrong
+          ul.mt-2.list-disc.list-inside.text-sm.text-red-700.space-y-1
+            - resource.errors.full_messages.each do |message|
+              li = message
+
+      = form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post, class: "space-y-6" }) do |f|
+        .space-y-2
+          = f.label :email, class: "block text-sm font-medium text-gray-700"
+          = f.email_field :email, autofocus: true, autocomplete: "email",
+                          class: "w-full px-5 py-4 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+
+        = f.submit "Send reset instructions",
+                  class: "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-2xl transition mt-2"
+
+      .text-center.mt-8.text-sm.text-gray-500
+        = link_to "← Back to sign in", new_session_path(resource_name), class: "text-blue-600 hover:underline"

@@ -19,6 +19,13 @@ class Admin::UsersController < ApplicationController
     @role_options = true_current_user.creatable_roles
     selected_project_id = params.dig(:user, :project_id).presence
     bitcoin_address = params.dig(:user, :bitcoin_address).to_s.strip.presence
+    raw_label = params.dig(:user, :investment_label).to_s.strip
+    company_or_nickname =
+      if raw_label.blank? || raw_label.casecmp?(@user.full_name.strip)
+        nil
+      else
+        raw_label
+      end
 
     unless @role_options.include?(@user.role)
       @user.errors.add(:role, "is not allowed")
@@ -34,7 +41,10 @@ class Admin::UsersController < ApplicationController
         Investment.create!(
           user: @user,
           project: project,
-          bitcoin_address: bitcoin_address
+          bitcoin_address: bitcoin_address,
+          company_or_nickname: company_or_nickname,
+          amount_usd: parse_amount_usd(params.dig(:user, :amount_usd)),
+          investor_since: parse_investor_since(params.dig(:user, :investor_since))
         )
       end
     end
@@ -68,7 +78,21 @@ class Admin::UsersController < ApplicationController
   private
 
   def user_create_params
-    params.require(:user).permit(:email, :password, :password_confirmation, :role)
+    params.require(:user).permit(:email, :password, :password_confirmation, :role, :first_name, :last_name)
+  end
+
+  def parse_amount_usd(value)
+    return 50_000 if value.blank?
+    BigDecimal(value.to_s)
+  rescue ArgumentError
+    50_000
+  end
+
+  def parse_investor_since(value)
+    return Date.current if value.blank?
+    Date.parse(value.to_s)
+  rescue ArgumentError
+    Date.current
   end
 
   def require_user_directory_access

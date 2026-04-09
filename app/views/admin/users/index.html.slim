@@ -7,6 +7,7 @@ h1.text-3xl.font-bold.mb-6 User Access
   table.w-full.text-left
     thead.bg-gray-50.border-b.border-gray-200
       tr
+        th.px-4.py-3.text-sm.font-semibold.text-gray-700 Name
         th.px-4.py-3.text-sm.font-semibold.text-gray-700 Email
         th.px-4.py-3.text-sm.font-semibold.text-gray-700 Current Role
         - if true_current_user.can_manage_roles?
@@ -15,6 +16,7 @@ h1.text-3xl.font-bold.mb-6 User Access
     tbody
       - @users.each do |user|
         tr.border-b.border-gray-100
+          td.px-4.py-3.text-sm.text-gray-900 = user.full_name
           td.px-4.py-3.text-sm.text-gray-900 = user.email
           td.px-4.py-3.text-sm.text-gray-600 = user.role.humanize
           - if true_current_user.can_manage_roles?

@@ -38,7 +38,8 @@ html
         })();
 
   body class="bg-gray-50 font-sans"
-    - unless controller_path == "devise/sessions" && action_name == "new"
+    - auth_shell = (controller_path == "devise/sessions" && action_name == "new") || (controller_path == "devise/passwords" && %w[new edit].include?(action_name))
+    - unless auth_shell
       = render "shared/navbar"
     - if impersonating? && impersonated_user.present?
       .bg-amber-100.border-b.border-amber-300
@@ -53,5 +54,8 @@ html
       - if alert.present?
         .rounded-xl.border.border-red-200.bg-red-50.px-4.py-3.text-sm.text-red-900.shadow.transition.duration-300 data-flash="alert" role="alert"
           = alert
-    .max-w-7xl.mx-auto.px-6.py-10
+    - if auth_shell
       = yield
+    - else
+      .max-w-7xl.mx-auto.px-6.py-10
+        = yield

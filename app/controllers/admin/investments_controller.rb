@@ -18,10 +18,24 @@ class Admin::InvestmentsController < ApplicationController
       return
     end
 
+    raw_label = params[:investment_label].to_s.strip
+    company_or_nickname =
+      if raw_label.blank? || raw_label.casecmp?(user.full_name.strip)
+        nil
+      else
+        raw_label
+      end
+
+    amount_usd = parse_amount_usd(params[:amount_usd])
+    investor_since = parse_investor_since(params[:investor_since])
+
     investment = Investment.new(
       user: user,
       project: project,
-      bitcoin_address: params[:bitcoin_address]
+      bitcoin_address: params[:bitcoin_address],
+      company_or_nickname: company_or_nickname,
+      amount_usd: amount_usd,
+      investor_since: investor_since
     )
 
     if investment.save
@@ -40,5 +54,19 @@ class Admin::InvestmentsController < ApplicationController
 
   def require_super_admin
     redirect_to root_path, alert: "Access denied." unless current_user.can_assign_investments?
+  end
+
+  def parse_amount_usd(value)
+    return 50_000 if value.blank?
+    BigDecimal(value.to_s)
+  rescue ArgumentError
+    50_000
+  end
+
+  def parse_investor_since(value)
+    return Date.current if value.blank?
+    Date.parse(value.to_s)
+  rescue ArgumentError
+    Date.current
   end
 end

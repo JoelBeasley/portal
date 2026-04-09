@@ -11,6 +11,14 @@ h1.text-3xl.font-bold.mb-6 New User
   = form_with model: [:admin, @user], local: true, class: "space-y-5" do |f|
     .grid.grid-cols-1.md:grid-cols-2.gap-4
       .space-y-2
+        = f.label :first_name, class: "block text-sm font-medium text-gray-700"
+        = f.text_field :first_name, required: true, class: "w-full rounded-xl border border-gray-300 px-3 py-2"
+
+      .space-y-2
+        = f.label :last_name, class: "block text-sm font-medium text-gray-700"
+        = f.text_field :last_name, required: true, class: "w-full rounded-xl border border-gray-300 px-3 py-2"
+
+      .space-y-2
         = f.label :email, class: "block text-sm font-medium text-gray-700"
         = f.email_field :email, required: true, class: "w-full rounded-xl border border-gray-300 px-3 py-2"
 
@@ -34,6 +42,19 @@ h1.text-3xl.font-bold.mb-6 New User
         .space-y-2
           = label_tag "user_project_id", "Project", class: "block text-sm font-medium text-gray-700"
           = select_tag "user[project_id]", options_for_select([["No investment", ""]] + @projects.map { |p| [p.name, p.id] }, params.dig(:user, :project_id)), class: "w-full rounded-xl border border-gray-300 px-3 py-2"
+
+        .space-y-2
+          = label_tag "user_investment_label", "Investment name (optional)", class: "block text-sm font-medium text-gray-700"
+          p.text-xs.text-gray-500 Leave blank to use the user’s legal name only, or enter a company or nickname for “First Last (company)” in lists.
+          = text_field_tag "user[investment_label]", params.dig(:user, :investment_label), class: "w-full rounded-xl border border-gray-300 px-3 py-2"
+
+        .space-y-2
+          = label_tag "user_amount_usd", "Investment amount (USD)", class: "block text-sm font-medium text-gray-700"
+          = text_field_tag "user[amount_usd]", (params.dig(:user, :amount_usd).presence || "50000"), class: "w-full rounded-xl border border-gray-300 px-3 py-2"
+
+        .space-y-2
+          = label_tag "user_investor_since", "Investor since", class: "block text-sm font-medium text-gray-700"
+          = date_field_tag "user[investor_since]", (params.dig(:user, :investor_since).presence || Date.current), class: "w-full rounded-xl border border-gray-300 px-3 py-2"
 
         .space-y-2
           = label_tag "user_bitcoin_address", "Bitcoin address (optional)", class: "block text-sm font-medium text-gray-700"
