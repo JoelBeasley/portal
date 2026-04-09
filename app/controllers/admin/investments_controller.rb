@@ -17,11 +17,8 @@ class Admin::InvestmentsController < ApplicationController
       return
     end
 
-    dropbox_path = "/Bitcoin_Investments/inv_#{Time.current.to_i}_#{user.email.parameterize}"
-
     investment = Investment.new(
       user: user,
-      dropbox_path: dropbox_path,
       bitcoin_address: params[:bitcoin_address]
     )
 
@@ -30,14 +27,8 @@ class Admin::InvestmentsController < ApplicationController
         InvestmentSite.create!(investment: investment, site: Site.find(site_id))
       end
 
-      begin
-        DropboxService.new.create_folder(dropbox_path)
-      rescue => e
-        Rails.logger.error "Dropbox folder creation failed: #{e.message}"
-      end
-
       redirect_to admin_sites_path, 
-                  notice: "Investment created for #{user.email} with #{site_ids.size} site(s) and Dropbox folder."
+                  notice: "Investment created for #{user.email} with #{site_ids.size} site(s)."
     else
       redirect_to assign_admin_investments_path, alert: investment.errors.full_messages.join(", ")
     end

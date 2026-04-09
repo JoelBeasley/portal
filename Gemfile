@@ -21,7 +21,6 @@ gem "jbuilder"
 # gem "bcrypt", "~> 3.1.7"
 
 gem "devise"
-gem "dropbox_api"
 gem "pundit"
 gem "slim-rails"
 gem "tailwindcss-rails"

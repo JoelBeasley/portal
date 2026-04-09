@@ -19,11 +19,9 @@ admin.password_confirmation = "password"
 admin.save!
 
 dmg = admin.investments.find_or_initialize_by(name: "DMG")
-dmg.dropbox_path = "/Bitcoin_Investments/dmg"
 dmg.save!
 dmg.sites = Site.where(name: ["Bluegrass"])
 
 exotic_ridge = admin.investments.find_or_initialize_by(name: "ExoticRidge")
-exotic_ridge.dropbox_path = "/Bitcoin_Investments/exoticridge"
 exotic_ridge.save!
 exotic_ridge.sites = Site.where(name: ["Hailey's Mill", "Hash Dock"])

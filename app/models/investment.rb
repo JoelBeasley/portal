@@ -4,7 +4,6 @@ class Investment < ApplicationRecord
   has_many :sites, through: :investment_sites
   has_many_attached :documents
 
-  validates :dropbox_path, presence: true
   validates :bitcoin_address,
             format: { with: /\A(bc1|[13])[a-km-zA-HJ-NP-Z1-9]{25,34}\z/, message: "must be a valid Bitcoin address" },
             allow_blank: true
