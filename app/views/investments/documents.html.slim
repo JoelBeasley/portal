@@ -5,16 +5,16 @@ h2.text-2xl.font-semibold.mb-6 Documents
     - @documents.each do |doc|
       .flex.justify-between.items-center.border.border-gray-200.p-6.rounded-3xl
         .flex-1
-          .font-medium = doc[:name]
+          .font-medium = doc.filename.to_s
           .text-sm.text-gray-500.mt-1
-            = number_to_human_size(doc[:size])
-            |  • 
-            = doc[:modified].strftime("%B %d, %Y")
-        = link_to "Download", doc[:download_url], 
+            = number_to_human_size(doc.byte_size)
+            |  •
+            = l(doc.created_at, format: :long)
+        = link_to "Download", url_for(doc),
                   target: "_blank", 
                   class: "bg-gray-900 text-white px-6 py-3 rounded-2xl hover:bg-black transition"
   - else
-    .text-center.py-12.text-gray-500 No documents yet. Tax forms and sub-docs will appear here.
+    .text-center.py-12.text-gray-500 No documents yet.
 
 .mt-10
   = link_to "← Back to My Investments", investments_path, class: "text-blue-600 hover:underline"

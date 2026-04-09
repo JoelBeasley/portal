@@ -3,6 +3,7 @@ Rails.application.routes.draw do
 
   resources :investments, only: [:index, :show] do
     member do
+      post :upload_document
       get :documents
       patch :documents
     end

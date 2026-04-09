@@ -21,5 +21,24 @@ h1.text-4xl.font-bold.mb-4 Investment
     p.text-sm.text-gray-500.mb-2 Bitcoin Address
     p.text-lg = @investment.bitcoin_address
 
+  .mt-8
+    p.text-sm.text-gray-500.mb-2 Documents
+    - if @investment.documents.attached?
+      ul.space-y-2
+        - @investment.documents.each do |document|
+          li.flex.items-center.justify-between.border.border-gray-200.rounded-xl.p-3
+            .truncate.pr-4 = document.filename.to_s
+            = link_to "Download", url_for(document), target: "_blank", class: "text-blue-600 hover:underline"
+    - else
+      p.text-gray-600 No documents uploaded yet.
+
+  - if current_user.admin?
+    .mt-8.border-t.border-gray-200.pt-6
+      p.text-sm.text-gray-500.mb-2 Upload Document (Admin)
+      = form_with url: upload_document_investment_path(@investment), method: :post, local: true, multipart: true do |f|
+        .flex.flex-col.md:flex-row.gap-3
+          = f.file_field :document, name: :document, class: "block w-full border border-gray-300 rounded-xl p-2"
+          = f.submit "Upload", class: "bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700"
+
 .mt-10
   = link_to "← Back to My Investments", investments_path, class: "text-blue-600 hover:underline"

@@ -28,8 +28,11 @@ Rails.application.configure do
   # Change to :null_store to avoid any caching.
   config.cache_store = :memory_store
 
-  # Store uploaded files on the local file system (see config/storage.yml for options).
-  config.active_storage.service = :local
+  # Use Bucketeer in development when all required credentials are available; otherwise use local disk.
+  has_bucket = ENV["BUCKETEER_BUCKET_NAME"].present?
+  has_access_key = (ENV["BUCKETEER_AWS_ACCESS_KEY_ID"] || ENV["AWS_ACCESS_KEY_ID"]).present?
+  has_secret_key = (ENV["BUCKETEER_AWS_SECRET_ACCESS_KEY"] || ENV["AWS_SECRET_ACCESS_KEY"]).present?
+  config.active_storage.service = has_bucket && has_access_key && has_secret_key ? :bucketeer_development : :local
 
   # Don't care if the mailer can't send.
   config.action_mailer.raise_delivery_errors = false
