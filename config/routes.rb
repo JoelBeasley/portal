@@ -10,6 +10,7 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
+    resources :projects, only: [:index, :show]
     resources :sites, only: [:index, :new, :create]
 
     resources :investments, only: [] do

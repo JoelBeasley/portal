@@ -1,7 +1,7 @@
 class Investment < ApplicationRecord
   belongs_to :user
-  has_many :investment_sites, dependent: :destroy
-  has_many :sites, through: :investment_sites
+  belongs_to :project
+  has_many :sites, through: :project
   has_many_attached :documents
 
   validates :bitcoin_address,

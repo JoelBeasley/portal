@@ -5,8 +5,8 @@ class User < ApplicationRecord
   enum :role, { investor: 0, admin: 1, partner: 2 }
 
   has_many :investments, dependent: :destroy
-  has_many :investment_sites, through: :investments
-  has_many :sites, through: :investment_sites
+  has_many :projects, -> { distinct }, through: :investments
+  has_many :sites, through: :projects
 
   def admin?
     role == "admin"

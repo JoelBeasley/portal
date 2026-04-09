@@ -8,20 +8,21 @@
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
 
-["Hash Dock", "Hailey's Mill", "Bluegrass"].each do |site_name|
-  Site.find_or_create_by!(name: site_name)
-end
-
 admin = User.find_or_initialize_by(email: "joel@sovrn.com")
 admin.role = :admin
 admin.password = "password"
 admin.password_confirmation = "password"
 admin.save!
 
-dmg = admin.investments.find_or_initialize_by(name: "DMG")
+dmg_project = Project.find_or_create_by!(name: "DMG Project")
+Site.find_or_create_by!(name: "Bluegrass", project: dmg_project)
+dmg = admin.investments.find_or_initialize_by(project: dmg_project)
+dmg.project = dmg_project
 dmg.save!
-dmg.sites = Site.where(name: ["Bluegrass"])
 
-exotic_ridge = admin.investments.find_or_initialize_by(name: "ExoticRidge")
+exotic_project = Project.find_or_create_by!(name: "ExoticRidge Project")
+Site.find_or_create_by!(name: "Hailey's Mill", project: exotic_project)
+Site.find_or_create_by!(name: "Hash Dock", project: exotic_project)
+exotic_ridge = admin.investments.find_or_initialize_by(project: exotic_project)
+exotic_ridge.project = exotic_project
 exotic_ridge.save!
-exotic_ridge.sites = Site.where(name: ["Hailey's Mill", "Hash Dock"])

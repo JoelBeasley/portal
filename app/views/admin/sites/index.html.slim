@@ -1,2 +1,12 @@
-h1 Admin::Sites#index
-p Find me in app/views/admin/sites/index.html.slim
+h1.text-3xl.font-bold.mb-6 Sites
+
+.mb-6.flex.gap-3
+  = link_to "Projects", admin_projects_path, class: "bg-gray-200 px-4 py-2 rounded-xl"
+  = link_to "New Site", new_admin_site_path, class: "bg-blue-600 text-white px-4 py-2 rounded-xl"
+
+.space-y-3
+  - @sites.each do |site|
+    .border.border-gray-200.rounded-xl.p-4
+      .font-semibold = site.name
+      .text-sm.text-gray-500
+        = "Project: #{site.project.name}"

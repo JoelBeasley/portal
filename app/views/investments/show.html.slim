@@ -1,8 +1,12 @@
 h1.text-4xl.font-bold.mb-4 Investment
 
 .bg-white.border.border-gray-200.rounded-2xl.p-6
-  p.text-sm.text-gray-500.mb-2 Name
-  p.text-2xl.font-semibold = @investment.name.presence || "Unnamed investment"
+  p.text-sm.text-gray-500.mb-2 Project
+  p.text-2xl.font-semibold = @investment.project.name
+
+  .mt-6
+    p.text-sm.text-gray-500.mb-2 Investor
+    p.text-lg = @investment.user.email
 
   .mt-6
     p.text-sm.text-gray-500.mb-2 Sites

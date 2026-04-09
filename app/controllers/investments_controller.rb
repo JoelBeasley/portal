@@ -3,7 +3,7 @@ class InvestmentsController < ApplicationController
   before_action :set_investment, only: [:show, :documents, :update, :upload_document]
 
   def index
-    @investments = current_user.investments.includes(:sites)
+    @investments = current_user.investments.includes(project: :sites)
   end
 
   def show

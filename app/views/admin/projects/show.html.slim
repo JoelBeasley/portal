@@ -1,0 +1,35 @@
+h1.text-3xl.font-bold.mb-2 = @project.name
+p.text-gray-600.mb-6 Investors and sites in this project
+
+.grid.grid-cols-1.lg:grid-cols-2.gap-8
+  .border.border-gray-200.rounded-xl.p-5
+    h2.text-xl.font-semibold.mb-4 Investors
+    - if @investors.any?
+      ul.list-disc.list-inside.space-y-1
+        - @investors.each do |investor|
+          li = investor.email
+    - else
+      p.text-gray-500 No investors assigned yet.
+
+  .border.border-gray-200.rounded-xl.p-5
+    h2.text-xl.font-semibold.mb-4 Sites
+    - if @sites.any?
+      ul.list-disc.list-inside.space-y-1
+        - @sites.each do |site|
+          li = site.name
+    - else
+      p.text-gray-500 No sites in this project yet.
+
+.mt-8
+  h2.text-xl.font-semibold.mb-3 Investments
+  - if @investments.any?
+    .space-y-2
+      - @investments.each do |investment|
+        .border.border-gray-200.rounded-xl.p-3
+          .font-medium = @project.name
+          .text-sm.text-gray-500 = "Investor: #{investment.user.email}"
+  - else
+    p.text-gray-500 No investments in this project yet.
+
+.mt-8
+  = link_to "← Back to Projects", admin_projects_path, class: "text-blue-600 hover:underline"
