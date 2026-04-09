@@ -1,0 +1,54 @@
+h1.text-3xl.font-bold.mb-2 Investment Documents
+
+p.text-gray-600.mb-8
+  | Sites: 
+  strong = @investment.sites.map(&:name).join(", ")
+
+/ Payout Address Section
+.bg-white.border.border-gray-200.p-8.rounded-3xl.mb-10
+  h2.text-xl.font-semibold.mb-4 Payout Bitcoin Address
+  p.text-sm.text-gray-600.mb-6
+    | This is the address we will use to send your returns for this investment.
+    br
+    strong Warning: We are not responsible for funds sent to the wrong address.
+
+  = form_with model: @investment,
+              url: documents_investment_path(@investment),
+              method: :patch,
+              class: "flex flex-col sm:flex-row gap-4" do |f|
+    .flex-1
+      = f.text_field :bitcoin_address,
+                     placeholder: "bc1q... or 1A1z...",
+                     class: "w-full px-5 py-4 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-600"
+      - if @investment.errors.any?
+        p.text-red-600.mt-2 = @investment.errors.full_messages.join(", ")
+    
+    = f.submit "Save Address", 
+              class: "bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-medium self-start"
+
+  - if @investment.bitcoin_address.present?
+    p.mt-6.text-green-700
+      | ✅ Current address: 
+      code.bg-gray-100.px-3.py-1.rounded.font-mono = @investment.bitcoin_address
+
+/ Documents
+h2.text-2xl.font-semibold.mb-6 Documents
+
+.space-y-6
+  - if @documents.any?
+    - @documents.each do |doc|
+      .flex.justify-between.items-center.border.border-gray-200.p-6.rounded-3xl
+        .flex-1
+          .font-medium = doc[:name]
+          .text-sm.text-gray-500.mt-1
+            = number_to_human_size(doc[:size])
+            |  • 
+            = doc[:modified].strftime("%B %d, %Y")
+        = link_to "Download", doc[:download_url], 
+                  target: "_blank", 
+                  class: "bg-gray-900 text-white px-6 py-3 rounded-2xl hover:bg-black transition"
+  - else
+    .text-center.py-12.text-gray-500 No documents yet. Tax forms and sub-docs will appear here.
+
+.mt-10
+  = link_to "← Back to My Investments", investments_path, class: "text-blue-600 hover:underline"

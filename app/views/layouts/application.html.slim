@@ -22,7 +22,8 @@ html
     = javascript_importmap_tags
 
   body
-    main.container.mx-auto.mt-28.px-5.flex
+    = render "shared/navbar"
+    .max-w-7xl.mx-auto.px-6.py-8
       - if notice.present?
         p.notice role="status" = notice
       - if alert.present?
