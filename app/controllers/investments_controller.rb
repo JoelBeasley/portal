@@ -24,7 +24,7 @@ class InvestmentsController < ApplicationController
   end
 
   def upload_document
-    unless current_user.admin?
+    unless current_user.can_access_admin_area?
       redirect_to investment_path(@investment), alert: "Access denied."
       return
     end
@@ -53,7 +53,7 @@ class InvestmentsController < ApplicationController
 
   def set_investment
     @investment =
-      if current_user.admin?
+      if current_user.can_access_admin_area?
         Investment.find(params[:id])
       else
         current_user.investments.find(params[:id])

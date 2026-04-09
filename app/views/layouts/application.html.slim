@@ -40,6 +40,12 @@ html
   body class="bg-gray-50 font-sans"
     - unless controller_path == "devise/sessions" && action_name == "new"
       = render "shared/navbar"
+    - if impersonating? && impersonated_user.present?
+      .bg-amber-100.border-b.border-amber-300
+        .max-w-7xl.mx-auto.px-6.py-3.flex.items-center.justify-between
+          p.text-sm.font-medium.text-amber-900
+            = "Impersonating #{impersonated_user.email}"
+          = button_to "Stop Impersonating", admin_impersonation_path, method: :delete, class: "bg-amber-900 text-white text-sm px-3 py-1 rounded-lg hover:bg-amber-800"
     .fixed.top-20.right-6.z-50.space-y-3.w-full.max-w-md
       - if notice.present?
         .rounded-xl.border.border-emerald-200.bg-emerald-50.px-4.py-3.text-sm.text-emerald-900.shadow.transition.duration-300 data-flash="notice" role="status"

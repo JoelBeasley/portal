@@ -14,6 +14,8 @@ Rails.application.routes.draw do
     post "site_analytics/data", to: "site_analytics#data"
     resources :projects, only: [:index, :show]
     resources :sites, only: [:index, :new, :create]
+    resources :users, only: [:index, :new, :create, :update]
+    resource :impersonation, only: [:create, :destroy]
 
     resources :investments, only: [] do
       collection do

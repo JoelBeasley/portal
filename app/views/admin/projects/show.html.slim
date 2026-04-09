@@ -26,8 +26,8 @@ p.text-gray-600.mb-6 Investors and sites in this project
     .space-y-2
       - @investments.each do |investment|
         .border.border-gray-200.rounded-xl.p-3
-          .font-medium = @project.name
-          .text-sm.text-gray-500 = "Investor: #{investment.user.email}"
+          .font-medium = "Investor: #{investment.user.email}"
+          .text-sm.text-gray-500 = @project.name
   - else
     p.text-gray-500 No investments in this project yet.
 

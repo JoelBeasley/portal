@@ -1,10 +1,11 @@
 class Admin::InvestmentsController < ApplicationController
   before_action :authenticate_user!
   before_action :require_admin
+  before_action :require_super_admin, only: [:assign, :create_assignment]
 
   def assign
     @investment = Investment.new
-    @users = User.where(role: [:investor, :admin]).order(:email)  # Admins can also be investors
+    @users = User.where(role: [:investor, :admin, :super_admin]).order(:email)
     @projects = Project.order(:name)
   end
 
@@ -34,6 +35,10 @@ class Admin::InvestmentsController < ApplicationController
   private
 
   def require_admin
-    redirect_to root_path, alert: "Access denied." unless current_user.admin?
+    redirect_to root_path, alert: "Access denied." unless current_user.can_access_admin_area?
+  end
+
+  def require_super_admin
+    redirect_to root_path, alert: "Access denied." unless current_user.can_assign_investments?
   end
 end

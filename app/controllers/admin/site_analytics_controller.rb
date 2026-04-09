@@ -33,7 +33,7 @@ class Admin::SiteAnalyticsController < ApplicationController
   private
 
   def require_admin
-    redirect_to root_path, alert: "Access denied." unless current_user.admin?
+    redirect_to root_path, alert: "Access denied." unless current_user.can_access_admin_area?
   end
 
   def fetch_braiins_json(endpoint, token)

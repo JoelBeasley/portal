@@ -7,10 +7,13 @@ nav.bg-black.border-b.border-slate-800.shadow-sm.py-4
       - if user_signed_in?
         = link_to "My Investments", investments_path, class: "text-slate-200 hover:text-white"
         
-        - if current_user.admin?
-          = link_to "Sites", admin_sites_path, class: "text-blue-300 font-medium hover:text-blue-200"
-          = link_to "Assign Investment", assign_admin_investments_path, class: "text-blue-300 font-medium hover:text-blue-200"
+        - if current_user.can_access_admin_area?
+          = link_to "Projects", admin_projects_path, class: "text-blue-300 font-medium hover:text-blue-200"
+          - if current_user.can_assign_investments?
+            = link_to "Assign Investment", assign_admin_investments_path, class: "text-blue-300 font-medium hover:text-blue-200"
           = link_to "Site Analytics", admin_site_analytics_path, class: "text-blue-300 font-medium hover:text-blue-200"
+          - if true_current_user.can_manage_user_directory?
+            = link_to "Users", admin_users_path, class: "text-blue-300 font-medium hover:text-blue-200"
         
         = link_to "Sign out", destroy_user_session_path,
                   data: { turbo_method: :delete }, 

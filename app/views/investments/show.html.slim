@@ -32,7 +32,7 @@ h1.text-4xl.font-bold.mb-4 Investment
     - else
       p.text-gray-600 No documents uploaded yet.
 
-  - if current_user.admin?
+  - if current_user.can_access_admin_area?
     .mt-8.border-t.border-gray-200.pt-6
       p.text-sm.text-gray-500.mb-2 Upload Document (Admin)
       = form_with url: upload_document_investment_path(@investment), method: :post, local: true, multipart: true do |f|

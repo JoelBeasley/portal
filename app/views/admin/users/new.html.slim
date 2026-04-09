@@ -1,0 +1,44 @@
+h1.text-3xl.font-bold.mb-6 New User
+
+.bg-white.border.border-gray-200.rounded-2xl.p-6
+  - if @user.errors.any?
+    .mb-4.rounded-xl.border.border-red-200.bg-red-50.p-3
+      p.text-sm.font-semibold.text-red-800 Could not create user:
+      ul.mt-1.list-disc.list-inside.text-sm.text-red-700
+        - @user.errors.full_messages.each do |message|
+          li = message
+
+  = form_with model: [:admin, @user], local: true, class: "space-y-5" do |f|
+    .grid.grid-cols-1.md:grid-cols-2.gap-4
+      .space-y-2
+        = f.label :email, class: "block text-sm font-medium text-gray-700"
+        = f.email_field :email, required: true, class: "w-full rounded-xl border border-gray-300 px-3 py-2"
+
+      .space-y-2
+        = f.label :role, class: "block text-sm font-medium text-gray-700"
+        = f.select :role, @role_options.map { |r| [r.humanize, r] }, {}, class: "w-full rounded-xl border border-gray-300 px-3 py-2"
+
+      .space-y-2
+        = f.label :password, class: "block text-sm font-medium text-gray-700"
+        = f.password_field :password, required: true, class: "w-full rounded-xl border border-gray-300 px-3 py-2"
+
+      .space-y-2
+        = f.label :password_confirmation, class: "block text-sm font-medium text-gray-700"
+        = f.password_field :password_confirmation, required: true, class: "w-full rounded-xl border border-gray-300 px-3 py-2"
+
+    .border-t.border-gray-200.pt-5
+      h2.text-lg.font-semibold.text-gray-900 Optional Investment
+      p.text-sm.text-gray-500.mt-1 Assign the user to a project now, or leave blank.
+
+      .grid.grid-cols-1.md:grid-cols-2.gap-4.mt-4
+        .space-y-2
+          = label_tag "user_project_id", "Project", class: "block text-sm font-medium text-gray-700"
+          = select_tag "user[project_id]", options_for_select([["No investment", ""]] + @projects.map { |p| [p.name, p.id] }, params.dig(:user, :project_id)), class: "w-full rounded-xl border border-gray-300 px-3 py-2"
+
+        .space-y-2
+          = label_tag "user_bitcoin_address", "Bitcoin address (optional)", class: "block text-sm font-medium text-gray-700"
+          = text_field_tag "user[bitcoin_address]", params.dig(:user, :bitcoin_address), class: "w-full rounded-xl border border-gray-300 px-3 py-2"
+
+    .flex.items-center.gap-3.pt-2
+      = f.submit "Create User", class: "bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700"
+      = link_to "Cancel", admin_users_path, class: "text-gray-600 hover:underline"

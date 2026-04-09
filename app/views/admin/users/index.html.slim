@@ -1,0 +1,31 @@
+h1.text-3xl.font-bold.mb-6 User Access
+
+.mb-6
+  = link_to "New User", new_admin_user_path, class: "bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
+
+.bg-white.border.border-gray-200.rounded-2xl.overflow-hidden
+  table.w-full.text-left
+    thead.bg-gray-50.border-b.border-gray-200
+      tr
+        th.px-4.py-3.text-sm.font-semibold.text-gray-700 Email
+        th.px-4.py-3.text-sm.font-semibold.text-gray-700 Current Role
+        - if true_current_user.can_manage_roles?
+          th.px-4.py-3.text-sm.font-semibold.text-gray-700 Update Role
+        th.px-4.py-3.text-sm.font-semibold.text-gray-700 Impersonate
+    tbody
+      - @users.each do |user|
+        tr.border-b.border-gray-100
+          td.px-4.py-3.text-sm.text-gray-900 = user.email
+          td.px-4.py-3.text-sm.text-gray-600 = user.role.humanize
+          - if true_current_user.can_manage_roles?
+            td.px-4.py-3
+              = form_with model: [:admin, user], method: :patch, local: true, class: "flex items-center gap-2" do |f|
+                = f.select :role, User.roles.keys.map { |r| [r.humanize, r] }, { selected: user.role }, class: "rounded-lg border border-gray-300 px-2 py-1 text-sm"
+                = f.submit "Save", class: "bg-blue-600 text-white text-sm px-3 py-1 rounded-lg hover:bg-blue-700"
+          td.px-4.py-3
+            - if true_current_user.can_impersonate?(user)
+              = button_to "Impersonate", admin_impersonation_path(user_id: user.id), method: :post, class: "bg-gray-900 text-white text-sm px-3 py-1 rounded-lg hover:bg-black"
+            - elsif user == true_current_user
+              span.text-xs.text-gray-400 You
+            - else
+              span.text-xs.text-gray-400 Not allowed
