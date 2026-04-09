@@ -18,12 +18,12 @@ html
     link rel="icon" href="/icon.svg" type="image/svg+xml"
     link rel="apple-touch-icon" href="/icon.png"
 
-    = stylesheet_link_tag :app, "data-turbo-track": "reload"
+    = stylesheet_link_tag "tailwind", "data-turbo-track": "reload"
     = javascript_importmap_tags
 
-  body
+  body class="bg-gray-50 font-sans"
     = render "shared/navbar"
-    .max-w-7xl.mx-auto.px-6.py-8
+    .max-w-7xl.mx-auto.px-6.py-10
       - if notice.present?
         p.notice role="status" = notice
       - if alert.present?
