@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+/* Ensure all app templates are scanned (avoids missing utilities when classes only appear in Slim, etc.) */
+@source "../../views";
+@source "../../javascript";

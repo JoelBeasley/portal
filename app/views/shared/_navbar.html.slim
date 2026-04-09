@@ -1,22 +1,49 @@
-nav.bg-black.border-b.border-slate-800.shadow-sm.py-4
-  .max-w-7xl.mx-auto.px-6.flex.justify-between.items-center
-    = link_to root_path, class: "inline-flex items-center" do
-      = image_tag "sovrn_logo_white.png", alt: "Sovrn Capital", class: "h-10 w-auto"
-    
-    .flex.items-center.gap-8
-      - if user_signed_in?
-        = link_to "My Investments", investments_path, class: "text-slate-200 hover:text-white"
-        
-        - if current_user.can_access_admin_area?
-          = link_to "Projects", admin_projects_path, class: "text-blue-300 font-medium hover:text-blue-200"
-          - if current_user.can_assign_investments?
-            = link_to "Assign Investment", assign_admin_investments_path, class: "text-blue-300 font-medium hover:text-blue-200"
-          = link_to "Site Analytics", admin_site_analytics_path, class: "text-blue-300 font-medium hover:text-blue-200"
-          - if true_current_user.can_manage_user_directory?
-            = link_to "Users", admin_users_path, class: "text-blue-300 font-medium hover:text-blue-200"
-        
-        = link_to "Sign out", destroy_user_session_path,
-                  data: { turbo_method: :delete }, 
-                  class: "text-red-300 hover:text-red-200"
-      - else
-        = link_to "Sign in", new_user_session_path, class: "text-blue-300 hover:text-blue-200"
+nav.bg-black.border-b.border-slate-800.shadow-sm data-controller="mobile-nav"
+  .max-w-7xl.mx-auto.px-4.sm:px-6
+    .flex.justify-between.items-center.gap-4.min-h-14.py-3
+      = link_to root_path, class: "inline-flex items-center shrink-0 py-1" do
+        = image_tag "sovrn_logo_white.png", alt: "Sovrn Capital", class: "h-9 sm:h-10 w-auto"
+
+      / Desktop navigation
+      .hidden.md:flex.items-center.gap-4.lg:gap-6.flex-wrap.justify-end
+        - if user_signed_in?
+          = link_to "My Investments", investments_path, class: "text-sm lg:text-base text-slate-200 hover:text-white whitespace-nowrap transition"
+          - if current_user.can_access_admin_area?
+            = link_to "Projects", admin_projects_path, class: "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 whitespace-nowrap transition"
+            - if current_user.can_assign_investments?
+              = link_to "Assign Investment", assign_admin_investments_path, class: "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 whitespace-nowrap transition"
+            = link_to "Site Analytics", admin_site_analytics_path, class: "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 whitespace-nowrap transition"
+            - if true_current_user.can_manage_user_directory?
+              = link_to "Users", admin_users_path, class: "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 whitespace-nowrap transition"
+          = link_to "Sign out", destroy_user_session_path,
+                    data: { turbo_method: :delete },
+                    class: "text-sm lg:text-base text-red-300 hover:text-red-200 whitespace-nowrap transition"
+        - else
+          = link_to "Sign in", new_user_session_path, class: "text-sm lg:text-base text-blue-300 hover:text-blue-200 whitespace-nowrap transition"
+
+      / Mobile menu button
+      button.md:hidden.relative.z-20.inline-flex.items-center.justify-center.rounded-lg.p-2.min-h-11.min-w-11.text-slate-200.hover:bg-slate-800.focus:outline-none.focus:ring-2.focus:ring-blue-400 type="button" aria-controls="mobile-nav-menu" aria-expanded="false" aria-label="Toggle menu" data-mobile-nav-target="toggle" data-action="click->mobile-nav#toggle"
+        span.block data-mobile-nav-target="hamburgerIcon"
+          svg.w-6.h-6 aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"
+        span.hidden data-mobile-nav-target="closeIcon"
+          svg.w-6.h-6 aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"
+
+    / Mobile menu panel
+    #mobile-nav-menu.hidden.md:hidden.border-t.border-slate-800.bg-black data-mobile-nav-target="panel" data-action="click->mobile-nav#navigate"
+      .flex.flex-col.py-2.pb-4
+        - if user_signed_in?
+          = link_to "My Investments", investments_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-slate-100 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
+          - if current_user.can_access_admin_area?
+            = link_to "Projects", admin_projects_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
+            - if current_user.can_assign_investments?
+              = link_to "Assign Investment", assign_admin_investments_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
+            = link_to "Site Analytics", admin_site_analytics_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
+            - if true_current_user.can_manage_user_directory?
+              = link_to "Users", admin_users_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
+          = link_to "Sign out", destroy_user_session_path,
+                    data: { turbo_method: :delete },
+                    class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-red-300 border-b border-slate-800/80 last:border-b-0 active:bg-slate-900 rounded-lg"
+        - else
+          = link_to "Sign in", new_user_session_path, class: "flex items-center justify-center min-h-12 px-4 py-3 mt-1 text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 rounded-xl mx-2"
