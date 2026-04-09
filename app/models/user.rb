@@ -28,6 +28,10 @@ class User < ApplicationRecord
     super_admin?
   end
 
+  def can_manage_projects?
+    super_admin?
+  end
+
   def can_manage_roles?
     super_admin?
   end
