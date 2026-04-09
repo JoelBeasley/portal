@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
   namespace :admin do
     get "site_analytics", to: "site_analytics#show"
+    post "site_analytics/data", to: "site_analytics#data"
     resources :projects, only: [:index, :show]
     resources :sites, only: [:index, :new, :create]
 

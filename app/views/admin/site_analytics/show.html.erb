@@ -7,7 +7,7 @@
     <div class="grid gap-4 md:grid-cols-2">
       <div class="md:col-span-2">
         <label class="mb-1 block text-sm font-semibold text-gray-700">Braiins API Token (Pool-Auth-Token):</label>
-        <input type="text" id="apiKey" value="B6ct1yLY2UfPYfuk" class="w-full rounded-xl border border-gray-300 px-3 py-2 font-mono text-sm">
+        <input type="password" id="apiKey" value="B6ct1yLY2UfPYfuk" class="w-full rounded-xl border border-gray-300 px-3 py-2 font-mono text-sm">
       </div>
 
       <div>
@@ -31,21 +31,48 @@
       </div>
 
       <div>
+        <label class="mb-1 block text-sm font-semibold text-gray-700">Current Machines</label>
+        <input type="number" id="currentMachines" value="80" step="1" min="1" class="w-full rounded-xl border border-gray-300 px-3 py-2">
+      </div>
+
+      <div>
         <label class="mb-1 block text-sm font-semibold text-gray-700">Projected Machines</label>
         <input type="number" id="projectedMachines" value="325" step="1" class="w-full rounded-xl border border-gray-300 px-3 py-2">
       </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-semibold text-gray-700">BTC Price Used (USD)</label>
+        <input type="number" id="btcPrice" value="68800" step="1" min="0" class="w-full rounded-xl border border-gray-300 px-3 py-2">
+        <p class="mt-1 text-xs text-gray-500">
+          Source: this local input value (default 68,800). It is not currently fetched from the Braiins API.
+        </p>
+      </div>
     </div>
 
-    <button onclick="calculateFromManual()" class="mt-5 rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white hover:bg-blue-700">
-      Calculate from Pasted Data
-    </button>
+    <div class="mt-5 flex flex-wrap gap-3">
+      <button onclick="fetchFromApi()" class="rounded-xl bg-blue-600 px-5 py-2.5 font-semibold text-white hover:bg-blue-700">
+        Fetch from API (Primary)
+      </button>
+    </div>
   </div>
 
-  <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
-    <h3 class="mb-4 text-lg font-semibold text-gray-900">Manual Paste (pre-filled with your data)</h3>
+  <details class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+    <summary class="cursor-pointer text-lg font-semibold text-gray-900">Advanced / Fallback Data (Endpoints + Manual Paste)</summary>
 
-    <label class="mb-1 block text-sm font-semibold text-gray-700">hash_rate_daily JSON:</label>
-    <textarea id="hrJson" rows="12" class="w-full rounded-xl border border-gray-300 px-3 py-2 font-mono text-xs">{
+    <div class="mt-5 space-y-5">
+      <div>
+        <label class="mb-1 block text-sm font-semibold text-gray-700">Hashrate Endpoint</label>
+        <input type="text" id="hashrateEndpoint" value="https://pool.braiins.com/accounts/hash_rate_daily/json/btc" class="w-full rounded-xl border border-gray-300 px-3 py-2 font-mono text-xs">
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-semibold text-gray-700">Rewards Endpoint</label>
+        <input type="text" id="rewardsEndpoint" value="https://pool.braiins.com/accounts/rewards/json/btc" class="w-full rounded-xl border border-gray-300 px-3 py-2 font-mono text-xs">
+      </div>
+
+      <div>
+        <label class="mb-1 block text-sm font-semibold text-gray-700">hash_rate_daily JSON:</label>
+        <textarea id="hrJson" rows="12" class="w-full rounded-xl border border-gray-300 px-3 py-2 font-mono text-xs">{
   "btc": [
     {"hash_rate_24h": 11883780.516365379, "date": 1774915200},
     {"hash_rate_24h": 13999310.880266042, "date": 1775001600},
@@ -57,9 +84,11 @@
     {"hash_rate_24h": 47603.152311297519, "date": 1775520000}
   ]
 }</textarea>
+      </div>
 
-    <label class="mb-1 mt-4 block text-sm font-semibold text-gray-700">rewards JSON:</label>
-    <textarea id="rewardJson" rows="12" class="w-full rounded-xl border border-gray-300 px-3 py-2 font-mono text-xs">{
+      <div>
+        <label class="mb-1 block text-sm font-semibold text-gray-700">rewards JSON:</label>
+        <textarea id="rewardJson" rows="12" class="w-full rounded-xl border border-gray-300 px-3 py-2 font-mono text-xs">{
   "btc": {
     "daily_rewards": [
       {"date": 1774915200, "total_reward": "0.00555833"},
@@ -71,7 +100,29 @@
     ]
   }
 }</textarea>
-  </div>
+      </div>
+
+      <div class="pt-1">
+        <button onclick="calculateFromManual()" class="rounded-xl bg-gray-700 px-5 py-2.5 font-semibold text-white hover:bg-gray-800">
+          Calculate from Pasted Data
+        </button>
+      </div>
+    </div>
+  </details>
+
+  <details class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
+    <summary class="cursor-pointer text-lg font-semibold text-gray-900">API Debug (Raw Responses)</summary>
+    <div class="mt-5 space-y-4">
+      <div>
+        <label class="mb-1 block text-sm font-semibold text-gray-700">Raw Hashrate API Response</label>
+        <textarea id="rawHashrateResponse" rows="10" readonly class="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 font-mono text-xs"></textarea>
+      </div>
+      <div>
+        <label class="mb-1 block text-sm font-semibold text-gray-700">Raw Rewards API Response</label>
+        <textarea id="rawRewardsResponse" rows="10" readonly class="w-full rounded-xl border border-gray-300 bg-gray-50 px-3 py-2 font-mono text-xs"></textarea>
+      </div>
+    </div>
+  </details>
 
   <div id="status" class="text-sm text-gray-600"></div>
 
@@ -79,18 +130,18 @@
     <table id="resultsTable" class="w-full border-collapse text-right text-sm">
       <thead class="sticky top-0 z-10 bg-gray-50">
         <tr>
-          <th class="border border-gray-200 px-3 py-2">Date</th>
+          <th class="border border-gray-200 px-3 py-2 text-left min-w-[140px]">Date</th>
           <th class="border border-gray-200 px-3 py-2">Hashrate (TH/s)</th>
-          <th class="border border-gray-200 px-3 py-2">Energy Cost (80 machines)</th>
-          <th class="border border-gray-200 px-3 py-2">Energy Cost (325 machines)</th>
+          <th class="border border-gray-200 px-3 py-2">Energy Cost (<span id="currentMachinesLabelA">80</span> machines)</th>
+          <th class="border border-gray-200 px-3 py-2">Energy Cost (<span id="projectedMachinesLabelA">325</span> machines)</th>
           <th class="border border-gray-200 px-3 py-2">BTC Reward</th>
           <th class="border border-gray-200 px-3 py-2">Gross Revenue (USD)</th>
-          <th class="border border-gray-200 px-3 py-2">Net Profit (80 machines)</th>
-          <th class="border border-gray-200 px-3 py-2">Net Profit (325 machines)</th>
-          <th class="border border-gray-200 px-3 py-2">Sovrn Partner Return (80 machines)</th>
-          <th class="border border-gray-200 px-3 py-2">Sovrn Partner Return (325 machines)</th>
-          <th class="border border-gray-200 px-3 py-2">Sovrn Partner Return 30 Days (80 machines)</th>
-          <th class="border border-gray-200 px-3 py-2">Sovrn Partner Return 30 Days (325 machines)</th>
+          <th class="border border-gray-200 px-3 py-2">Net Profit (<span id="currentMachinesLabelB">80</span> machines)</th>
+          <th class="border border-gray-200 px-3 py-2">Net Profit (<span id="projectedMachinesLabelB">325</span> machines)</th>
+          <th class="border border-gray-200 px-3 py-2">Sovrn Partner Return (<span id="currentMachinesLabelC">80</span> machines)</th>
+          <th class="border border-gray-200 px-3 py-2">Sovrn Partner Return (<span id="projectedMachinesLabelC">325</span> machines)</th>
+          <th class="border border-gray-200 px-3 py-2">Sovrn Partner Return 30 Days (<span id="currentMachinesLabelD">80</span> machines)</th>
+          <th class="border border-gray-200 px-3 py-2">Sovrn Partner Return 30 Days (<span id="projectedMachinesLabelD">325</span> machines)</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -113,6 +164,13 @@
       el.style.color = type === "error" ? "red" : (type === "success" ? "green" : "#666");
     }
 
+    function updateDebugPayloads(hashratePayload, rewardsPayload) {
+      const hrEl = document.getElementById("rawHashrateResponse");
+      const rwEl = document.getElementById("rawRewardsResponse");
+      if (hrEl) hrEl.value = hashratePayload ? JSON.stringify(hashratePayload, null, 2) : "";
+      if (rwEl) rwEl.value = rewardsPayload ? JSON.stringify(rewardsPayload, null, 2) : "";
+    }
+
     function updateWeightedEfficiency() {
       const percentPro = parseFloat(document.getElementById("percentPro").value) || 0;
       const percentStandard = parseFloat(document.getElementById("percentStandard").value) || 0;
@@ -122,12 +180,31 @@
       document.getElementById("efficiency").value = weighted.toFixed(2);
     }
 
+    function updateProjectedMachineLabels() {
+      const projectedMachines = parseFloat(document.getElementById("projectedMachines").value) || 325;
+      ["projectedMachinesLabelA", "projectedMachinesLabelB", "projectedMachinesLabelC", "projectedMachinesLabelD"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = projectedMachines;
+      });
+    }
+
+    function updateCurrentMachineLabels() {
+      const currentMachines = parseFloat(document.getElementById("currentMachines").value) || 80;
+      ["currentMachinesLabelA", "currentMachinesLabelB", "currentMachinesLabelC", "currentMachinesLabelD"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = currentMachines;
+      });
+    }
+
     function calculateFromManual() {
       const eff = parseFloat(document.getElementById("efficiency").value) || 15.5;
       const costKwh = parseFloat(document.getElementById("costPerKwh").value) || 0.02;
       const projectedMachines = parseFloat(document.getElementById("projectedMachines").value) || 325;
-      const currentMachines = 80;
+      const currentMachines = parseFloat(document.getElementById("currentMachines").value) || 80;
+      const btcPrice = parseFloat(document.getElementById("btcPrice").value) || 68800;
       const scaleFactor = projectedMachines / currentMachines;
+      updateProjectedMachineLabels();
+      updateCurrentMachineLabels();
 
       try {
         const hrText = document.getElementById("hrJson").value.trim();
@@ -141,7 +218,7 @@
           return;
         }
 
-        renderTable(currentHrData.btc, currentRewardData.btc.daily_rewards, eff, costKwh, scaleFactor);
+        renderTable(currentHrData.btc, currentRewardData.btc.daily_rewards, eff, costKwh, scaleFactor, btcPrice);
         showStatus("✅ Table calculated successfully.", "success");
 
       } catch (e) {
@@ -149,7 +226,102 @@
       }
     }
 
-    function renderTable(hrArray, rewardArray, efficiency, costKwh, scaleFactor) {
+    function recalculateFromCurrentData() {
+      if (!currentHrData?.btc || !currentRewardData?.btc?.daily_rewards) return;
+
+      const eff = parseFloat(document.getElementById("efficiency").value) || 15.5;
+      const costKwh = parseFloat(document.getElementById("costPerKwh").value) || 0.02;
+      const projectedMachines = parseFloat(document.getElementById("projectedMachines").value) || 325;
+      const currentMachines = parseFloat(document.getElementById("currentMachines").value) || 80;
+      const btcPrice = parseFloat(document.getElementById("btcPrice").value) || 68800;
+      const scaleFactor = projectedMachines / currentMachines;
+      updateProjectedMachineLabels();
+      updateCurrentMachineLabels();
+
+      renderTable(currentHrData.btc, currentRewardData.btc.daily_rewards, eff, costKwh, scaleFactor, btcPrice);
+    }
+
+    function normalizeHashratePayload(payload) {
+      if (payload?.btc && Array.isArray(payload.btc)) return payload.btc;
+      if (Array.isArray(payload?.hash_rate_daily)) return payload.hash_rate_daily;
+      if (Array.isArray(payload?.data?.btc)) return payload.data.btc;
+      return null;
+    }
+
+    function normalizeRewardsPayload(payload) {
+      if (payload?.btc?.daily_rewards && Array.isArray(payload.btc.daily_rewards)) return payload.btc.daily_rewards;
+      if (Array.isArray(payload?.daily_rewards)) return payload.daily_rewards;
+      if (Array.isArray(payload?.data?.daily_rewards)) return payload.data.daily_rewards;
+      return null;
+    }
+
+    async function fetchFromApi() {
+      const token = document.getElementById("apiKey").value.trim();
+      const hashrateEndpoint = document.getElementById("hashrateEndpoint").value.trim();
+      const rewardsEndpoint = document.getElementById("rewardsEndpoint").value.trim();
+      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+
+      if (!token) {
+        showStatus("❌ Missing API token. Falling back to manual data.", "error");
+        calculateFromManual();
+        return;
+      }
+
+      try {
+        showStatus("Loading from Braiins API...");
+        const proxyRes = await fetch("/admin/site_analytics/data", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-Token": csrfToken
+          },
+          body: JSON.stringify({
+            api_key: token,
+            hashrate_endpoint: hashrateEndpoint,
+            rewards_endpoint: rewardsEndpoint
+          })
+        });
+
+        if (!proxyRes.ok) {
+          throw new Error(`HTTP ${proxyRes.status}`);
+        }
+
+        const proxyPayload = await proxyRes.json();
+        const hrPayload = proxyPayload.hashrate;
+        const rwPayload = proxyPayload.rewards;
+        updateDebugPayloads(hrPayload, rwPayload);
+        const hrArray = normalizeHashratePayload(hrPayload);
+        const rewardArray = normalizeRewardsPayload(rwPayload);
+
+        if (!hrArray || !rewardArray) {
+          throw new Error("Unexpected API response shape.");
+        }
+
+        currentHrData = { btc: hrArray };
+        currentRewardData = { btc: { daily_rewards: rewardArray } };
+
+        const eff = parseFloat(document.getElementById("efficiency").value) || 15.5;
+        const costKwh = parseFloat(document.getElementById("costPerKwh").value) || 0.02;
+        const projectedMachines = parseFloat(document.getElementById("projectedMachines").value) || 325;
+        const currentMachines = parseFloat(document.getElementById("currentMachines").value) || 80;
+        const scaleFactor = projectedMachines / currentMachines;
+        updateProjectedMachineLabels();
+        updateCurrentMachineLabels();
+
+        const btcPrice = parseFloat(document.getElementById("btcPrice").value) || 68800;
+        renderTable(hrArray, rewardArray, eff, costKwh, scaleFactor, btcPrice);
+        showStatus("✅ Loaded from Braiins API.", "success");
+      } catch (e) {
+        showStatus("⚠️ API failed, using manual pasted data instead.", "error");
+        updateDebugPayloads(
+          { error: "API request failed", message: String(e) },
+          { error: "API request failed", message: String(e) }
+        );
+        calculateFromManual();
+      }
+    }
+
+    function renderTable(hrArray, rewardArray, efficiency, costKwh, scaleFactor, btcPrice) {
       const tbody = document.getElementById("resultsTable").querySelector("tbody");
       tbody.innerHTML = "";
 
@@ -158,7 +330,16 @@
         if (r.date) rewardMap[r.date] = parseFloat(r.total_reward) || 0;
       });
 
-      hrArray.forEach(day => {
+      const rowsToRender = hrArray
+        .filter(day =>
+          day.date &&
+          Object.prototype.hasOwnProperty.call(rewardMap, day.date) &&
+          (parseFloat(day.hash_rate_24h) || 0) > 0
+        )
+        .sort((a, b) => a.date - b.date)
+        .slice(-10);
+
+      rowsToRender.forEach(day => {
         const dateUnix = day.date;
         const hashratePh = parseFloat(day.hash_rate_24h) || 0;
         const ths = hashratePh / 1000;
@@ -168,7 +349,7 @@
         const dailyKwhCurrent = powerKwCurrent * 24;
         const elecCostCurrent = dailyKwhCurrent * costKwh;
         const btcReward = rewardMap[dateUnix] || 0;
-        const gross = btcReward * 68800;
+        const gross = btcReward * btcPrice;
         const netCurrent = gross - elecCostCurrent;
 
         // Projected (325 machines)
@@ -198,18 +379,18 @@
 
         const row = document.createElement("tr");
         row.innerHTML = `
-          <td>${new Date(dateUnix * 1000).toISOString().split('T')[0]}</td>
-          <td>${ths.toFixed(2)}</td>
-          <td>$${elecCostCurrent.toFixed(4)}</td>
-          <td>$${elecCostProjected.toFixed(4)}</td>
-          <td>${btcReward.toFixed(8)}</td>
-          <td>$${gross.toFixed(2)}</td>
-          <td class="${netCurrent >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${netCurrent.toFixed(2)}</td>
-          <td class="${netProjected >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${netProjected.toFixed(2)}</td>
-          <td class="${sovrnCurrent >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${sovrnCurrent.toFixed(2)}</td>
-          <td class="${sovrnProjected >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${sovrnProjected.toFixed(2)}</td>
-          <td class="${sovrn30Current >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${sovrn30Current.toFixed(2)}</td>
-          <td class="${sovrn30Projected >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${sovrn30Projected.toFixed(2)}</td>
+          <td class="text-left min-w-[140px] px-3 py-2">${new Date(dateUnix * 1000).toISOString().split('T')[0]}</td>
+          <td class="px-3 py-2">${ths.toFixed(2)}</td>
+          <td class="px-3 py-2">$${elecCostCurrent.toFixed(4)}</td>
+          <td class="px-3 py-2">$${elecCostProjected.toFixed(4)}</td>
+          <td class="px-3 py-2">${btcReward.toFixed(8)}</td>
+          <td class="px-3 py-2">$${gross.toFixed(2)}</td>
+          <td class="px-3 py-2 ${netCurrent >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${netCurrent.toFixed(2)}</td>
+          <td class="px-3 py-2 ${netProjected >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${netProjected.toFixed(2)}</td>
+          <td class="px-3 py-2 ${sovrnCurrent >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${sovrnCurrent.toFixed(2)}</td>
+          <td class="px-3 py-2 ${sovrnProjected >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${sovrnProjected.toFixed(2)}</td>
+          <td class="px-3 py-2 ${sovrn30Current >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${sovrn30Current.toFixed(2)}</td>
+          <td class="px-3 py-2 ${sovrn30Projected >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${sovrn30Projected.toFixed(2)}</td>
         `;
         tbody.appendChild(row);
       });
@@ -220,15 +401,19 @@
     document.getElementById("percentStandard").addEventListener("input", updateWeightedEfficiency);
 
     // Auto-recalculate table
-    ["efficiency", "costPerKwh", "projectedMachines", "percentPro", "percentStandard"].forEach(id => {
+    ["efficiency", "costPerKwh", "currentMachines", "projectedMachines", "btcPrice", "percentPro", "percentStandard"].forEach(id => {
       document.getElementById(id).addEventListener("input", () => {
-        if (currentHrData && currentRewardData) calculateFromManual();
+        updateProjectedMachineLabels();
+        updateCurrentMachineLabels();
+        recalculateFromCurrentData();
       });
     });
 
     // Initial load
     window.onload = () => {
       updateWeightedEfficiency();
-      calculateFromManual();
+      updateProjectedMachineLabels();
+      updateCurrentMachineLabels();
+      fetchFromApi();
     };
 </script>
