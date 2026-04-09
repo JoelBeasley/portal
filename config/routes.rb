@@ -1,7 +1,7 @@
 Rails.application.routes.draw do
   devise_for :users
 
-  resources :investments, only: [:index] do
+  resources :investments, only: [:index, :show] do
     member do
       get :documents
       patch :documents

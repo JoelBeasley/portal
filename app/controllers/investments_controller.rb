@@ -5,6 +5,10 @@ class InvestmentsController < ApplicationController
     @investments = current_user.investments.includes(:sites)
   end
 
+  def show
+    @investment = current_user.investments.find(params[:id])
+  end
+
   def show_documents
     @investment = current_user.investments.find(params[:id])
     @documents = DropboxService.new.list_documents(@investment.dropbox_path)

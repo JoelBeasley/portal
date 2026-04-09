@@ -1,0 +1,25 @@
+h1.text-4xl.font-bold.mb-4 Investment
+
+.bg-white.border.border-gray-200.rounded-2xl.p-6
+  p.text-sm.text-gray-500.mb-2 Name
+  p.text-2xl.font-semibold = @investment.name.presence || "Unnamed investment"
+
+  .mt-6
+    p.text-sm.text-gray-500.mb-2 Sites
+    - if @investment.sites.any?
+      ul.list-disc.list-inside.space-y-1
+        - @investment.sites.order(:name).each do |site|
+          li.text-lg = site.name
+    - else
+      p.text-gray-600 No sites assigned.
+
+  .mt-6
+    p.text-sm.text-gray-500.mb-2 Dropbox Path
+    p.text-lg = @investment.dropbox_path
+
+  .mt-6
+    p.text-sm.text-gray-500.mb-2 Bitcoin Address
+    p.text-lg = @investment.bitcoin_address
+
+.mt-10
+  = link_to "← Back to My Investments", investments_path, class: "text-blue-600 hover:underline"
