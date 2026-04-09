@@ -20,12 +20,32 @@ html
 
     = stylesheet_link_tag "tailwind", "data-turbo-track": "reload"
     = javascript_importmap_tags
+    script
+      |
+        (() => {
+          const initFlash = () => {
+            document.querySelectorAll("[data-flash]").forEach((el) => {
+              if (el.dataset.flashInitialized === "true") return;
+              el.dataset.flashInitialized = "true";
+              setTimeout(() => {
+                el.classList.add("opacity-0", "translate-y-1");
+                setTimeout(() => el.remove(), 400);
+              }, 3500);
+            });
+          };
+          document.addEventListener("turbo:load", initFlash);
+          document.addEventListener("DOMContentLoaded", initFlash);
+        })();
 
   body class="bg-gray-50 font-sans"
-    = render "shared/navbar"
-    .max-w-7xl.mx-auto.px-6.py-10
+    - unless controller_path == "devise/sessions" && action_name == "new"
+      = render "shared/navbar"
+    .fixed.top-20.right-6.z-50.space-y-3.w-full.max-w-md
       - if notice.present?
-        p.notice role="status" = notice
+        .rounded-xl.border.border-emerald-200.bg-emerald-50.px-4.py-3.text-sm.text-emerald-900.shadow.transition.duration-300 data-flash="notice" role="status"
+          = notice
       - if alert.present?
-        p.alert role="alert" = alert
+        .rounded-xl.border.border-red-200.bg-red-50.px-4.py-3.text-sm.text-red-900.shadow.transition.duration-300 data-flash="alert" role="alert"
+          = alert
+    .max-w-7xl.mx-auto.px-6.py-10
       = yield

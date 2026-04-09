@@ -14,15 +14,18 @@ admin.password = "password"
 admin.password_confirmation = "password"
 admin.save!
 
-dmg_project = Project.find_or_create_by!(name: "DMG Project")
-Site.find_or_create_by!(name: "Bluegrass", project: dmg_project)
-dmg = admin.investments.find_or_initialize_by(project: dmg_project)
-dmg.project = dmg_project
-dmg.save!
+digital_midstream = Project.find_or_create_by!(name: "Digital Midstream Genisis")
+["Hash Dock", "Hailey's Mill", "Bluegrass"].each do |site_name|
+  Site.find_or_create_by!(name: site_name, project: digital_midstream)
+end
+digital_investment = admin.investments.find_or_initialize_by(project: digital_midstream)
+digital_investment.project = digital_midstream
+digital_investment.save!
 
-exotic_project = Project.find_or_create_by!(name: "ExoticRidge Project")
-Site.find_or_create_by!(name: "Hailey's Mill", project: exotic_project)
-Site.find_or_create_by!(name: "Hash Dock", project: exotic_project)
-exotic_ridge = admin.investments.find_or_initialize_by(project: exotic_project)
-exotic_ridge.project = exotic_project
-exotic_ridge.save!
+moon_lander = Project.find_or_create_by!(name: "Moon Lander")
+["Dark side", "Light side"].each do |site_name|
+  Site.find_or_create_by!(name: site_name, project: moon_lander)
+end
+moon_investment = admin.investments.find_or_initialize_by(project: moon_lander)
+moon_investment.project = moon_lander
+moon_investment.save!

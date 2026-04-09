@@ -4,17 +4,17 @@ html
     title Sign in - Investor Portal
     = csrf_meta_tags
     = csp_meta_tag
-    = stylesheet_link_tag "application", "data-turbo-track": "reload"
+    = stylesheet_link_tag "tailwind", "data-turbo-track": "reload"
     = javascript_importmap_tags
   body class="bg-gray-50"
-    .min-h-screen.flex.items-center.justify-center.px-4
+    .min-h-screen.flex.items-start.justify-center.px-4
       .max-w-md.w-full
-        .text-center.mb-10
-          h1.text-4xl.font-bold.text-gray-900 Bitcoin Investor Portal
-          p.text-gray-600.mt-2 Secure Document & Payout Portal
+        .text-center.pt-10
+          = image_tag "sovrn_logo_black.png", alt: "Sovrn Capital", class: "mx-auto mb-14 h-24 w-auto"
+
 
         .bg-white.rounded-3xl.shadow-xl.p-10
-          h2.text-2xl.font-semibold.text-center.mb-8 Sign in to your account
+          h2.text-2xl.font-semibold.text-center.mb-8.text-gray-900 Sign in to your account
 
           = form_for(resource, as: resource_name, url: session_path(resource_name), class: "space-y-6") do |f|
             .space-y-5
