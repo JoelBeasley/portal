@@ -89,9 +89,12 @@ class Admin::UsersController < ApplicationController
     end
 
     token = user.send(:set_reset_password_token)
-    Admin::InvestorWelcomeMailer.with(user: user, token: token).welcome_email.deliver_later
+    Admin::InvestorWelcomeMailer.with(user: user, token: token).welcome_email.deliver_now
 
-    redirect_to admin_users_path, notice: "Queued welcome email for #{user.email}."
+    redirect_to admin_users_path, notice: "Sent welcome email to #{user.email}."
+  rescue StandardError => e
+    Rails.logger.error("Failed to send welcome email to #{user.email}: #{e.class} - #{e.message}")
+    redirect_to admin_users_path, alert: "Could not send welcome email to #{user.email}. Please check mail delivery logs."
   end
 
   private
