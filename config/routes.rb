@@ -28,7 +28,11 @@ Rails.application.routes.draw do
       end
     end
     resources :sites, only: [:index, :new, :create]
-    resources :users, only: [:index, :new, :create, :update]
+    resources :users, only: [:index, :new, :create, :update] do
+      member do
+        post :send_welcome_email
+      end
+    end
     resource :impersonation, only: [:create, :destroy]
 
     resources :investments, only: [] do

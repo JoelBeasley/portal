@@ -75,6 +75,25 @@ class Admin::UsersController < ApplicationController
     redirect_to admin_users_path, alert: e.record.errors.full_messages.join(", ")
   end
 
+  def send_welcome_email
+    user = true_current_user.manageable_users_scope.find(params[:id])
+
+    unless user.investor?
+      redirect_to admin_users_path, alert: "Welcome emails can only be sent to investors."
+      return
+    end
+
+    if user.welcome_password_set_at.present?
+      redirect_to admin_users_path, notice: "#{user.email} has already set a password."
+      return
+    end
+
+    token = user.send(:set_reset_password_token)
+    Admin::InvestorWelcomeMailer.with(user: user, token: token).welcome_email.deliver_later
+
+    redirect_to admin_users_path, notice: "Queued welcome email for #{user.email}."
+  end
+
   private
 
   def user_create_params

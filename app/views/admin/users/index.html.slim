@@ -11,6 +11,7 @@ h1.text-3xl.font-bold.mb-6 User Access
           th.px-4.py-3.text-sm.font-semibold.text-gray-700 Name
           th.px-4.py-3.text-sm.font-semibold.text-gray-700 Email
           th.px-4.py-3.text-sm.font-semibold.text-gray-700 Current Role
+          th.px-4.py-3.text-sm.font-semibold.text-gray-700 Welcome Email
           - if true_current_user.can_manage_roles?
             th.px-4.py-3.text-sm.font-semibold.text-gray-700 Update Role
           th.px-4.py-3.text-sm.font-semibold.text-gray-700 Impersonate
@@ -20,6 +21,14 @@ h1.text-3xl.font-bold.mb-6 User Access
             td.px-4.py-3.text-sm.text-gray-900 = user.full_name
             td.px-4.py-3.text-sm.text-gray-900 = user.email
             td.px-4.py-3.text-sm.text-gray-600 = user.role.humanize
+            td.px-4.py-3
+              - if user.investor?
+                - if user.welcome_password_set_at.nil?
+                  = button_to "Send Welcome", send_welcome_email_admin_user_path(user), method: :post, class: "bg-emerald-600 text-white text-sm px-3 py-1 rounded-lg hover:bg-emerald-700", data: { turbo_confirm: "Send welcome email to #{user.email}?" }
+                - else
+                  span.text-xs.text-gray-400 Password set
+              - else
+                span.text-xs.text-gray-400 N/A
             - if true_current_user.can_manage_roles?
               td.px-4.py-3
                 = form_with model: [:admin, user], method: :patch, local: true, class: "flex items-center gap-2" do |f|
