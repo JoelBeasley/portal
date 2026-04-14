@@ -1,6 +1,6 @@
 h1.text-3xl.font-bold.mb-6 New Site
 
-= form_with model: [:admin, @site] do |f|
+= form_with model: [:admin, @site], local: true do |f|
   .space-y-5.max-w-2xl
     div
       = f.label :name, class: "block text-sm font-medium mb-2"
@@ -21,8 +21,8 @@ h1.text-3xl.font-bold.mb-6 New Site
 
     div
       = f.label :braiins_pool_auth_token, "Braiins Pool-Auth-Token (optional)", class: "block text-sm font-medium mb-2"
-      = f.password_field :braiins_pool_auth_token, autocomplete: "off", class: "w-full border border-gray-300 rounded-xl p-3 font-mono text-sm"
-      p.mt-1.text-xs.text-gray-500 Saved on the site record for pool analytics. You can add or change it later when editing the site.
+      = f.text_field :braiins_pool_auth_token, autocomplete: "off", spellcheck: "false", autocapitalize: "off", class: "w-full border border-gray-300 rounded-xl p-3 font-mono text-sm"
+      p.mt-1.text-xs.text-gray-500 Shown in plain text so the browser always submits it reliably. Saved on the site for pool analytics; you can change it later when editing the site.
 
   .mt-8.flex.gap-4
     = f.submit "Create Site", class: "bg-blue-600 text-white px-8 py-3 rounded-2xl hover:bg-blue-700"

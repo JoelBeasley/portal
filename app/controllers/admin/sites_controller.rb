@@ -17,7 +17,9 @@ class Admin::SitesController < ApplicationController
   end
 
   def create
-    @site = Site.new(site_params)
+    permitted = site_params
+    permitted = permitted.except(:braiins_pool_auth_token) if permitted[:braiins_pool_auth_token].blank?
+    @site = Site.new(permitted)
     @offerings = Offering.order(:name)
 
     if @site.save
