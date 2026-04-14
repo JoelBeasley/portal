@@ -4,6 +4,11 @@ class InvestmentsController < ApplicationController
 
   def index
     @investments = current_user.investments.includes(offering: :sites)
+    @tax_documents = current_user.investment_documents
+                                 .tax_documents
+                                 .includes(investment: :offering)
+                                 .with_attached_file
+                                 .order(created_at: :desc)
   end
 
   def show

@@ -17,3 +17,21 @@ h1.text-4xl.font-bold.mb-8 My Investments
       = link_to "View investment", 
                 investment_path(investment), 
                 class: "block w-full text-center bg-blue-600 text-white py-4 rounded-2xl hover:bg-blue-700 transition font-medium"
+
+.mt-12
+  h2.text-2xl.font-semibold.mb-4 Tax Documents
+  - if @tax_documents.any?
+    .space-y-3
+      - @tax_documents.each do |document|
+        .flex.items-center.justify-between.border.border-gray-200.rounded-2xl.p-4
+          .pr-4
+            .font-medium = document.file.filename.to_s
+            .text-sm.text-gray-500.mt-1
+              = document.investment.offering.name
+              |  •
+              = document.display_document_type
+              |  •
+              = l(document.created_at, format: :long)
+          = link_to "Download", url_for(document.file), target: "_blank", class: "text-blue-600 hover:underline font-medium"
+  - else
+    p.text-gray-600 No tax documents available yet.

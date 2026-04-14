@@ -16,6 +16,10 @@ class InvestmentDocument < ApplicationRecord
   validate :file_presence
   validate :user_matches_investment
 
+  scope :tax_documents, -> {
+    where(document_type: document_types[:k1])
+  }
+
   private
 
   def file_presence
