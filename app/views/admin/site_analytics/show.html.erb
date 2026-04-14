@@ -3,6 +3,52 @@
     <h1 class="text-3xl font-bold tracking-tight text-gray-900">Braiins Pool Profit Dashboard</h1>
   </div>
 
+  <div id="status" class="text-sm flex flex-wrap items-baseline gap-x-2 gap-y-1" role="status" aria-live="polite"></div>
+
+  <div class="space-y-6">
+    <div>
+      <h2 class="mb-2 text-lg font-semibold text-gray-900">Current machines (<span id="currentMachinesHeading">80</span>)</h2>
+      <div class="overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-sm" style="max-height: 70vh;">
+        <table id="resultsTableCurrent" class="w-full border-collapse text-right text-sm">
+          <thead class="sticky top-0 z-10 bg-gray-50">
+            <tr>
+              <th class="border border-gray-200 px-3 py-2 text-left min-w-[140px]">Date</th>
+              <th class="border border-gray-200 px-3 py-2">Hashrate (TH/s)</th>
+              <th class="border border-gray-200 px-3 py-2">Energy Cost (<span id="currentMachinesLabelA">80</span> machines)</th>
+              <th class="border border-gray-200 px-3 py-2">BTC Reward</th>
+              <th class="border border-gray-200 px-3 py-2">Gross Revenue (USD)</th>
+              <th class="border border-gray-200 px-3 py-2">Daily Net Profit (<span id="currentMachinesLabelB">80</span> machines)</th>
+              <th class="border border-gray-200 px-3 py-2">Daily Sovrn Partner Return (<span id="currentMachinesLabelC">80</span> machines)</th>
+              <th class="border border-gray-200 px-3 py-2">Monthly Sovrn Partner Return (<span id="currentMachinesLabelD">80</span> machines)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div>
+      <h2 class="mb-2 text-lg font-semibold text-gray-900">Projected machines (<span id="projectedMachinesHeading">325</span>)</h2>
+      <div class="overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-sm" style="max-height: 70vh;">
+        <table id="resultsTableProjected" class="w-full border-collapse text-right text-sm">
+          <thead class="sticky top-0 z-10 bg-gray-50">
+            <tr>
+              <th class="border border-gray-200 px-3 py-2 text-left min-w-[140px]">Date</th>
+              <th class="border border-gray-200 px-3 py-2">Hashrate (TH/s)</th>
+              <th class="border border-gray-200 px-3 py-2">Energy Cost (<span id="projectedMachinesLabelA">325</span> machines)</th>
+              <th class="border border-gray-200 px-3 py-2">BTC Reward (scaled)</th>
+              <th class="border border-gray-200 px-3 py-2">Gross Revenue (USD)</th>
+              <th class="border border-gray-200 px-3 py-2">Daily Net Profit (<span id="projectedMachinesLabelB">325</span> machines)</th>
+              <th class="border border-gray-200 px-3 py-2">Daily Sovrn Partner Return (<span id="projectedMachinesLabelC">325</span> machines)</th>
+              <th class="border border-gray-200 px-3 py-2">Monthly Sovrn Partner Return (<span id="projectedMachinesLabelD">325</span> machines)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
   <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
     <div class="grid gap-4 md:grid-cols-2">
       <div class="md:col-span-2">
@@ -43,8 +89,8 @@
       <div>
         <label class="mb-1 block text-sm font-semibold text-gray-700">BTC Price Used (USD)</label>
         <input type="number" id="btcPrice" value="68800" step="1" min="0" class="w-full rounded-xl border border-gray-300 px-3 py-2">
-        <p class="mt-1 text-xs text-gray-500">
-          Source: this local input value (default 68,800). It is not currently fetched from the Braiins API.
+        <p id="btcPriceSource" class="mt-1 text-xs text-gray-500">
+          Spot USD is loaded from a public price API (via this app, cached a few minutes). You can override the field anytime.
         </p>
       </div>
     </div>
@@ -124,33 +170,9 @@
     </div>
   </details>
 
-  <div id="status" class="text-sm text-gray-600"></div>
-
-  <div class="overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-sm" style="max-height: 70vh;">
-    <table id="resultsTable" class="w-full border-collapse text-right text-sm">
-      <thead class="sticky top-0 z-10 bg-gray-50">
-        <tr>
-          <th class="border border-gray-200 px-3 py-2 text-left min-w-[140px]">Date</th>
-          <th class="border border-gray-200 px-3 py-2">Hashrate (TH/s)</th>
-          <th class="border border-gray-200 px-3 py-2">Energy Cost (<span id="currentMachinesLabelA">80</span> machines)</th>
-          <th class="border border-gray-200 px-3 py-2">Energy Cost (<span id="projectedMachinesLabelA">325</span> machines)</th>
-          <th class="border border-gray-200 px-3 py-2">BTC Reward</th>
-          <th class="border border-gray-200 px-3 py-2">Gross Revenue (USD)</th>
-          <th class="border border-gray-200 px-3 py-2">Net Profit (<span id="currentMachinesLabelB">80</span> machines)</th>
-          <th class="border border-gray-200 px-3 py-2">Net Profit (<span id="projectedMachinesLabelB">325</span> machines)</th>
-          <th class="border border-gray-200 px-3 py-2">Sovrn Partner Return (<span id="currentMachinesLabelC">80</span> machines)</th>
-          <th class="border border-gray-200 px-3 py-2">Sovrn Partner Return (<span id="projectedMachinesLabelC">325</span> machines)</th>
-          <th class="border border-gray-200 px-3 py-2">Sovrn Partner Return 30 Days (<span id="currentMachinesLabelD">80</span> machines)</th>
-          <th class="border border-gray-200 px-3 py-2">Sovrn Partner Return 30 Days (<span id="projectedMachinesLabelD">325</span> machines)</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
   <p class="text-sm text-gray-600">
     Weighted Efficiency auto-calculated from % mix (80% S21 Pro + 20% S21 = 15.5 J/TH).<br>
-    Sovrn Partner Return follows your exact rules: Net Profit − 7% operator − $133.33 generator → Project Profit → DMG 60% → Partner Pool 20% → divided by 4.
+    Sovrn Partner Return follows your exact rules: Daily Net Profit − 7% operator − $133.33 generator → Project Profit → DMG 60% → Partner Pool 20% → divided by 4.
   </p>
 </div>
 
@@ -158,10 +180,35 @@
     let currentHrData = null;
     let currentRewardData = null;
 
-    function showStatus(msg, type = "") {
+    function showStatus(msg, type = "", meta = null) {
       const el = document.getElementById("status");
-      el.textContent = msg;
-      el.style.color = type === "error" ? "red" : (type === "success" ? "green" : "#666");
+      el.className = "text-sm flex flex-wrap items-baseline gap-x-2 gap-y-1";
+      el.textContent = "";
+      const main = document.createElement("span");
+      main.textContent = msg;
+      if (type === "error") {
+        main.className = "text-red-600";
+      } else if (type === "success") {
+        main.className = "font-medium text-green-700";
+      } else {
+        main.className = "text-gray-600";
+      }
+      el.appendChild(main);
+
+      if (meta && (meta.cachedAt || meta.refreshHours != null)) {
+        const suffix = document.createElement("span");
+        suffix.className = "text-gray-500";
+        const parts = [];
+        if (meta.cachedAt) {
+          const when = new Date(meta.cachedAt);
+          const label = Number.isNaN(when.getTime()) ? String(meta.cachedAt) : when.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" });
+          parts.push("Last cached " + label + ".");
+        }
+        const hrs = meta.refreshHours != null ? meta.refreshHours : 6;
+        parts.push("Pool data is refetched from Braiins at most every " + hrs + " hours.");
+        suffix.textContent = parts.join(" ");
+        el.appendChild(suffix);
+      }
     }
 
     function updateDebugPayloads(hashratePayload, rewardsPayload) {
@@ -182,17 +229,19 @@
 
     function updateProjectedMachineLabels() {
       const projectedMachines = parseFloat(document.getElementById("projectedMachines").value) || 325;
-      ["projectedMachinesLabelA", "projectedMachinesLabelB", "projectedMachinesLabelC", "projectedMachinesLabelD"].forEach(id => {
+      const text = String(projectedMachines);
+      ["projectedMachinesHeading", "projectedMachinesLabelA", "projectedMachinesLabelB", "projectedMachinesLabelC", "projectedMachinesLabelD"].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.textContent = projectedMachines;
+        if (el) el.textContent = text;
       });
     }
 
     function updateCurrentMachineLabels() {
       const currentMachines = parseFloat(document.getElementById("currentMachines").value) || 80;
-      ["currentMachinesLabelA", "currentMachinesLabelB", "currentMachinesLabelC", "currentMachinesLabelD"].forEach(id => {
+      const text = String(currentMachines);
+      ["currentMachinesHeading", "currentMachinesLabelA", "currentMachinesLabelB", "currentMachinesLabelC", "currentMachinesLabelD"].forEach(id => {
         const el = document.getElementById(id);
-        if (el) el.textContent = currentMachines;
+        if (el) el.textContent = text;
       });
     }
 
@@ -255,7 +304,35 @@
       return null;
     }
 
+    async function fetchBtcPriceUsd() {
+      const hint = document.getElementById("btcPriceSource");
+      const input = document.getElementById("btcPrice");
+      try {
+        const res = await fetch("/admin/site_analytics/btc_price", {
+          headers: { Accept: "application/json" }
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
+        if (data.error || typeof data.usd !== "number") throw new Error(data.error || "bad response");
+        const rounded = Math.round(data.usd * 100) / 100;
+        input.value = String(rounded);
+        const src = data.source || "API";
+        const ttl = data.cache_ttl_minutes != null ? data.cache_ttl_minutes : 5;
+        let line = "Spot USD from " + src + ", via server (cached up to " + ttl + " min). Override anytime.";
+        if (data.fetched_at) {
+          const when = new Date(data.fetched_at);
+          if (!Number.isNaN(when.getTime())) {
+            line += " Price snapshot: " + when.toLocaleString(undefined, { dateStyle: "medium", timeStyle: "short" }) + ".";
+          }
+        }
+        hint.textContent = line;
+      } catch (e) {
+        hint.textContent = "Could not load live BTC/USD; using the value in the field above. (" + String(e.message) + ")";
+      }
+    }
+
     async function fetchFromApi() {
+      await fetchBtcPriceUsd();
       const token = document.getElementById("apiKey").value.trim();
       const hashrateEndpoint = document.getElementById("hashrateEndpoint").value.trim();
       const rewardsEndpoint = document.getElementById("rewardsEndpoint").value.trim();
@@ -310,7 +387,12 @@
 
         const btcPrice = parseFloat(document.getElementById("btcPrice").value) || 68800;
         renderTable(hrArray, rewardArray, eff, costKwh, scaleFactor, btcPrice);
-        showStatus("✅ Loaded from Braiins API.", "success");
+        const cachedAtRaw = proxyPayload.cached_at != null ? proxyPayload.cached_at : proxyPayload.cachedAt;
+        const refreshHrs = proxyPayload.refresh_interval_hours != null ? proxyPayload.refresh_interval_hours : proxyPayload.refreshIntervalHours;
+        showStatus("✅ Loaded from Braiins API.", "success", {
+          cachedAt: cachedAtRaw,
+          refreshHours: refreshHrs != null ? refreshHrs : 6
+        });
       } catch (e) {
         showStatus("⚠️ API failed, using manual pasted data instead.", "error");
         updateDebugPayloads(
@@ -321,9 +403,19 @@
       }
     }
 
+    function formatTableDateMmDdYy(unixSeconds) {
+      const d = new Date(unixSeconds * 1000);
+      const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
+      const dd = String(d.getUTCDate()).padStart(2, "0");
+      const yy = String(d.getUTCFullYear()).slice(-2);
+      return `${mm}/${dd}/${yy}`;
+    }
+
     function renderTable(hrArray, rewardArray, efficiency, costKwh, scaleFactor, btcPrice) {
-      const tbody = document.getElementById("resultsTable").querySelector("tbody");
-      tbody.innerHTML = "";
+      const tbodyCurrent = document.getElementById("resultsTableCurrent").querySelector("tbody");
+      const tbodyProjected = document.getElementById("resultsTableProjected").querySelector("tbody");
+      tbodyCurrent.innerHTML = "";
+      tbodyProjected.innerHTML = "";
 
       const rewardMap = {};
       rewardArray.forEach(r => {
@@ -344,7 +436,6 @@
         const hashratePh = parseFloat(day.hash_rate_24h) || 0;
         const ths = hashratePh / 1000;
 
-        // Current (80 machines)
         const powerKwCurrent = (ths * efficiency) / 1000;
         const dailyKwhCurrent = powerKwCurrent * 24;
         const elecCostCurrent = dailyKwhCurrent * costKwh;
@@ -352,24 +443,23 @@
         const gross = btcReward * btcPrice;
         const netCurrent = gross - elecCostCurrent;
 
-        // Projected (325 machines)
         const thsProjected = ths * scaleFactor;
         const powerKwProjected = (thsProjected * efficiency) / 1000;
         const dailyKwhProjected = powerKwProjected * 24;
         const elecCostProjected = dailyKwhProjected * costKwh;
         const grossProjected = gross * scaleFactor;
+        const btcRewardScaled = btcReward * scaleFactor;
         const netProjected = grossProjected - elecCostProjected;
 
-        // Sovrn calculation for current
-        const operatorCostCurrent = netCurrent * 0.07;
         const generatorCost = 4000 / 30;
+
+        const operatorCostCurrent = netCurrent * 0.07;
         const projectProfitCurrent = netCurrent - operatorCostCurrent - generatorCost;
         const dmgProfitCurrent = projectProfitCurrent * 0.60;
         const partnerPoolCurrent = dmgProfitCurrent * 0.20;
         const sovrnCurrent = partnerPoolCurrent / 4;
         const sovrn30Current = sovrnCurrent * 30;
 
-        // Sovrn calculation for projected
         const operatorCostProjected = netProjected * 0.07;
         const projectProfitProjected = netProjected - operatorCostProjected - generatorCost;
         const dmgProfitProjected = projectProfitProjected * 0.60;
@@ -377,22 +467,33 @@
         const sovrnProjected = partnerPoolProjected / 4;
         const sovrn30Projected = sovrnProjected * 30;
 
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td class="text-left min-w-[140px] px-3 py-2">${new Date(dateUnix * 1000).toISOString().split('T')[0]}</td>
+        const dateStr = formatTableDateMmDdYy(dateUnix);
+
+        const rowCurrent = document.createElement("tr");
+        rowCurrent.innerHTML = `
+          <td class="text-left min-w-[140px] px-3 py-2">${dateStr}</td>
           <td class="px-3 py-2">${ths.toFixed(2)}</td>
-          <td class="px-3 py-2">$${elecCostCurrent.toFixed(4)}</td>
-          <td class="px-3 py-2">$${elecCostProjected.toFixed(4)}</td>
+          <td class="px-3 py-2">$${elecCostCurrent.toFixed(2)}</td>
           <td class="px-3 py-2">${btcReward.toFixed(8)}</td>
           <td class="px-3 py-2">$${gross.toFixed(2)}</td>
-          <td class="px-3 py-2 ${netCurrent >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${netCurrent.toFixed(2)}</td>
-          <td class="px-3 py-2 ${netProjected >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${netProjected.toFixed(2)}</td>
-          <td class="px-3 py-2 ${sovrnCurrent >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${sovrnCurrent.toFixed(2)}</td>
-          <td class="px-3 py-2 ${sovrnProjected >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${sovrnProjected.toFixed(2)}</td>
-          <td class="px-3 py-2 ${sovrn30Current >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${sovrn30Current.toFixed(2)}</td>
-          <td class="px-3 py-2 ${sovrn30Projected >= 0 ? 'text-green-700 font-semibold' : 'text-red-600 font-semibold'}">$${sovrn30Projected.toFixed(2)}</td>
+          <td class="px-3 py-2 ${netCurrent >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${netCurrent.toFixed(2)}</td>
+          <td class="px-3 py-2 ${sovrnCurrent >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${sovrnCurrent.toFixed(2)}</td>
+          <td class="px-3 py-2 ${sovrn30Current >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${sovrn30Current.toFixed(2)}</td>
         `;
-        tbody.appendChild(row);
+        tbodyCurrent.appendChild(rowCurrent);
+
+        const rowProjected = document.createElement("tr");
+        rowProjected.innerHTML = `
+          <td class="text-left min-w-[140px] px-3 py-2">${dateStr}</td>
+          <td class="px-3 py-2">${thsProjected.toFixed(2)}</td>
+          <td class="px-3 py-2">$${elecCostProjected.toFixed(2)}</td>
+          <td class="px-3 py-2">${btcRewardScaled.toFixed(8)}</td>
+          <td class="px-3 py-2">$${grossProjected.toFixed(2)}</td>
+          <td class="px-3 py-2 ${netProjected >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${netProjected.toFixed(2)}</td>
+          <td class="px-3 py-2 ${sovrnProjected >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${sovrnProjected.toFixed(2)}</td>
+          <td class="px-3 py-2 ${sovrn30Projected >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${sovrn30Projected.toFixed(2)}</td>
+        `;
+        tbodyProjected.appendChild(rowProjected);
       });
     }
 
@@ -409,11 +510,16 @@
       });
     });
 
-    // Initial load
-    window.onload = () => {
+    async function initSiteAnalyticsPage() {
+      if (!document.getElementById("resultsTableCurrent")) return;
       updateWeightedEfficiency();
       updateProjectedMachineLabels();
       updateCurrentMachineLabels();
-      fetchFromApi();
-    };
+      await fetchFromApi();
+    }
+
+    if (!window.__siteAnalyticsTurboInit) {
+      window.__siteAnalyticsTurboInit = true;
+      document.addEventListener("turbo:load", initSiteAnalyticsPage);
+    }
 </script>

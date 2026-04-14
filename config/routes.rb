@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     get "dashboard", to: "dashboard#show"
     post "dashboard/send_welcome_emails", to: "dashboard#send_welcome_emails"
     get "site_analytics", to: "site_analytics#show"
+    get "site_analytics/btc_price", to: "site_analytics#btc_price"
     post "site_analytics/data", to: "site_analytics#data"
     resources :offerings, only: [:index, :show, :new, :create] do
       member do
