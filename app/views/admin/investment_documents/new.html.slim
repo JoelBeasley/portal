@@ -1,0 +1,87 @@
+h1.text-3xl.font-bold.mb-2 Import Investment Documents
+
+p.text-gray-600.mb-6
+  | Upload files and map each one to an investor and investment before importing.
+
+- if @import_errors.present?
+  .mb-6.rounded-xl.border.border-red-200.bg-red-50.p-4
+    p.text-sm.font-semibold.text-red-900.mb-2 Import errors
+    ul.list-disc.pl-5.text-sm.text-red-900.space-y-1
+      - @import_errors.each do |error|
+        li = error
+
+- document_import_investors_value = @users.map { |u| { id: u.id, fullName: u.full_name, email: u.email } }
+- document_import_investments_value = @investments.map { |inv| { id: inv.id, userId: inv.user_id, userFullName: inv.user.full_name, listTitle: inv.list_title, companyOrNickname: inv.company_or_nickname, projectName: inv.project.name } }
+
+= form_with url: admin_investment_documents_path, method: :post, multipart: true, class: "space-y-6", data: { controller: "document-import", document_import_investors_value: document_import_investors_value.to_json, document_import_investments_value: document_import_investments_value.to_json } do |f|
+  .bg-white.border.border-gray-200.rounded-2xl.p-6.space-y-4
+    h2.text-lg.font-semibold Document type
+    = select_tag :document_type,
+                 options_for_select(@document_type_options, @document_type.presence || params[:document_type]),
+                 include_blank: "Select document type",
+                 class: "w-full max-w-xl border border-gray-300 rounded-xl px-4 py-3",
+                 data: { document_import_target: "documentTypeSelect", action: "change->document-import#syncCustomTypeField" }
+    div data-document-import-target="customTypeField"
+      label.block.text-sm.font-medium.mb-2 Custom type name (optional)
+      = text_field_tag :custom_document_type,
+                       (@custom_document_type.presence || params[:custom_document_type]),
+                       placeholder: "e.g. Operating Agreement",
+                       class: "w-full max-w-xl border border-gray-300 rounded-xl px-4 py-3"
+      p.text-xs.text-gray-500 Use this when Document type is set to "Custom".
+
+  .bg-white.border.border-gray-200.rounded-2xl.p-6.space-y-4
+    h2.text-lg.font-semibold Document files
+    = file_field_tag "files[]",
+                     multiple: true,
+                     class: "block w-full text-sm text-gray-600",
+                     accept: ".pdf,.png,.jpg,.jpeg,.doc,.docx,.txt,.zip,application/pdf,image/*",
+                     data: { document_import_target: "fileInput", action: "change->document-import#renderMappings" }
+    p.text-xs.text-gray-500 Choose multiple files, then map each file below.
+
+  .bg-white.border.border-gray-200.rounded-2xl.p-6.space-y-4
+    h2.text-lg.font-semibold File mappings
+    p.text-sm.text-gray-600 One row is required per selected file.
+    p.text-sm.text-gray-500 data-document-import-target="emptyState" Select files above to generate mapping rows.
+    #document-mappings.space-y-4 data-document-import-target="mappings"
+      - Array(@pending_mappings).each_with_index do |mapping, idx|
+        .document-mapping-row.border.border-gray-200.rounded-xl.p-4 data-row-index=idx
+          .flex.items-start.justify-between.gap-3.mb-3
+            p.font-medium = mapping[:filename]
+            button.text-xs.text-red-600.hover:text-red-700.font-medium type="button" data-action="click->document-import#removeRow" Remove file
+          .grid.grid-cols-1.md:grid-cols-2.gap-4
+            div
+              label.block.text-sm.font-medium.mb-2 Investor
+              = select_tag "mappings[#{idx}][user_id]",
+                           options_for_select(@users.map { |u| ["#{u.full_name} (#{u.email})", u.id] }, mapping[:user_id]),
+                           include_blank: "Select investor",
+                           class: "w-full border border-gray-300 rounded-xl px-4 py-3",
+                           data: { action: "change->document-import#syncInvestments", document_import_role: "user-select" }
+            div
+              label.block.text-sm.font-medium.mb-2 Investment
+              select.w-full.border.border-gray-300.rounded-xl.px-4.py-3 name="mappings[#{idx}][investment_id]" data-document-import-role="investment-select"
+                option value="" Select investment
+                - @investments.each do |inv|
+                  option value=inv.id selected=(mapping[:investment_id].to_s == inv.id.to_s) data-user-id=inv.user_id = "##{inv.id} - #{inv.list_title} (#{inv.project.name})"
+
+    template data-document-import-target="template"
+      .document-mapping-row.border.border-gray-200.rounded-xl.p-4 data-row-index="__INDEX__"
+        .flex.items-start.justify-between.gap-3.mb-3
+          p.font-medium __FILENAME__
+          button.text-xs.text-red-600.hover:text-red-700.font-medium type="button" data-action="click->document-import#removeRow" Remove file
+        .grid.grid-cols-1.md:grid-cols-2.gap-4
+          div
+            label.block.text-sm.font-medium.mb-2 Investor
+            select.w-full.border.border-gray-300.rounded-xl.px-4.py-3 name="mappings[__INDEX__][user_id]" data-action="change->document-import#syncInvestments" data-document-import-role="user-select"
+              option value="" Select investor
+              - @users.each do |u|
+                option value=u.id = "#{u.full_name} (#{u.email})"
+          div
+            label.block.text-sm.font-medium.mb-2 Investment
+            select.w-full.border.border-gray-300.rounded-xl.px-4.py-3 name="mappings[__INDEX__][investment_id]" data-document-import-role="investment-select"
+              option value="" Select investment
+              - @investments.each do |inv|
+                option value=inv.id data-user-id=inv.user_id = "##{inv.id} - #{inv.list_title} (#{inv.project.name})"
+
+  .flex.flex-wrap.gap-4
+    = f.submit "Import documents", class: "bg-green-600 text-white px-8 py-3 rounded-2xl font-semibold hover:bg-green-700"
+    = link_to "Cancel", admin_projects_path, class: "bg-gray-200 px-8 py-3 rounded-2xl inline-flex items-center"

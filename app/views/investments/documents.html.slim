@@ -1,7 +1,21 @@
 h2.text-2xl.font-semibold.mb-6 Documents
 
 .space-y-6
-  - if @documents.any?
+  - if @typed_documents.any? || @documents.any?
+    - @typed_documents.each do |doc|
+      .flex.justify-between.items-center.border.border-gray-200.p-6.rounded-3xl
+        .flex-1
+          .font-medium = doc.file.filename.to_s
+          .text-sm.text-gray-500.mt-1
+            = doc.display_document_type
+            |  •
+            = number_to_human_size(doc.file.byte_size)
+            |  •
+            = l(doc.created_at, format: :long)
+        = link_to "Download", url_for(doc.file),
+                  target: "_blank",
+                  class: "bg-gray-900 text-white px-6 py-3 rounded-2xl hover:bg-black transition"
+
     - @documents.each do |doc|
       .flex.justify-between.items-center.border.border-gray-200.p-6.rounded-3xl
         .flex-1

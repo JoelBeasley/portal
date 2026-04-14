@@ -7,6 +7,7 @@ class User < ApplicationRecord
   enum :role, { investor: 0, admin: 1, partner: 2, super_admin: 3 }
 
   has_many :investments, dependent: :destroy
+  has_many :investment_documents, dependent: :destroy
   has_many :projects, -> { distinct }, through: :investments
   has_many :sites, through: :projects
   has_many :started_impersonation_events, class_name: "ImpersonationEvent", foreign_key: :admin_user_id, inverse_of: :admin_user, dependent: :nullify

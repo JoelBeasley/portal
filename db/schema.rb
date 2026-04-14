@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_13_110000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_13_130000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -54,6 +54,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_110000) do
     t.string "user_agent"
     t.index ["admin_user_id"], name: "index_impersonation_events_on_admin_user_id"
     t.index ["target_user_id"], name: "index_impersonation_events_on_target_user_id"
+  end
+
+  create_table "investment_documents", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "custom_document_type"
+    t.integer "document_type", null: false
+    t.bigint "investment_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["investment_id"], name: "index_investment_documents_on_investment_id"
+    t.index ["user_id"], name: "index_investment_documents_on_user_id"
   end
 
   create_table "investments", force: :cascade do |t|
@@ -175,6 +186,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_13_110000) do
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
   add_foreign_key "impersonation_events", "users", column: "admin_user_id"
   add_foreign_key "impersonation_events", "users", column: "target_user_id"
+  add_foreign_key "investment_documents", "investments"
+  add_foreign_key "investment_documents", "users"
   add_foreign_key "investments", "projects"
   add_foreign_key "investments", "users"
   add_foreign_key "sites", "projects"

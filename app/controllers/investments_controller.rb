@@ -7,10 +7,12 @@ class InvestmentsController < ApplicationController
   end
 
   def show
+    @typed_documents = @investment.investment_documents.with_attached_file.order(created_at: :desc)
   end
 
   def documents
     @documents = @investment.documents.includes(:blob)
+    @typed_documents = @investment.investment_documents.with_attached_file.order(created_at: :desc)
   end
 
   def update
@@ -19,6 +21,7 @@ class InvestmentsController < ApplicationController
                   notice: "Bitcoin payout address updated successfully."
     else
       @documents = @investment.documents.includes(:blob)
+      @typed_documents = @investment.investment_documents.with_attached_file.order(created_at: :desc)
       render :documents, status: :unprocessable_entity
     end
   end

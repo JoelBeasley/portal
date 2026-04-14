@@ -43,8 +43,17 @@ h1.text-4xl.font-bold.mb-4 = @investment.list_title
 
   .mt-8
     p.text-sm.text-gray-500.mb-2 Documents
-    - if @investment.documents.attached?
+    - has_legacy_documents = @investment.documents.attached?
+    - has_typed_documents = @typed_documents.present?
+    - if has_typed_documents || has_legacy_documents
       ul.space-y-2
+        - @typed_documents.each do |document|
+          li.flex.items-center.justify-between.border.border-gray-200.rounded-xl.p-3
+            .truncate.pr-4
+              .font-medium = document.file.filename.to_s
+              .text-xs.text-gray-500.mt-1
+                = "#{document.display_document_type} • #{l(document.created_at, format: :long)}"
+            = link_to "Download", url_for(document.file), target: "_blank", class: "text-blue-600 hover:underline"
         - @investment.documents.each do |document|
           li.flex.items-center.justify-between.border.border-gray-200.rounded-xl.p-3
             .truncate.pr-4 = document.filename.to_s

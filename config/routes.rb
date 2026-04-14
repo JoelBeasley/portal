@@ -25,6 +25,7 @@ Rails.application.routes.draw do
         post :create_import
       end
     end
+    resources :investment_documents, only: [:new, :create]
   end
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
