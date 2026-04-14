@@ -11,7 +11,7 @@ p.text-gray-600.mb-6
         li = error
 
 - document_import_investors_value = @users.map { |u| { id: u.id, fullName: u.full_name, email: u.email } }
-- document_import_investments_value = @investments.map { |inv| { id: inv.id, userId: inv.user_id, userFullName: inv.user.full_name, listTitle: inv.list_title, companyOrNickname: inv.company_or_nickname, projectName: inv.project.name } }
+- document_import_investments_value = @investments.map { |inv| { id: inv.id, userId: inv.user_id, userFullName: inv.user.full_name, listTitle: inv.list_title, companyOrNickname: inv.company_or_nickname, offeringName: inv.offering.name } }
 
 = form_with url: admin_investment_documents_path, method: :post, multipart: true, class: "space-y-6", data: { controller: "document-import", document_import_investors_value: document_import_investors_value.to_json, document_import_investments_value: document_import_investments_value.to_json } do |f|
   .bg-white.border.border-gray-200.rounded-2xl.p-6.space-y-4
@@ -61,7 +61,7 @@ p.text-gray-600.mb-6
               select.w-full.border.border-gray-300.rounded-xl.px-4.py-3 name="mappings[#{idx}][investment_id]" data-document-import-role="investment-select"
                 option value="" Select investment
                 - @investments.each do |inv|
-                  option value=inv.id selected=(mapping[:investment_id].to_s == inv.id.to_s) data-user-id=inv.user_id = "##{inv.id} - #{inv.list_title} (#{inv.project.name})"
+                  option value=inv.id selected=(mapping[:investment_id].to_s == inv.id.to_s) data-user-id=inv.user_id = "##{inv.id} - #{inv.list_title} (#{inv.offering.name})"
 
     template data-document-import-target="template"
       .document-mapping-row.border.border-gray-200.rounded-xl.p-4 data-row-index="__INDEX__"
@@ -80,8 +80,8 @@ p.text-gray-600.mb-6
             select.w-full.border.border-gray-300.rounded-xl.px-4.py-3 name="mappings[__INDEX__][investment_id]" data-document-import-role="investment-select"
               option value="" Select investment
               - @investments.each do |inv|
-                option value=inv.id data-user-id=inv.user_id = "##{inv.id} - #{inv.list_title} (#{inv.project.name})"
+                option value=inv.id data-user-id=inv.user_id = "##{inv.id} - #{inv.list_title} (#{inv.offering.name})"
 
   .flex.flex-wrap.gap-4
     = f.submit "Import documents", class: "bg-green-600 text-white px-8 py-3 rounded-2xl font-semibold hover:bg-green-700"
-    = link_to "Cancel", admin_projects_path, class: "bg-gray-200 px-8 py-3 rounded-2xl inline-flex items-center"
+    = link_to "Cancel", admin_offerings_path, class: "bg-gray-200 px-8 py-3 rounded-2xl inline-flex items-center"

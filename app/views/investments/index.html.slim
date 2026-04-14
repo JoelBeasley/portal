@@ -3,7 +3,7 @@ h1.text-4xl.font-bold.mb-8 My Investments
 .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-6
   - @investments.each do |investment|
     .border.border-gray-200.rounded-3xl.p-8.hover:shadow-lg.transition
-      h2.text-2xl.font-semibold.mb-1 = investment.project.name
+      h2.text-2xl.font-semibold.mb-1 = investment.offering.name
       p.text-sm.text-gray-500.mb-3 = investment.list_title
       p.text-sm.text-gray-600.mb-1
         = number_to_currency(investment.invested_amount, precision: 0)

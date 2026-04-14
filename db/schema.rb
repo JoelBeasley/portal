@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_14_160858) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_14_162449) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -112,6 +112,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_160858) do
     t.text "mailing_address"
     t.text "notes"
     t.integer "number_of_members"
+    t.bigint "offering_id", null: false
     t.string "offering_name"
     t.string "other_investor_email"
     t.string "other_investor_name"
@@ -124,7 +125,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_160858) do
     t.string "profile_import_id"
     t.string "profile_name"
     t.string "profile_type"
-    t.bigint "project_id", null: false
     t.date "received_date"
     t.string "reinvest_distributions"
     t.string "selected_company_member"
@@ -140,11 +140,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_160858) do
     t.bigint "user_id", null: false
     t.string "waitlist_status"
     t.index ["cash_flow_import_id"], name: "index_investments_on_cash_flow_import_id_unique", unique: true, where: "(cash_flow_import_id IS NOT NULL)"
-    t.index ["project_id"], name: "index_investments_on_project_id"
+    t.index ["offering_id"], name: "index_investments_on_offering_id"
     t.index ["user_id"], name: "index_investments_on_user_id"
   end
 
-  create_table "projects", force: :cascade do |t|
+  create_table "offerings", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "description"
     t.string "name", null: false
@@ -155,10 +155,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_160858) do
     t.datetime "created_at", null: false
     t.text "description"
     t.string "name"
-    t.bigint "project_id", null: false
+    t.bigint "offering_id", null: false
     t.string "slug"
     t.datetime "updated_at", null: false
-    t.index ["project_id"], name: "index_sites_on_project_id"
+    t.index ["offering_id"], name: "index_sites_on_offering_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -189,7 +189,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_160858) do
   add_foreign_key "impersonation_events", "users", column: "target_user_id"
   add_foreign_key "investment_documents", "investments"
   add_foreign_key "investment_documents", "users"
-  add_foreign_key "investments", "projects"
+  add_foreign_key "investments", "offerings"
   add_foreign_key "investments", "users"
-  add_foreign_key "sites", "projects"
+  add_foreign_key "sites", "offerings"
 end

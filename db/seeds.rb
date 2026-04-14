@@ -32,37 +32,37 @@ investor.assign_attributes(
 )
 investor.save!
 
-digital_midstream = Project.find_or_create_by!(name: "Digital Midstream Genisis")
+digital_midstream = Offering.find_or_create_by!(name: "Digital Midstream Genisis")
 ["Hash Dock", "Hailey's Mill", "Bluegrass"].each do |site_name|
-  Site.find_or_create_by!(name: site_name, project: digital_midstream)
+  Site.find_or_create_by!(name: site_name, offering: digital_midstream)
 end
 
-digital_investment = super_admin.investments.find_or_initialize_by(project: digital_midstream)
+digital_investment = super_admin.investments.find_or_initialize_by(offering: digital_midstream)
 digital_investment.assign_attributes(
-  project: digital_midstream,
+  offering: digital_midstream,
   invested_amount: 125_000,
   investor_since: Date.new(2025, 11, 1),
   company_or_nickname: nil
 )
 digital_investment.save!
 
-moon_lander = Project.find_or_create_by!(name: "Moon Lander")
+moon_lander = Offering.find_or_create_by!(name: "Moon Lander")
 ["Dark side", "Light side"].each do |site_name|
-  Site.find_or_create_by!(name: site_name, project: moon_lander)
+  Site.find_or_create_by!(name: site_name, offering: moon_lander)
 end
 
-moon_investment = regular_admin.investments.find_or_initialize_by(project: moon_lander)
+moon_investment = regular_admin.investments.find_or_initialize_by(offering: moon_lander)
 moon_investment.assign_attributes(
-  project: moon_lander,
+  offering: moon_lander,
   invested_amount: 50_000,
   investor_since: Date.new(2026, 1, 15),
   company_or_nickname: "Lunar Ops LLC"
 )
 moon_investment.save!
 
-investor_investment = investor.investments.find_or_initialize_by(project: digital_midstream)
+investor_investment = investor.investments.find_or_initialize_by(offering: digital_midstream)
 investor_investment.assign_attributes(
-  project: digital_midstream,
+  offering: digital_midstream,
   invested_amount: 75_000,
   investor_since: Date.new(2026, 2, 1),
   company_or_nickname: "Atlas Mining Co."

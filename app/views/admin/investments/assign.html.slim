@@ -12,10 +12,10 @@ h1.text-3xl.font-bold.mb-6 Assign New Investment
                    class: "w-full border border-gray-300 rounded-2xl p-4 text-lg",
                    data: { investment_assign_target: "userSelect", action: "change->investment-assign#syncLabel" }
 
-      / Project Selection
+      / Offering Selection
       .space-y-6
-        h2.text-xl.font-semibold Choose Project
-        = f.select :project_id, @projects.map { |p| [p.name, p.id] },
+        h2.text-xl.font-semibold Choose Offering
+        = f.select :offering_id, @offerings.map { |o| [o.name, o.id] },
                    {},
                    class: "w-full border border-gray-300 rounded-2xl p-4 text-lg"
 
@@ -49,4 +49,4 @@ h1.text-3xl.font-bold.mb-6 Assign New Investment
     .mt-10.flex.gap-4
       = f.submit "Create Investment",
                 class: "bg-green-600 text-white px-10 py-4 rounded-3xl font-semibold hover:bg-green-700"
-      = link_to "Cancel", admin_projects_path, class: "bg-gray-200 px-10 py-4 rounded-3xl"
+      = link_to "Cancel", admin_offerings_path, class: "bg-gray-200 px-10 py-4 rounded-3xl"

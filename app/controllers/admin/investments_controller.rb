@@ -6,17 +6,17 @@ class Admin::InvestmentsController < ApplicationController
   def assign
     @investment = Investment.new
     @users = User.where(role: [:investor, :admin, :super_admin]).order(:email)
-    @projects = Project.order(:name)
+    @offerings = Offering.order(:name)
   end
 
   def import
-    @projects = Project.order(:name)
+    @offerings = Offering.order(:name)
   end
 
   def create_import
     file = params[:import_file]
     text = params[:import_text].to_s
-    default_project_id = params[:default_project_id].presence
+    default_offering_id = params[:default_offering_id].presence
 
     if file.blank? && text.strip.blank?
       redirect_to import_admin_investments_path, alert: "Add a file or paste CSV/TSV data."
@@ -27,7 +27,7 @@ class Admin::InvestmentsController < ApplicationController
     io = file.presence
 
     result = CashFlowImport::SheetImporter.new(
-      default_project_id: default_project_id,
+      default_offering_id: default_offering_id,
       io: io,
       string: (text.strip.presence unless io),
       filename: filename
@@ -43,7 +43,7 @@ class Admin::InvestmentsController < ApplicationController
 
     if result.errors.any?
       # Do not stash errors in the session — cookie store maxes out (~4KB).
-      @projects = Project.order(:name)
+      @offerings = Offering.order(:name)
       @import_errors = result.errors.first(500)
       @import_text = text
       flash.now[:notice] = summary if result.created_users.positive? || result.updated_users.positive? ||
@@ -58,10 +58,10 @@ class Admin::InvestmentsController < ApplicationController
 
   def create_assignment
     user = User.find(params[:user_id])
-    project = Project.find_by(id: params[:project_id])
+    offering = Offering.find_by(id: params[:offering_id])
 
-    unless project
-      redirect_to assign_admin_investments_path, alert: "Please select a project."
+    unless offering
+      redirect_to assign_admin_investments_path, alert: "Please select an offering."
       return
     end
 
@@ -78,7 +78,7 @@ class Admin::InvestmentsController < ApplicationController
 
     investment = Investment.new(
       user: user,
-      project: project,
+      offering: offering,
       bitcoin_address: params[:bitcoin_address],
       company_or_nickname: company_or_nickname,
       invested_amount: invested_amount,
@@ -86,8 +86,8 @@ class Admin::InvestmentsController < ApplicationController
     )
 
     if investment.save
-      redirect_to admin_project_path(project),
-                  notice: "Investment created for #{user.email} in project #{project.name}."
+      redirect_to admin_offering_path(offering),
+                  notice: "Investment created for #{user.email} in offering #{offering.name}."
     else
       redirect_to assign_admin_investments_path, alert: investment.errors.full_messages.join(", ")
     end

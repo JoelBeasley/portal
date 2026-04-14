@@ -1,13 +1,13 @@
 .space-y-8
   .border.border-gray-200.rounded-2xl.p-6.bg-white
-    h1.text-3xl.font-bold.mb-2 = @project.name
-    p.text-gray-600 Investors, sites, and investments in this project
+    h1.text-3xl.font-bold.mb-2 = @offering.name
+    p.text-gray-600 Investors, sites, and investments in this offering
 
   - if current_user.can_access_admin_area?
     .border.border-gray-200.rounded-2xl.p-6.bg-white
       h2.text-lg.font-semibold.mb-2 Export
-      p.text-sm.text-gray-600.mb-4 Export investor names, bitcoin addresses, and project name to CSV.
-      = link_to "Export Addresses", export_addresses_admin_project_path(@project), class: "bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 inline-flex items-center"
+      p.text-sm.text-gray-600.mb-4 Export investor names, bitcoin addresses, and offering name to CSV.
+      = link_to "Export Addresses", export_addresses_admin_offering_path(@offering), class: "bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 inline-flex items-center"
 
   .grid.grid-cols-1.lg:grid-cols-2.gap-8
     .border.border-gray-200.rounded-2xl.p-5.bg-white
@@ -37,7 +37,7 @@
             - @sites.each do |site|
               li = site.name
       - else
-        p.text-gray-500.text-sm No sites in this project yet.
+        p.text-gray-500.text-sm No sites in this offering yet.
 
   .border.border-gray-200.rounded-2xl.p-6.bg-white
     h2.text-xl.font-semibold.mb-3 Investments
@@ -55,6 +55,6 @@
             .mt-2
               = link_to "View investment", investment_path(investment), class: "text-sm text-blue-600 hover:underline"
     - else
-      p.text-gray-500.text-sm No investments in this project yet.
+      p.text-gray-500.text-sm No investments in this offering yet.
 
-  = link_to "← Back to Projects", admin_projects_path, class: "text-blue-600 hover:underline"
+  = link_to "← Back to Offerings", admin_offerings_path, class: "text-blue-600 hover:underline"

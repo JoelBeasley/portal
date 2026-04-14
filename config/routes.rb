@@ -22,7 +22,7 @@ Rails.application.routes.draw do
     post "dashboard/send_welcome_emails", to: "dashboard#send_welcome_emails"
     get "site_analytics", to: "site_analytics#show"
     post "site_analytics/data", to: "site_analytics#data"
-    resources :projects, only: [:index, :show, :new, :create] do
+    resources :offerings, only: [:index, :show, :new, :create] do
       member do
         get :export_addresses
       end

@@ -13,10 +13,10 @@ p.text-gray-600.mb-6
     pre.text-xs.text-red-900.whitespace-pre-wrap.font-mono.overflow-x-auto.max-h-96 = @import_errors.join("\n")
 
 .bg-amber-50.border.border-amber-200.rounded-xl.p-4.mb-8
-  h2.text-sm.font-semibold.text-amber-900.mb-2 Multiple investments per project
+  h2.text-sm.font-semibold.text-amber-900.mb-2 Multiple investments per offering
   p.text-sm.text-amber-900
     | Use a stable <strong>ID</strong> column from Cash Flow (mapped to import id) so re-imports update the same
-      investment. Without it, the importer matches on email + project + invested amount + date + company label, or creates a new row.
+      investment. Without it, the importer matches on email + offering + invested amount + date + company label, or creates a new row.
 
 .bg-white.border.border-gray-200.rounded-2xl.p-6.mb-8
   h2.text-lg.font-semibold.mb-3 Recognized columns
@@ -24,7 +24,7 @@ p.text-gray-600.mb-6
     li <strong>Email, First Name, Last Name</strong> — required (aliases: First, Last, etc.)
     li <strong>Amount / Invested amount</strong> — USD (aliases: Total Invested, Investment Amount, amount_usd)
     li <strong>Funded date</strong> — investor since (aliases: Close Date, Investor Since)
-    li <strong>Project / Offering / Investment name</strong> — optional if you choose a project below (then every row uses that project)
+    li <strong>Project / Offering / Investment name</strong> — optional if you choose an offering below (then every row uses that offering)
     li <strong>ID / Investment ID</strong> — optional; becomes <code class="bg-gray-100 px-1 rounded">cash_flow_import_id</code> for upserts
     li <strong>Legal entity / Company</strong> — optional → investment display label when different from the person’s name
     li <strong>Bitcoin address</strong> — optional; invalid values are cleared
@@ -36,13 +36,13 @@ p.text-gray-600.mb-6
 
 = form_with url: create_import_admin_investments_path, method: :post, multipart: true, class: "space-y-8" do |f|
   .bg-white.border.border-gray-200.rounded-2xl.p-6.space-y-4
-    h2.text-lg.font-semibold Project for this import
+    h2.text-lg.font-semibold Offering for this import
     p.text-sm.text-gray-600
-      | Choose the project <strong>all rows</strong> will be attached to (typical for a Cash Flow export where every line is the same offering).
-        Leave as “— none —” only if each row includes a project/offering column whose values match a project name in this app exactly (case-insensitive).
-    = f.select :default_project_id,
-               [["— none —", ""]] + @projects.map { |p| [p.name, p.id] },
-               { selected: params[:default_project_id].presence },
+      | Choose the offering <strong>all rows</strong> will be attached to (typical for a Cash Flow export where every line is the same offering).
+        Leave as “— none —” only if each row includes a project/offering column whose values match an offering name in this app exactly (case-insensitive).
+    = f.select :default_offering_id,
+               [["— none —", ""]] + @offerings.map { |o| [o.name, o.id] },
+               { selected: params[:default_offering_id].presence },
                class: "w-full max-w-xl border border-gray-300 rounded-xl px-4 py-3"
 
   .bg-white.border.border-gray-200.rounded-2xl.p-6.space-y-4
@@ -58,8 +58,8 @@ p.text-gray-600.mb-6
                   rows: 12,
                   value: (@import_text.presence || params[:import_text]),
                   class: "w-full font-mono text-sm border border-gray-300 rounded-xl p-4",
-                  placeholder: "Email\tFirst Name\tLast Name\tAmount\tFunded Date\tProject Name\n..."
+                  placeholder: "Email\tFirst Name\tLast Name\tAmount\tFunded Date\tOffering Name\n..."
 
   .flex.flex-wrap.gap-4
     = f.submit "Run import", class: "bg-green-600 text-white px-8 py-3 rounded-2xl font-semibold hover:bg-green-700"
-    = link_to "Cancel", admin_projects_path, class: "bg-gray-200 px-8 py-3 rounded-2xl inline-flex items-center"
+    = link_to "Cancel", admin_offerings_path, class: "bg-gray-200 px-8 py-3 rounded-2xl inline-flex items-center"

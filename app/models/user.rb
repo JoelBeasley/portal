@@ -8,8 +8,8 @@ class User < ApplicationRecord
 
   has_many :investments, dependent: :destroy
   has_many :investment_documents, dependent: :destroy
-  has_many :projects, -> { distinct }, through: :investments
-  has_many :sites, through: :projects
+  has_many :offerings, -> { distinct }, through: :investments
+  has_many :sites, through: :offerings
   has_many :started_impersonation_events, class_name: "ImpersonationEvent", foreign_key: :admin_user_id, inverse_of: :admin_user, dependent: :nullify
   has_many :targeted_impersonation_events, class_name: "ImpersonationEvent", foreign_key: :target_user_id, inverse_of: :target_user, dependent: :nullify
 

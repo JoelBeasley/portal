@@ -9,12 +9,12 @@ class Admin::SitesController < ApplicationController
 
   def new
     @site = Site.new
-    @projects = Project.order(:name)
+    @offerings = Offering.order(:name)
   end
 
   def create
     @site = Site.new(site_params)
-    @projects = Project.order(:name)
+    @offerings = Offering.order(:name)
 
     if @site.save
       redirect_to admin_sites_path, notice: "Site created successfully."
@@ -34,6 +34,6 @@ class Admin::SitesController < ApplicationController
   end
 
   def site_params
-    params.require(:site).permit(:name, :slug, :description, :project_id)
+    params.require(:site).permit(:name, :slug, :description, :offering_id)
   end
 end

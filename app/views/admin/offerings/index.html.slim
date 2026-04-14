@@ -1,0 +1,15 @@
+h1.text-3xl.font-bold.mb-6 Offerings
+
+.mb-6.flex.flex-wrap.gap-3
+  - if current_user.can_manage_projects?
+    = link_to "New Offering", new_admin_offering_path, class: "bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
+  = link_to "Sites", admin_sites_path, class: "bg-gray-200 px-4 py-2 rounded-xl"
+
+.space-y-4
+  - @offerings.each do |offering|
+    .border.border-gray-200.rounded-xl.p-5
+      .flex.items-center.justify-between
+        .font-semibold.text-lg = offering.name
+        = link_to "View Investors", admin_offering_path(offering), class: "text-blue-600 hover:underline"
+      .text-sm.text-gray-500.mt-1
+        = "#{pluralize(offering.sites.size, 'site')} • #{pluralize(offering.users.size, 'investor')}"

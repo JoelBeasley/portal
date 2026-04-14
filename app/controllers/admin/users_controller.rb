@@ -9,15 +9,15 @@ class Admin::UsersController < ApplicationController
 
   def new
     @user = User.new(role: :investor)
-    @projects = Project.order(:name)
+    @offerings = Offering.order(:name)
     @role_options = true_current_user.creatable_roles
   end
 
   def create
     @user = User.new(user_create_params)
-    @projects = Project.order(:name)
+    @offerings = Offering.order(:name)
     @role_options = true_current_user.creatable_roles
-    selected_project_id = params.dig(:user, :project_id).presence
+    selected_offering_id = params.dig(:user, :offering_id).presence
     bitcoin_address = params.dig(:user, :bitcoin_address).to_s.strip.presence
     raw_label = params.dig(:user, :investment_label).to_s.strip
     company_or_nickname =
@@ -36,11 +36,11 @@ class Admin::UsersController < ApplicationController
     ActiveRecord::Base.transaction do
       @user.save!
 
-      if selected_project_id.present?
-        project = Project.find(selected_project_id)
+      if selected_offering_id.present?
+        offering = Offering.find(selected_offering_id)
         Investment.create!(
           user: @user,
-          project: project,
+          offering: offering,
           bitcoin_address: bitcoin_address,
           company_or_nickname: company_or_nickname,
           invested_amount: parse_invested_amount(params.dig(:user, :invested_amount)),

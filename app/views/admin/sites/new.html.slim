@@ -15,8 +15,8 @@ h1.text-3xl.font-bold.mb-6 New Site
       = f.text_area :description, rows: 4, class: "w-full border border-gray-300 rounded-xl p-3"
 
     div
-      = f.label :project_id, "Project", class: "block text-sm font-medium mb-2"
-      = f.select :project_id, @projects.map { |p| [p.name, p.id] }, {},
+      = f.label :offering_id, "Offering", class: "block text-sm font-medium mb-2"
+      = f.select :offering_id, @offerings.map { |o| [o.name, o.id] }, {},
                  class: "w-full border border-gray-300 rounded-xl p-3"
 
   .mt-8.flex.gap-4

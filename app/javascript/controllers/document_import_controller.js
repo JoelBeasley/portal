@@ -152,7 +152,7 @@ export default class extends Controller {
         investment.listTitle,
         investment.companyOrNickname,
         investment.userFullName,
-        investment.projectName
+        investment.offeringName
       ].filter(Boolean).join(" ")
       const candidateTokens = this.tokens(haystack)
       const score = this.tokenScore(filenameTokens, candidateTokens)

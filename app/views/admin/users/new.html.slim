@@ -36,12 +36,12 @@ h1.text-3xl.font-bold.mb-6 New User
 
     .border-t.border-gray-200.pt-5
       h2.text-lg.font-semibold.text-gray-900 Optional Investment
-      p.text-sm.text-gray-500.mt-1 Assign the user to a project now, or leave blank.
+      p.text-sm.text-gray-500.mt-1 Assign the user to an offering now, or leave blank.
 
       .grid.grid-cols-1.md:grid-cols-2.gap-4.mt-4
         .space-y-2
-          = label_tag "user_project_id", "Project", class: "block text-sm font-medium text-gray-700"
-          = select_tag "user[project_id]", options_for_select([["No investment", ""]] + @projects.map { |p| [p.name, p.id] }, params.dig(:user, :project_id)), class: "w-full rounded-xl border border-gray-300 px-3 py-2"
+          = label_tag "user_offering_id", "Offering", class: "block text-sm font-medium text-gray-700"
+          = select_tag "user[offering_id]", options_for_select([["No investment", ""]] + @offerings.map { |o| [o.name, o.id] }, params.dig(:user, :offering_id)), class: "w-full rounded-xl border border-gray-300 px-3 py-2"
 
         .space-y-2
           = label_tag "user_investment_label", "Investment name (optional)", class: "block text-sm font-medium text-gray-700"

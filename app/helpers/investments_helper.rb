@@ -8,8 +8,8 @@ module InvestmentsHelper
     when :user_id
       u = inv.user
       u ? "#{u.full_name} · #{u.email} (##{u.id})" : MISSING
-    when :project_id
-      inv.project&.name || MISSING
+    when :offering_id
+      inv.offering&.name || MISSING
     when :invested_amount
       inv.invested_amount.present? ? number_to_currency(inv.invested_amount, precision: 0) : MISSING
     when :funded_amount
@@ -40,7 +40,7 @@ module InvestmentsHelper
         title: "Identity & links",
         rows: [
           ["Investor", :user_id],
-          ["Project", :project_id],
+          ["Offering", :offering_id],
           ["Import record ID", :cash_flow_import_id],
           ["Profile import ID", :profile_import_id],
           ["Profile name", :profile_name],

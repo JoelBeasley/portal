@@ -5,7 +5,7 @@ require "csv"
 module CashFlowImport
   # Imports investors + investments from Cash Flow Portal-style CSV or Excel (.xlsx).
   # Users are matched by email; investments upsert by +cash_flow_import_id+ when present,
-  # otherwise a weak match on user + project + invested_amount + date + company label, else a new row.
+  # otherwise a weak match on user + offering + invested_amount + date + company label, else a new row.
   class SheetImporter
     Result = Struct.new(
       :created_users,
@@ -50,14 +50,14 @@ module CashFlowImport
       "investor_since" => :investor_since,
       "close_date" => :investor_since,
       "signed_date" => :investor_since,
-      "project" => :project_name,
-      "project_name" => :project_name,
-      "offering" => :project_name,
+      "project" => :offering_name,
+      "project_name" => :offering_name,
+      "offering" => :offering_name,
       "offering_name" => :offering_name,
-      "fund" => :project_name,
+      "fund" => :offering_name,
       "deal" => :deal_name,
       "deal_name" => :deal_name,
-      "investment_name" => :project_name,
+      "investment_name" => :offering_name,
       "legacy_offering_name" => :legacy_offering_name,
       "series_name" => :legacy_offering_name,
       "series" => :legacy_offering_name,
@@ -166,7 +166,7 @@ module CashFlowImport
     # Headers that match these symbols (after normalization) map without an alias entry.
     CORE_FIELD_KEYS = (
       %i[
-        import_id email first_name last_name invested_amount funded_amount investor_since project_name
+        import_id email first_name last_name invested_amount funded_amount investor_since offering_name
         profile_import_id profile_name profile_type deal_name offering_name company_or_nickname
         other_investor_name other_investor_email date_placed bitcoin_address phone legacy_offering_name
         street_address city state zip_code country
@@ -187,8 +187,8 @@ module CashFlowImport
 
     BITCOIN_REGEX = /\A(bc1|[13])[a-km-zA-HJ-NP-Z1-9]{25,34}\z/
 
-    def initialize(default_project_id:, io: nil, string: nil, filename: "import.csv")
-      @default_project_id = default_project_id.presence
+    def initialize(default_offering_id:, io: nil, string: nil, filename: "import.csv")
+      @default_offering_id = default_offering_id.presence
       @io = io
       @string = string
       @filename = filename.to_s
@@ -321,9 +321,9 @@ module CashFlowImport
       errs << "last name is required" if data[:last_name].blank?
       return [0, 0, 0, 0, errs] if errs.any?
 
-      project_name = data[:project_name].presence || data[:deal_name].presence || data[:offering_name].presence
-      project = resolve_project(project_name)
-      errs << "project could not be resolved (choose Project for this import on the form, or add a column whose values match a project name)" if project.blank?
+      offering_name = data[:offering_name].presence || data[:deal_name].presence
+      offering = resolve_offering(offering_name)
+      errs << "offering could not be resolved (choose Offering for this import on the form, or add a column whose values match an offering name)" if offering.blank?
       return [0, 0, 0, 0, errs] if errs.any?
 
       amount = parse_amount(data[:invested_amount])
@@ -342,7 +342,7 @@ module CashFlowImport
 
         investment, was_new_investment = build_investment_for_import(
           user: user,
-          project: project,
+          offering: offering,
           import_id: import_id,
           invested_amount: amount,
           investor_since: investor_since,
@@ -390,7 +390,7 @@ module CashFlowImport
       [user, was_new]
     end
 
-    def build_investment_for_import(user:, project:, import_id:, invested_amount:, investor_since:, data:)
+    def build_investment_for_import(user:, offering:, import_id:, invested_amount:, investor_since:, data:)
       company_raw = data[:company_or_nickname].presence
       bitcoin_raw = data[:bitcoin_address].presence
 
@@ -398,13 +398,13 @@ module CashFlowImport
         if import_id.present?
           Investment.find_or_initialize_by(cash_flow_import_id: import_id.to_s.strip)
         else
-          weak_match_investment(user, project, invested_amount, investor_since, company_raw) ||
-            Investment.new(user: user, project: project)
+          weak_match_investment(user, offering, invested_amount, investor_since, company_raw) ||
+            Investment.new(user: user, offering: offering)
         end
 
       was_new = investment.new_record?
       investment.user = user
-      investment.project = project
+      investment.offering = offering
       investment.invested_amount = invested_amount
       investment.investor_since = investor_since
       investment.company_or_nickname = label_or_nil(company_raw, user)
@@ -486,8 +486,8 @@ module CashFlowImport
       [investment, was_new]
     end
 
-    def weak_match_investment(user, project, invested_amount, investor_since, company_or_nickname)
-      scope = Investment.where(user: user, project: project, invested_amount: invested_amount, investor_since: investor_since)
+    def weak_match_investment(user, offering, invested_amount, investor_since, company_or_nickname)
+      scope = Investment.where(user: user, offering: offering, invested_amount: invested_amount, investor_since: investor_since)
       label = label_or_nil(company_or_nickname, user)
       rel = label.nil? ? scope.where(company_or_nickname: nil) : scope.where(company_or_nickname: label)
       rel.first
@@ -509,19 +509,19 @@ module CashFlowImport
       nil
     end
 
-    def resolve_project(name_from_row)
-      # When importing from Cash Flow, the sheet often has no usable project column.
-      # If the admin picks a project in the form, every row uses that project.
-      if @default_project_id.present?
-        project = Project.find_by(id: @default_project_id)
-        return project if project
+    def resolve_offering(name_from_row)
+      # When importing from Cash Flow, the sheet often has no usable offering column.
+      # If the admin picks an offering in the form, every row uses that offering.
+      if @default_offering_id.present?
+        offering = Offering.find_by(id: @default_offering_id)
+        return offering if offering
       end
 
       name = name_from_row.to_s.strip
       return nil if name.blank?
 
-      Project.where("LOWER(TRIM(name)) = ?", name.downcase.strip).first ||
-        Project.where("LOWER(name) = ?", name.downcase.strip).first
+      Offering.where("LOWER(TRIM(name)) = ?", name.downcase.strip).first ||
+        Offering.where("LOWER(name) = ?", name.downcase.strip).first
     end
 
     def parse_amount(raw)

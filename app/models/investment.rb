@@ -1,7 +1,7 @@
 class Investment < ApplicationRecord
   belongs_to :user
-  belongs_to :project
-  has_many :sites, through: :project
+  belongs_to :offering
+  has_many :sites, through: :offering
   has_many_attached :documents
   has_many :investment_documents, dependent: :destroy
 

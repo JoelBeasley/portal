@@ -1,13 +1,13 @@
-h1.text-3xl.font-bold.mb-6 New Project
+h1.text-3xl.font-bold.mb-6 New Offering
 
 .bg-white.border.border-gray-200.rounded-2xl.p-8.max-w-xl
-  - if @project.errors.any?
+  - if @offering.errors.any?
     .mb-6.rounded-xl.border.border-red-200.bg-red-50.p-4
       ul.list-disc.list-inside.text-sm.text-red-700.space-y-1
-        - @project.errors.full_messages.each do |message|
+        - @offering.errors.full_messages.each do |message|
           li = message
 
-  = form_with model: [:admin, @project], local: true, class: "space-y-5" do |f|
+  = form_with model: [:admin, @offering], local: true, class: "space-y-5" do |f|
     .space-y-2
       = f.label :name, class: "block text-sm font-medium text-gray-700"
       = f.text_field :name, required: true, autofocus: true, class: "w-full rounded-xl border border-gray-300 px-4 py-3"
@@ -17,5 +17,5 @@ h1.text-3xl.font-bold.mb-6 New Project
       = f.text_area :description, rows: 4, class: "w-full rounded-xl border border-gray-300 px-4 py-3"
 
     .flex.items-center.gap-3.pt-2
-      = f.submit "Create project", class: "bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700"
-      = link_to "Cancel", admin_projects_path, class: "text-gray-600 hover:underline"
+      = f.submit "Create offering", class: "bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700"
+      = link_to "Cancel", admin_offerings_path, class: "text-gray-600 hover:underline"
