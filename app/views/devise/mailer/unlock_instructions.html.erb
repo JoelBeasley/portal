@@ -1,7 +1,10 @@
-<p>Hello <%= @resource.email %>!</p>
+<p style="margin: 0 0 12px; font-size: 20px; font-weight: 700; color: #111827;">Unlock your account</p>
 
-<p>Your account has been locked due to an excessive number of unsuccessful sign in attempts.</p>
+<p style="margin: 0 0 14px;">Hi <strong><%= @resource.full_name.presence || @resource.email %></strong>,</p>
+<p style="margin: 0 0 20px;">
+  Your account was temporarily locked after too many unsuccessful sign-in attempts.
+</p>
 
-<p>Click the link below to unlock your account:</p>
-
-<p><%= link_to 'Unlock my account', unlock_url(@resource, unlock_token: @token) %></p>
+<p style="margin: 0;">
+  <%= link_to "Unlock my account", unlock_url(@resource, unlock_token: @token), style: "display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 18px; border-radius: 10px;" %>
+</p>

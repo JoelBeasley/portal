@@ -1,5 +1,10 @@
-<p>Welcome <%= @email %>!</p>
+<p style="margin: 0 0 12px; font-size: 20px; font-weight: 700; color: #111827;">Confirm your email</p>
 
-<p>You can confirm your account email through the link below:</p>
+<p style="margin: 0 0 14px;">Welcome <strong><%= @email %></strong>,</p>
+<p style="margin: 0 0 20px;">
+  Please confirm your account email to finish setting up your investor portal access.
+</p>
 
-<p><%= link_to 'Confirm my account', confirmation_url(@resource, confirmation_token: @token) %></p>
+<p style="margin: 0;">
+  <%= link_to "Confirm my account", confirmation_url(@resource, confirmation_token: @token), style: "display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 18px; border-radius: 10px;" %>
+</p>

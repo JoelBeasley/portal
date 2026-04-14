@@ -2,12 +2,36 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <style>
-      /* Email styles need to be inline */
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
 
-  <body>
-    <%= yield %>
+  <body style="margin: 0; padding: 0; background-color: #ececec; font-family: Arial, Helvetica, sans-serif; color: #111111;">
+    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="background-color: #ececec; padding: 28px 12px;">
+      <tr>
+        <td align="center">
+          <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="max-width: 640px; background-color: #ffffff; border-collapse: collapse;">
+            <tr>
+              <td style="padding: 28px 24px 12px; text-align: center;">
+                <%= image_tag image_url("sovrn_logo_white.png"), alt: "Sovrn Capital", style: "max-width: 380px; width: 100%; height: auto; display: inline-block;" %>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 0 24px;">
+                <div style="border-top: 1px solid #111111; width: 100%;"></div>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding: 26px 20px 24px; font-size: 16px; line-height: 1.6; text-align: left;">
+                <%= yield %>
+              </td>
+            </tr>
+          </table>
+
+          <div style="max-width: 640px; margin-top: 12px; color: #6b7280; font-size: 12px; text-align: center;">
+            Please do not reply to this email directly.
+          </div>
+        </td>
+      </tr>
+    </table>
   </body>
 </html>

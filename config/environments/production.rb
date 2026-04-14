@@ -58,7 +58,9 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: ENV.fetch("APP_HOST", "example.com") }
+  app_host = ENV.fetch("APP_HOST", "example.com")
+  config.action_mailer.default_url_options = { host: app_host }
+  config.action_mailer.asset_host = app_host.start_with?("http") ? app_host : "https://#{app_host}"
   config.action_mailer.delivery_method = :postmark
   config.action_mailer.postmark_settings = {
     api_token: ENV["POSTMARK_SERVER_API_TOKEN"]

@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
   if Rails.env.development?
     mount LetterOpenerWeb::Engine, at: "/letter_opener"
+    get "/email_preview/reset_password", to: proc { |_env|
+      DevisePreviewMailer.reset_password_preview.deliver_now
+      [302, { "Location" => "/letter_opener" }, []]
+    }
   end
 
   devise_for :users
