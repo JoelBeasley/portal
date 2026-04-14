@@ -18,6 +18,8 @@ Rails.application.routes.draw do
   end
 
   namespace :admin do
+    get "dashboard", to: "dashboard#show"
+    post "dashboard/send_welcome_emails", to: "dashboard#send_welcome_emails"
     get "site_analytics", to: "site_analytics#show"
     post "site_analytics/data", to: "site_analytics#data"
     resources :projects, only: [:index, :show, :new, :create] do

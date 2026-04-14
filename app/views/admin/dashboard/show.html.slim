@@ -1,0 +1,25 @@
+.max-w-4xl
+  h1.text-3xl.font-bold.mb-2 Admin
+  p.text-gray-600.mb-8 Admin tools and import workflows
+
+  .grid.grid-cols-1.md:grid-cols-2.gap-6
+    .border.border-gray-200.rounded-2xl.p-6.bg-white
+      h2.text-lg.font-semibold.mb-2 Send welcome emails to all investors
+      p.text-sm.text-gray-600.mb-4 Send the branded portal migration email with a secure set-password link to every current investor.
+      = button_to "Send Welcome Emails to All Investors", admin_dashboard_send_welcome_emails_path, method: :post, class: "inline-flex items-center bg-emerald-600 text-white px-4 py-2 rounded-xl hover:bg-emerald-700", data: { turbo_confirm: "Send welcome emails to all current investors?" }
+
+    .border.border-gray-200.rounded-2xl.p-6.bg-white
+      h2.text-lg.font-semibold.mb-2 Import documents
+      p.text-sm.text-gray-600.mb-4 Upload and map investment documents to investors.
+      = link_to "Open Import Documents", new_admin_investment_document_path, class: "inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
+
+    - if current_user.can_assign_investments?
+      .border.border-gray-200.rounded-2xl.p-6.bg-white
+        h2.text-lg.font-semibold.mb-2 Import investments
+        p.text-sm.text-gray-600.mb-4 Upload investment rows in bulk from CSV or TSV.
+        = link_to "Open Import Investments", import_admin_investments_path, class: "inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
+
+      .border.border-gray-200.rounded-2xl.p-6.bg-white
+        h2.text-lg.font-semibold.mb-2 Assign investment
+        p.text-sm.text-gray-600.mb-4 Manually assign an investor to a project.
+        = link_to "Open Assign Investment", assign_admin_investments_path, class: "inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"

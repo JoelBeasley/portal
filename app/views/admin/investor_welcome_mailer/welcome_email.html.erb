@@ -1,0 +1,14 @@
+<p style="margin: 0 0 12px; font-size: 20px; font-weight: 700; color: #111827;">Welcome to our new investor portal</p>
+
+<p style="margin: 0 0 14px;">Hi <strong><%= @user.full_name.presence || @user.email %></strong>,</p>
+<p style="margin: 0 0 20px;">
+  We are moving over to a new portal system, please click below to set your password.
+</p>
+
+<p style="margin: 0 0 24px;">
+  <%= link_to "Set your password", edit_user_password_url(reset_password_token: @token), style: "display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 18px; border-radius: 10px;" %>
+</p>
+
+<p style="margin: 0; color: #374151;">
+  After you set your password, you will be logged in automatically.
+</p>
