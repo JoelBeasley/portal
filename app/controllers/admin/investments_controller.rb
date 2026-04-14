@@ -1,12 +1,59 @@
 class Admin::InvestmentsController < ApplicationController
   before_action :authenticate_user!
   before_action :require_admin
-  before_action :require_super_admin, only: [:assign, :create_assignment]
+  before_action :require_super_admin, only: [:assign, :create_assignment, :import, :create_import]
 
   def assign
     @investment = Investment.new
     @users = User.where(role: [:investor, :admin, :super_admin]).order(:email)
     @projects = Project.order(:name)
+  end
+
+  def import
+    @projects = Project.order(:name)
+  end
+
+  def create_import
+    file = params[:import_file]
+    text = params[:import_text].to_s
+    default_project_id = params[:default_project_id].presence
+
+    if file.blank? && text.strip.blank?
+      redirect_to import_admin_investments_path, alert: "Add a file or paste CSV/TSV data."
+      return
+    end
+
+    filename = file&.original_filename || "paste.csv"
+    io = file.presence
+
+    result = CashFlowImport::SheetImporter.new(
+      default_project_id: default_project_id,
+      io: io,
+      string: (text.strip.presence unless io),
+      filename: filename
+    ).call
+
+    parts = [
+      "#{result.created_users} new user(s)",
+      "#{result.updated_users} user update(s)",
+      "#{result.created_investments} new investment(s)",
+      "#{result.updated_investments} investment update(s)"
+    ]
+    summary = "Import: #{parts.join(', ')}."
+
+    if result.errors.any?
+      # Do not stash errors in the session — cookie store maxes out (~4KB).
+      @projects = Project.order(:name)
+      @import_errors = result.errors.first(500)
+      @import_text = text
+      flash.now[:notice] = summary if result.created_users.positive? || result.updated_users.positive? ||
+        result.created_investments.positive? || result.updated_investments.positive?
+      flash.now[:alert] = "#{result.errors.size} row(s) failed. Fix and retry; details below."
+      render :import, status: :unprocessable_entity
+      return
+    end
+
+    redirect_to import_admin_investments_path, notice: "#{summary} All rows imported."
   end
 
   def create_assignment
@@ -26,7 +73,7 @@ class Admin::InvestmentsController < ApplicationController
         raw_label
       end
 
-    amount_usd = parse_amount_usd(params[:amount_usd])
+    invested_amount = parse_invested_amount(params[:invested_amount])
     investor_since = parse_investor_since(params[:investor_since])
 
     investment = Investment.new(
@@ -34,7 +81,7 @@ class Admin::InvestmentsController < ApplicationController
       project: project,
       bitcoin_address: params[:bitcoin_address],
       company_or_nickname: company_or_nickname,
-      amount_usd: amount_usd,
+      invested_amount: invested_amount,
       investor_since: investor_since
     )
 
@@ -56,7 +103,7 @@ class Admin::InvestmentsController < ApplicationController
     redirect_to root_path, alert: "Access denied." unless current_user.can_assign_investments?
   end
 
-  def parse_amount_usd(value)
+  def parse_invested_amount(value)
     return 50_000 if value.blank?
     BigDecimal(value.to_s)
   rescue ArgumentError

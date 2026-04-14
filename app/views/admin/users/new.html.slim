@@ -49,8 +49,8 @@ h1.text-3xl.font-bold.mb-6 New User
           = text_field_tag "user[investment_label]", params.dig(:user, :investment_label), class: "w-full rounded-xl border border-gray-300 px-3 py-2"
 
         .space-y-2
-          = label_tag "user_amount_usd", "Investment amount (USD)", class: "block text-sm font-medium text-gray-700"
-          = text_field_tag "user[amount_usd]", (params.dig(:user, :amount_usd).presence || "50000"), class: "w-full rounded-xl border border-gray-300 px-3 py-2"
+          = label_tag "user_invested_amount", "Investment amount (USD)", class: "block text-sm font-medium text-gray-700"
+          = text_field_tag "user[invested_amount]", (params.dig(:user, :invested_amount).presence || "50000"), class: "w-full rounded-xl border border-gray-300 px-3 py-2"
 
         .space-y-2
           = label_tag "user_investor_since", "Investor since", class: "block text-sm font-medium text-gray-700"

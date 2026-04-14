@@ -12,6 +12,7 @@ nav.bg-black.border-b.border-slate-800.shadow-sm data-controller="mobile-nav"
             = link_to "Projects", admin_projects_path, class: "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 whitespace-nowrap transition"
             - if current_user.can_assign_investments?
               = link_to "Assign Investment", assign_admin_investments_path, class: "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 whitespace-nowrap transition"
+              = link_to "Import investments", import_admin_investments_path, class: "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 whitespace-nowrap transition"
             = link_to "Site Analytics", admin_site_analytics_path, class: "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 whitespace-nowrap transition"
             - if true_current_user.can_manage_user_directory?
               = link_to "Users", admin_users_path, class: "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 whitespace-nowrap transition"
@@ -39,6 +40,7 @@ nav.bg-black.border-b.border-slate-800.shadow-sm data-controller="mobile-nav"
             = link_to "Projects", admin_projects_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
             - if current_user.can_assign_investments?
               = link_to "Assign Investment", assign_admin_investments_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
+              = link_to "Import investments", import_admin_investments_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
             = link_to "Site Analytics", admin_site_analytics_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
             - if true_current_user.can_manage_user_directory?
               = link_to "Users", admin_users_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"

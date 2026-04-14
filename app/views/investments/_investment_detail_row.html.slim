@@ -1,0 +1,7 @@
+- missing = (value == InvestmentsHelper::MISSING)
+.grid.grid-cols-1.md:grid-cols-12.gap-1.md:gap-6.px-5.py-4.hover:bg-slate-50/60.transition-colors
+  .md:col-span-4
+    p.text-sm.font-medium.text-gray-600 = label
+  .md:col-span-8
+    p.text-base.leading-relaxed.whitespace-pre-wrap.break-words class=(missing ? "text-gray-400 font-medium tabular-nums" : "text-gray-900")
+      = value

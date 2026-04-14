@@ -40,7 +40,7 @@ end
 digital_investment = super_admin.investments.find_or_initialize_by(project: digital_midstream)
 digital_investment.assign_attributes(
   project: digital_midstream,
-  amount_usd: 125_000,
+  invested_amount: 125_000,
   investor_since: Date.new(2025, 11, 1),
   company_or_nickname: nil
 )
@@ -54,7 +54,7 @@ end
 moon_investment = regular_admin.investments.find_or_initialize_by(project: moon_lander)
 moon_investment.assign_attributes(
   project: moon_lander,
-  amount_usd: 50_000,
+  invested_amount: 50_000,
   investor_since: Date.new(2026, 1, 15),
   company_or_nickname: "Lunar Ops LLC"
 )
@@ -63,7 +63,7 @@ moon_investment.save!
 investor_investment = investor.investments.find_or_initialize_by(project: digital_midstream)
 investor_investment.assign_attributes(
   project: digital_midstream,
-  amount_usd: 75_000,
+  invested_amount: 75_000,
   investor_since: Date.new(2026, 2, 1),
   company_or_nickname: "Atlas Mining Co."
 )

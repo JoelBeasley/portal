@@ -43,7 +43,7 @@ class Admin::UsersController < ApplicationController
           project: project,
           bitcoin_address: bitcoin_address,
           company_or_nickname: company_or_nickname,
-          amount_usd: parse_amount_usd(params.dig(:user, :amount_usd)),
+          invested_amount: parse_invested_amount(params.dig(:user, :invested_amount)),
           investor_since: parse_investor_since(params.dig(:user, :investor_since))
         )
       end
@@ -81,7 +81,7 @@ class Admin::UsersController < ApplicationController
     params.require(:user).permit(:email, :password, :password_confirmation, :role, :first_name, :last_name)
   end
 
-  def parse_amount_usd(value)
+  def parse_invested_amount(value)
     return 50_000 if value.blank?
     BigDecimal(value.to_s)
   rescue ArgumentError

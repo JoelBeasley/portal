@@ -9,14 +9,6 @@ h1.text-4xl.font-bold.mb-4 = @investment.list_title
     p.text-lg = @investment.user.full_name
     p.text-sm.text-gray-500 = @investment.user.email
 
-  .mt-6.grid.grid-cols-1.md:grid-cols-2.gap-4
-    div
-      p.text-sm.text-gray-500.mb-2 Investment amount
-      p.text-lg = number_to_currency(@investment.amount_usd, precision: 0)
-    div
-      p.text-sm.text-gray-500.mb-2 Investor since
-      p.text-lg = l(@investment.investor_since, format: :long)
-
   .mt-6
     p.text-sm.text-gray-500.mb-2 Sites
     - if @investment.sites.any?
@@ -26,9 +18,32 @@ h1.text-4xl.font-bold.mb-4 = @investment.list_title
     - else
       p.text-gray-600 No sites assigned.
 
-  .mt-6
-    p.text-sm.text-gray-500.mb-2 Bitcoin Address
-    p.text-lg = @investment.bitcoin_address
+  .mt-10.rounded-2xl.border.border-gray-200.bg-white.overflow-hidden.shadow-sm
+    .bg-slate-50.px-5.py-4.border-b.border-gray-200
+      h2.text-lg.font-semibold.tracking-tight.text-gray-900 Investment details
+
+    .divide-y.divide-gray-100
+      = render "investment_detail_row", label: "Investor", value: format_investment_detail_value(@investment, :user_id)
+      = render "investment_detail_row", label: "Project", value: format_investment_detail_value(@investment, :project_id)
+      = render "investment_detail_row", label: "Investment amount", value: format_investment_detail_value(@investment, :invested_amount)
+      = render "investment_detail_row", label: "Investor since", value: format_investment_detail_value(@investment, :investor_since)
+      = render "investment_detail_row", label: "Company / nickname", value: format_investment_detail_value(@investment, :company_or_nickname)
+      = render "investment_detail_row", label: "Bitcoin address", value: format_investment_detail_value(@investment, :bitcoin_address)
+      = render "investment_detail_row", label: "Import record ID", value: format_investment_detail_value(@investment, :cash_flow_import_id)
+      = render "investment_detail_row", label: "Offering / series name", value: format_investment_detail_value(@investment, :legacy_offering_name)
+      = render "investment_detail_row", label: "Class / share class", value: format_investment_detail_value(@investment, :share_class)
+      = render "investment_detail_row", label: "Status", value: format_investment_detail_value(@investment, :cash_flow_status)
+      = render "investment_detail_row", label: "Investment type", value: format_investment_detail_value(@investment, :investment_entity_type)
+      = render "investment_detail_row", label: "Accreditation", value: format_investment_detail_value(@investment, :accreditation_status)
+      = render "investment_detail_row", label: "Funded amount", value: format_investment_detail_value(@investment, :funded_amount)
+      = render "investment_detail_row", label: "Tax identifier", value: format_investment_detail_value(@investment, :tax_identifier)
+      = render "investment_detail_row", label: "Bank name", value: format_investment_detail_value(@investment, :bank_name)
+      = render "investment_detail_row", label: "Bank account number", value: format_investment_detail_value(@investment, :bank_account_number)
+      = render "investment_detail_row", label: "Routing number", value: format_investment_detail_value(@investment, :bank_routing_number)
+      = render "investment_detail_row", label: "Distribution method", value: format_investment_detail_value(@investment, :distribution_method)
+      = render "investment_detail_row", label: "Notes", value: format_investment_detail_value(@investment, :notes)
+      = render "investment_detail_row", label: "Created at", value: format_investment_detail_value(@investment, :created_at)
+      = render "investment_detail_row", label: "Updated at", value: format_investment_detail_value(@investment, :updated_at)
 
   .mt-8
     p.text-sm.text-gray-500.mb-2 Documents

@@ -29,7 +29,7 @@ p.text-gray-600.mb-6 Investors and sites in this project
         .border.border-gray-200.rounded-xl.p-3
           .font-medium = investment.list_title
           .text-sm.text-gray-600
-            = number_to_currency(investment.amount_usd, precision: 0)
+            = number_to_currency(investment.invested_amount, precision: 0)
             span.text-gray-400.ml-2
               | since #{l(investment.investor_since, format: :long)}
           .text-sm.text-gray-500 = investment.user.email

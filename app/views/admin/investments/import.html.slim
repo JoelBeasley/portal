@@ -1,0 +1,65 @@
+h1.text-3xl.font-bold.mb-2 Import from Cash Flow Portal
+
+p.text-gray-600.mb-6
+  | Upload an Excel (<code class="text-sm bg-gray-100 px-1 rounded">.xlsx</code>) export or paste
+    <strong>CSV / TSV</strong> (from “Save as CSV UTF-8” or copy from a sheet). Super-admin only.
+    Each row creates or updates a <strong>User</strong> by email and an <strong>Investment</strong>.
+    Supported headers map to real columns (address and phone on the user; offering, banking, tax, notes, etc. on the investment).
+    Columns with unrecognized names are ignored.
+
+- if @import_errors.present?
+  .mb-6.rounded-xl.border.border-red-200.bg-red-50.p-4
+    p.text-sm.font-semibold.text-red-900.mb-2 Row errors (showing up to 500)
+    pre.text-xs.text-red-900.whitespace-pre-wrap.font-mono.overflow-x-auto.max-h-96 = @import_errors.join("\n")
+
+.bg-amber-50.border.border-amber-200.rounded-xl.p-4.mb-8
+  h2.text-sm.font-semibold.text-amber-900.mb-2 Multiple investments per project
+  p.text-sm.text-amber-900
+    | Use a stable <strong>ID</strong> column from Cash Flow (mapped to import id) so re-imports update the same
+      investment. Without it, the importer matches on email + project + invested amount + date + company label, or creates a new row.
+
+.bg-white.border.border-gray-200.rounded-2xl.p-6.mb-8
+  h2.text-lg.font-semibold.mb-3 Recognized columns
+  ul.list-disc.pl-5.text-sm.text-gray-700.space-y-1
+    li <strong>Email, First Name, Last Name</strong> — required (aliases: First, Last, etc.)
+    li <strong>Amount / Invested amount</strong> — USD (aliases: Total Invested, Investment Amount, amount_usd)
+    li <strong>Funded date</strong> — investor since (aliases: Close Date, Investor Since)
+    li <strong>Project / Offering / Investment name</strong> — optional if you choose a project below (then every row uses that project)
+    li <strong>ID / Investment ID</strong> — optional; becomes <code class="bg-gray-100 px-1 rounded">cash_flow_import_id</code> for upserts
+    li <strong>Legal entity / Company</strong> — optional → investment display label when different from the person’s name
+    li <strong>Bitcoin address</strong> — optional; invalid values are cleared
+    li <strong>Phone, Address, City, State, ZIP, Country</strong> — saved on the user
+    li <strong>Funded amount</strong> — optional second amount column (separate from main investment amount)
+    li <strong>Class, Status, Investment type, Accreditation</strong> — investment record
+    li <strong>Tax ID, Bank name / account / routing, Distribution method, Notes</strong> — investment record
+    li <strong>Series name / Security name</strong> — optional offering label (<code class="bg-gray-100 px-1 rounded">legacy_offering_name</code>)
+
+= form_with url: create_import_admin_investments_path, method: :post, multipart: true, class: "space-y-8" do |f|
+  .bg-white.border.border-gray-200.rounded-2xl.p-6.space-y-4
+    h2.text-lg.font-semibold Project for this import
+    p.text-sm.text-gray-600
+      | Choose the project <strong>all rows</strong> will be attached to (typical for a Cash Flow export where every line is the same offering).
+        Leave as “— none —” only if each row includes a project/offering column whose values match a project name in this app exactly (case-insensitive).
+    = f.select :default_project_id,
+               [["— none —", ""]] + @projects.map { |p| [p.name, p.id] },
+               { selected: params[:default_project_id].presence },
+               class: "w-full max-w-xl border border-gray-300 rounded-xl px-4 py-3"
+
+  .bg-white.border.border-gray-200.rounded-2xl.p-6.space-y-4
+    h2.text-lg.font-semibold Excel or CSV file
+    = f.file_field :import_file,
+                   accept: ".csv,.xlsx,.xls,text/csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                   class: "block w-full text-sm text-gray-600"
+
+  .bg-white.border.border-gray-200.rounded-2xl.p-6.space-y-4
+    h2.text-lg.font-semibold Or paste data
+    p.text-sm.text-gray-600 First row must be headers. Tab-separated (from Excel) or comma-separated is fine.
+    = f.text_area :import_text,
+                  rows: 12,
+                  value: (@import_text.presence || params[:import_text]),
+                  class: "w-full font-mono text-sm border border-gray-300 rounded-xl p-4",
+                  placeholder: "Email\tFirst Name\tLast Name\tAmount\tFunded Date\tProject Name\n..."
+
+  .flex.flex-wrap.gap-4
+    = f.submit "Run import", class: "bg-green-600 text-white px-8 py-3 rounded-2xl font-semibold hover:bg-green-700"
+    = link_to "Cancel", admin_projects_path, class: "bg-gray-200 px-8 py-3 rounded-2xl inline-flex items-center"

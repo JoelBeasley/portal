@@ -7,8 +7,6 @@ class Investment < ApplicationRecord
   validates :bitcoin_address,
             format: { with: /\A(bc1|[13])[a-km-zA-HJ-NP-Z1-9]{25,34}\z/, message: "must be a valid Bitcoin address" },
             allow_blank: true
-  validates :amount_usd, numericality: { greater_than: 0 }
-  validates :investor_since, presence: true
 
   def list_title
     base = user.full_name

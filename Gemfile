@@ -21,6 +21,8 @@ gem "jbuilder"
 # gem "bcrypt", "~> 3.1.7"
 
 gem "devise"
+# Read .xlsx exports (Cash Flow Portal, etc.) for admin import; CSV uses stdlib.
+gem "roo", "~> 2.10"
 gem "pundit"
 gem "slim-rails"
 gem "tailwindcss-rails"

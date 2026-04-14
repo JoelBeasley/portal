@@ -21,6 +21,8 @@ Rails.application.routes.draw do
       collection do
         get :assign
         post :create_assignment
+        get :import
+        post :create_import
       end
     end
   end

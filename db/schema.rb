@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_09_200000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_10_180000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -57,14 +57,28 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_200000) do
   end
 
   create_table "investments", force: :cascade do |t|
-    t.decimal "amount_usd", precision: 12, scale: 2, default: "50000.0", null: false
+    t.string "accreditation_status"
+    t.string "bank_account_number"
+    t.string "bank_name"
+    t.string "bank_routing_number"
     t.string "bitcoin_address"
+    t.string "cash_flow_import_id"
+    t.string "cash_flow_status"
     t.string "company_or_nickname"
     t.datetime "created_at", null: false
+    t.string "distribution_method"
+    t.decimal "funded_amount", precision: 12, scale: 2
+    t.decimal "invested_amount", precision: 12, scale: 2, default: "50000.0", null: false
+    t.string "investment_entity_type"
     t.date "investor_since", default: -> { "CURRENT_DATE" }, null: false
+    t.string "legacy_offering_name"
+    t.text "notes"
     t.bigint "project_id", null: false
+    t.string "share_class"
+    t.string "tax_identifier"
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.index ["cash_flow_import_id"], name: "index_investments_on_cash_flow_import_id_unique", unique: true, where: "(cash_flow_import_id IS NOT NULL)"
     t.index ["project_id"], name: "index_investments_on_project_id"
     t.index ["user_id"], name: "index_investments_on_user_id"
   end
@@ -87,16 +101,22 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_09_200000) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.string "city"
+    t.string "country"
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "first_name", null: false
     t.string "last_name", null: false
+    t.string "phone"
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
     t.integer "role"
+    t.string "state"
+    t.text "street_address"
     t.datetime "updated_at", null: false
+    t.string "zip_code"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
