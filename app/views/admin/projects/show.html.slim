@@ -1,43 +1,55 @@
-h1.text-3xl.font-bold.mb-2 = @project.name
-p.text-gray-600.mb-6 Investors and sites in this project
+.space-y-8
+  .border.border-gray-200.rounded-2xl.p-6.bg-white
+    h1.text-3xl.font-bold.mb-2 = @project.name
+    p.text-gray-600 Investors, sites, and investments in this project
 
-.grid.grid-cols-1.lg:grid-cols-2.gap-8
-  .border.border-gray-200.rounded-xl.p-5
-    h2.text-xl.font-semibold.mb-4 Investors
-    - if @investors.any?
-      ul.list-disc.list-inside.space-y-1
-        - @investors.each do |investor|
-          li
-            = "#{investor.full_name} (#{investor.email})"
+  - if current_user.can_access_admin_area?
+    .border.border-gray-200.rounded-2xl.p-6.bg-white
+      h2.text-lg.font-semibold.mb-2 Export
+      p.text-sm.text-gray-600.mb-4 Export investor names, bitcoin addresses, and project name to CSV.
+      = link_to "Export Addresses", export_addresses_admin_project_path(@project), class: "bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 inline-flex items-center"
+
+  .grid.grid-cols-1.lg:grid-cols-2.gap-8
+    .border.border-gray-200.rounded-2xl.p-5.bg-white
+      h2.text-xl.font-semibold.mb-3 Investors
+      p.text-sm.text-gray-600.mb-4 = "#{@investors.count} investor#{'s' unless @investors.count == 1}"
+      - if @investors.any?
+        details.group
+          summary.cursor-pointer.text-blue-600.hover:text-blue-700.font-medium Select to view investors
+          ul.list-disc.list-inside.space-y-1.mt-3.text-sm.text-gray-700
+            - @investors.each do |investor|
+              li = "#{investor.full_name} (#{investor.email})"
+      - else
+        p.text-gray-500.text-sm No investors assigned yet.
+
+    .border.border-gray-200.rounded-2xl.p-5.bg-white
+      h2.text-xl.font-semibold.mb-3 Sites
+      p.text-sm.text-gray-600.mb-4 = "#{@sites.count} site#{'s' unless @sites.count == 1}"
+      - if @sites.any?
+        details.group
+          summary.cursor-pointer.text-blue-600.hover:text-blue-700.font-medium Select to view sites
+          ul.list-disc.list-inside.space-y-1.mt-3.text-sm.text-gray-700
+            - @sites.each do |site|
+              li = site.name
+      - else
+        p.text-gray-500.text-sm No sites in this project yet.
+
+  .border.border-gray-200.rounded-2xl.p-6.bg-white
+    h2.text-xl.font-semibold.mb-3 Investments
+    - if @investments.any?
+      .space-y-2
+        - @investments.each do |investment|
+          .border.border-gray-200.rounded-xl.p-3
+            .font-medium
+              = link_to investment.list_title, investment_path(investment), class: "text-blue-600 hover:underline"
+            .text-sm.text-gray-600
+              = number_to_currency(investment.invested_amount, precision: 0)
+              span.text-gray-400.ml-2
+                | since #{l(investment.investor_since, format: :long)}
+            .text-sm.text-gray-500 = investment.user.email
+            .mt-2
+              = link_to "View investment", investment_path(investment), class: "text-sm text-blue-600 hover:underline"
     - else
-      p.text-gray-500 No investors assigned yet.
+      p.text-gray-500.text-sm No investments in this project yet.
 
-  .border.border-gray-200.rounded-xl.p-5
-    h2.text-xl.font-semibold.mb-4 Sites
-    - if @sites.any?
-      ul.list-disc.list-inside.space-y-1
-        - @sites.each do |site|
-          li = site.name
-    - else
-      p.text-gray-500 No sites in this project yet.
-
-.mt-8
-  h2.text-xl.font-semibold.mb-3 Investments
-  - if @investments.any?
-    .space-y-2
-      - @investments.each do |investment|
-        .border.border-gray-200.rounded-xl.p-3
-          .font-medium
-            = link_to investment.list_title, investment_path(investment), class: "text-blue-600 hover:underline"
-          .text-sm.text-gray-600
-            = number_to_currency(investment.invested_amount, precision: 0)
-            span.text-gray-400.ml-2
-              | since #{l(investment.investor_since, format: :long)}
-          .text-sm.text-gray-500 = investment.user.email
-          .mt-2
-            = link_to "View investment", investment_path(investment), class: "text-sm text-blue-600 hover:underline"
-  - else
-    p.text-gray-500 No investments in this project yet.
-
-.mt-8
   = link_to "← Back to Projects", admin_projects_path, class: "text-blue-600 hover:underline"

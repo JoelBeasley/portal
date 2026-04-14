@@ -1,3 +1,5 @@
+require "csv"
+
 class Admin::ProjectsController < ApplicationController
   before_action :authenticate_user!
   before_action :require_admin
@@ -25,6 +27,23 @@ class Admin::ProjectsController < ApplicationController
     else
       render :new, status: :unprocessable_entity
     end
+  end
+
+  def export_addresses
+    project = Project.find(params[:id])
+    investments = project.investments.includes(:user).order(created_at: :desc)
+
+    csv_data = CSV.generate(headers: true) do |csv|
+      csv << ["name", "bitcoin_address", "project_name"]
+      investments.each do |investment|
+        csv << [investment.user.full_name, investment.bitcoin_address, project.name]
+      end
+    end
+
+    date_fragment = "#{Date.current.month}_#{Date.current.day}_#{Date.current.year}"
+    send_data csv_data,
+              filename: "address_export_#{date_fragment}.csv",
+              type: "text/csv"
   end
 
   private
