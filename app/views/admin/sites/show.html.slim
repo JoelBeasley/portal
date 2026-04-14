@@ -1,0 +1,23 @@
+.space-y-6
+  p.text-sm.text-gray-500
+    = link_to "Sites", admin_sites_path, class: "text-blue-600 hover:underline"
+
+  .border.border-gray-200.rounded-2xl.p-6.bg-white
+    h1.text-3xl.font-bold.mb-2 = @site.name
+    p.text-gray-600.mb-4 = @site.offering.name
+
+    .flex.flex-wrap.gap-3
+      = link_to "Pool analytics (Braiins)", admin_site_pool_dashboard_path(@site), class: "inline-flex items-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
+      - if current_user.can_manage_sites?
+        = link_to "Edit site", edit_admin_site_path(@site), class: "inline-flex items-center rounded-xl border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-800 hover:bg-gray-50"
+
+    - if @site.description.present?
+      .mt-6.prose.prose-sm.max-w-none.text-gray-700 = simple_format(@site.description)
+
+  - if current_user.can_manage_sites?
+    .border.border-gray-200.rounded-2xl.p-5.bg-white
+      h2.text-lg.font-semibold.mb-2 Braiins token
+      - if @site.braiins_pool_auth_token.present?
+        p.text-sm.text-emerald-800 A Pool-Auth-Token is saved. It is not shown here. Use Edit site to replace it.
+      - else
+        p.text-sm.text-amber-800 No token saved yet. Add one under Edit site so pool analytics can load without pasting a key each time.

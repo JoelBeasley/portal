@@ -1,4 +1,4 @@
-h1.text-3xl.font-bold.mb-6 New Site
+h1.text-3xl.font-bold.mb-6 Edit site
 
 = form_with model: [:admin, @site] do |f|
   .space-y-5.max-w-2xl
@@ -20,10 +20,10 @@ h1.text-3xl.font-bold.mb-6 New Site
                  class: "w-full border border-gray-300 rounded-xl p-3"
 
     div
-      = f.label :braiins_pool_auth_token, "Braiins Pool-Auth-Token (optional)", class: "block text-sm font-medium mb-2"
-      = f.password_field :braiins_pool_auth_token, autocomplete: "off", class: "w-full border border-gray-300 rounded-xl p-3 font-mono text-sm"
-      p.mt-1.text-xs.text-gray-500 Saved on the site record for pool analytics. You can add or change it later when editing the site.
+      = f.label :braiins_pool_auth_token, "Braiins Pool-Auth-Token", class: "block text-sm font-medium mb-2"
+      = f.password_field :braiins_pool_auth_token, autocomplete: "off", placeholder: "Leave blank to keep the current saved token", class: "w-full border border-gray-300 rounded-xl p-3 font-mono text-sm"
+      p.mt-1.text-xs.text-gray-500 Used server-side for #{link_to "pool analytics", admin_site_pool_dashboard_path(@site), class: "text-blue-600 hover:underline"}. Never shown after saving.
 
   .mt-8.flex.gap-4
-    = f.submit "Create Site", class: "bg-blue-600 text-white px-8 py-3 rounded-2xl hover:bg-blue-700"
-    = link_to "Cancel", admin_sites_path, class: "bg-gray-200 px-8 py-3 rounded-2xl"
+    = f.submit "Update site", class: "bg-blue-600 text-white px-8 py-3 rounded-2xl hover:bg-blue-700"
+    = link_to "Cancel", admin_site_path(@site), class: "bg-gray-200 px-8 py-3 rounded-2xl"

@@ -10,6 +10,9 @@ class Admin::SiteAnalyticsController < ApplicationController
   BTC_USD_CACHE_TTL = 5.minutes
 
   def show
+    @site = Site.includes(:offering).find(params[:id])
+  rescue ActiveRecord::RecordNotFound
+    redirect_to admin_sites_path, alert: "Site not found."
   end
 
   def btc_price
@@ -31,21 +34,34 @@ class Admin::SiteAnalyticsController < ApplicationController
   end
 
   def data
+    site = Site.find_by(id: params[:site_id])
+    unless site
+      render json: { error: "Unknown site for pool analytics." }, status: :unprocessable_entity
+      return
+    end
+
     token = params[:api_key].to_s.strip
+    token = site.braiins_pool_auth_token.to_s.strip if token.blank?
     hashrate_endpoint = params[:hashrate_endpoint].to_s.strip
     rewards_endpoint = params[:rewards_endpoint].to_s.strip
 
     if token.blank? || hashrate_endpoint.blank? || rewards_endpoint.blank?
-      render json: { error: "Missing token or endpoint." }, status: :unprocessable_entity
+      msg = if params[:api_key].to_s.strip.blank? && site.braiins_pool_auth_token.blank?
+              "No Braiins Pool-Auth-Token is saved for this site. Enter a token in the form or add one when editing the site."
+            else
+              "Missing token or endpoint."
+            end
+      render json: { error: msg }, status: :unprocessable_entity
       return
     end
 
     cache_key = [
       "site_analytics/braiins/v2",
+      site.id,
       hashrate_endpoint,
       rewards_endpoint,
       Digest::SHA256.hexdigest(token)
-    ]
+    ].compact
 
     payload = Rails.cache.fetch(cache_key, expires_in: CACHE_TTL) do
       {

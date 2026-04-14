@@ -20,15 +20,16 @@ Rails.application.routes.draw do
   namespace :admin do
     get "dashboard", to: "dashboard#show"
     post "dashboard/send_welcome_emails", to: "dashboard#send_welcome_emails"
-    get "site_analytics", to: "site_analytics#show"
+    get "site_analytics", to: redirect("/admin/sites")
     get "site_analytics/btc_price", to: "site_analytics#btc_price"
-    post "site_analytics/data", to: "site_analytics#data"
+    post "sites/:site_id/analytics/data", to: "site_analytics#data", as: :site_analytics_site_data
+    get "sites/:id/analytics", to: "site_analytics#show", as: :site_pool_dashboard
     resources :offerings, only: [:index, :show, :new, :create] do
       member do
         get :export_addresses
       end
     end
-    resources :sites, only: [:index, :new, :create]
+    resources :sites, only: [:index, :show, :new, :create, :edit, :update]
     resources :users, only: [:index, :new, :create, :update] do
       member do
         post :send_welcome_email

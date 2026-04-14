@@ -1,13 +1,19 @@
 h1.text-3xl.font-bold.mb-6 Sites
 
-.mb-6.flex.gap-3
+.mb-6.flex.flex-wrap.gap-3
   = link_to "Offerings", admin_offerings_path, class: "bg-gray-200 px-4 py-2 rounded-xl"
   - if current_user.can_manage_sites?
     = link_to "New Site", new_admin_site_path, class: "bg-blue-600 text-white px-4 py-2 rounded-xl"
 
 .space-y-3
   - @sites.each do |site|
-    .border.border-gray-200.rounded-xl.p-4
-      .font-semibold = site.name
-      .text-sm.text-gray-500
-        = "Offering: #{site.offering.name}"
+    .border.border-gray-200.rounded-xl.p-4.flex.flex-col.sm:flex-row.sm:items-center.sm:justify-between.gap-3
+      div
+        .font-semibold = site.name
+        .text-sm.text-gray-500
+          = "Offering: #{site.offering.name}"
+      .flex.flex-wrap.gap-2
+        = link_to "Pool analytics", admin_site_pool_dashboard_path(site), class: "inline-flex items-center rounded-xl bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+        = link_to "Site details", admin_site_path(site), class: "inline-flex items-center rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50"
+        - if current_user.can_manage_sites?
+          = link_to "Edit", edit_admin_site_path(site), class: "inline-flex items-center rounded-xl border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-50"

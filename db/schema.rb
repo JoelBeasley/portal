@@ -152,6 +152,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_162449) do
   end
 
   create_table "sites", force: :cascade do |t|
+    t.text "braiins_pool_auth_token"
     t.datetime "created_at", null: false
     t.text "description"
     t.string "name"

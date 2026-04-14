@@ -1,11 +1,24 @@
-<div class="mx-auto max-w-7xl space-y-8">
+<div id="site-analytics-root"
+     class="mx-auto max-w-7xl space-y-8"
+     data-analytics-data-url="<%= admin_site_analytics_site_data_path(@site) %>"
+     data-site-token-configured="<%= @site.braiins_pool_auth_token.present? ? "true" : "false" %>"
+     data-site-lacks-saved-token="<%= @site.braiins_pool_auth_token.blank? ? "true" : "false" %>"
+     data-site-id="<%= @site.id %>">
   <div>
-    <h1 class="text-3xl font-bold tracking-tight text-gray-900">Braiins Pool Profit Dashboard</h1>
+    <p class="text-sm text-gray-500 mb-1">
+      <%= link_to "Sites", admin_sites_path, class: "text-blue-600 hover:underline" %>
+      <span class="mx-1">/</span>
+      <%= link_to @site.name, admin_site_path(@site), class: "text-blue-600 hover:underline" %>
+      <span class="mx-1">/</span>
+      <span>Pool analytics</span>
+    </p>
+    <h1 class="text-3xl font-bold tracking-tight text-gray-900"><%= @site.name %> — Braiins pool profit</h1>
+    <p class="mt-1 text-sm text-gray-600"><%= @site.offering.name %></p>
   </div>
 
   <div id="status" class="text-sm flex flex-wrap items-baseline gap-x-2 gap-y-1" role="status" aria-live="polite"></div>
 
-  <div class="space-y-6">
+  <div id="analytics-tables" class="space-y-6 <%= "hidden" if @site.braiins_pool_auth_token.blank? %>">
     <div>
       <h2 class="mb-2 text-lg font-semibold text-gray-900">Current machines (<span id="currentMachinesHeading">80</span>)</h2>
       <div class="overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-sm" style="max-height: 70vh;">
@@ -52,8 +65,13 @@
   <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
     <div class="grid gap-4 md:grid-cols-2">
       <div class="md:col-span-2">
-        <label class="mb-1 block text-sm font-semibold text-gray-700">Braiins API Token (Pool-Auth-Token):</label>
-        <input type="password" id="apiKey" value="B6ct1yLY2UfPYfuk" class="w-full rounded-xl border border-gray-300 px-3 py-2 font-mono text-sm">
+        <label class="mb-1 block text-sm font-semibold text-gray-700">Braiins API token (Pool-Auth-Token)</label>
+        <% if @site.braiins_pool_auth_token.present? %>
+          <p id="apiKeySavedHint" class="mb-2 text-sm text-emerald-800">A token is saved for this site. Leave the field blank to use it, or enter a value to override for this session only.</p>
+        <% else %>
+          <p id="apiKeySavedHint" class="mb-2 text-sm text-amber-900 font-medium">Pool data is hidden until you add a Braiins Pool-Auth-Token. Enter one below and choose “Fetch from API”, or <%= link_to "save a token on the site", edit_admin_site_path(@site), class: "text-blue-700 hover:underline" %> so it loads automatically next time.</p>
+        <% end %>
+        <input type="password" id="apiKey" value="<%= h(@site.braiins_pool_auth_token.to_s) %>" autocomplete="off" placeholder="Pool-Auth-Token (optional if saved on site)" class="w-full rounded-xl border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900">
       </div>
 
       <div>
@@ -246,6 +264,13 @@
     }
 
     function calculateFromManual() {
+      const typedToken = document.getElementById("apiKey").value.trim();
+      if (siteLacksSavedToken() && !typedToken) {
+        clearAnalyticsTables();
+        showStatus("Add a Braiins Pool-Auth-Token above (or save one when editing this site) to load pool data. No data is shown without a token.", "error");
+        return;
+      }
+
       const eff = parseFloat(document.getElementById("efficiency").value) || 15.5;
       const costKwh = parseFloat(document.getElementById("costPerKwh").value) || 0.02;
       const projectedMachines = parseFloat(document.getElementById("projectedMachines").value) || 325;
@@ -331,6 +356,36 @@
       }
     }
 
+    function analyticsDataPostUrl() {
+      const fromData = document.getElementById("site-analytics-root")?.dataset?.analyticsDataUrl;
+      if (!fromData) throw new Error("Missing pool analytics data URL.");
+      return fromData;
+    }
+
+    function siteTokenConfigured() {
+      const root = document.getElementById("site-analytics-root");
+      return root?.dataset?.siteTokenConfigured === "true";
+    }
+
+    function siteLacksSavedToken() {
+      const root = document.getElementById("site-analytics-root");
+      return root?.dataset?.siteLacksSavedToken === "true";
+    }
+
+    function revealAnalyticsTables() {
+      document.getElementById("analytics-tables")?.classList.remove("hidden");
+    }
+
+    function clearAnalyticsTables() {
+      currentHrData = null;
+      currentRewardData = null;
+      ["resultsTableCurrent", "resultsTableProjected"].forEach(tableId => {
+        const table = document.getElementById(tableId);
+        const tbody = table?.querySelector("tbody");
+        if (tbody) tbody.innerHTML = "";
+      });
+    }
+
     async function fetchFromApi() {
       await fetchBtcPriceUsd();
       const token = document.getElementById("apiKey").value.trim();
@@ -338,15 +393,15 @@
       const rewardsEndpoint = document.getElementById("rewardsEndpoint").value.trim();
       const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
 
-      if (!token) {
-        showStatus("❌ Missing API token. Falling back to manual data.", "error");
-        calculateFromManual();
+      if (!token && !siteTokenConfigured()) {
+        clearAnalyticsTables();
+        showStatus("Add a Braiins Pool-Auth-Token above (or save one when editing this site) to load pool data. No data is shown without a token.", "error");
         return;
       }
 
       try {
         showStatus("Loading from Braiins API...");
-        const proxyRes = await fetch("/admin/site_analytics/data", {
+        const proxyRes = await fetch(analyticsDataPostUrl(), {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -359,11 +414,11 @@
           })
         });
 
-        if (!proxyRes.ok) {
-          throw new Error(`HTTP ${proxyRes.status}`);
-        }
-
         const proxyPayload = await proxyRes.json();
+        if (!proxyRes.ok) {
+          const msg = proxyPayload.error || `HTTP ${proxyRes.status}`;
+          throw new Error(msg);
+        }
         const hrPayload = proxyPayload.hashrate;
         const rwPayload = proxyPayload.rewards;
         updateDebugPayloads(hrPayload, rwPayload);
@@ -394,12 +449,17 @@
           refreshHours: refreshHrs != null ? refreshHrs : 6
         });
       } catch (e) {
-        showStatus("⚠️ API failed, using manual pasted data instead.", "error");
+        showStatus("⚠️ " + String(e.message) + " — using manual pasted data if available.", "error");
         updateDebugPayloads(
           { error: "API request failed", message: String(e) },
           { error: "API request failed", message: String(e) }
         );
-        calculateFromManual();
+        const typedToken = document.getElementById("apiKey").value.trim();
+        if (!siteLacksSavedToken() || typedToken) {
+          calculateFromManual();
+        } else {
+          clearAnalyticsTables();
+        }
       }
     }
 
@@ -412,6 +472,7 @@
     }
 
     function renderTable(hrArray, rewardArray, efficiency, costKwh, scaleFactor, btcPrice) {
+      revealAnalyticsTables();
       const tbodyCurrent = document.getElementById("resultsTableCurrent").querySelector("tbody");
       const tbodyProjected = document.getElementById("resultsTableProjected").querySelector("tbody");
       tbodyCurrent.innerHTML = "";
@@ -511,10 +572,18 @@
     });
 
     async function initSiteAnalyticsPage() {
-      if (!document.getElementById("resultsTableCurrent")) return;
+      if (!document.getElementById("site-analytics-root")) return;
       updateWeightedEfficiency();
       updateProjectedMachineLabels();
       updateCurrentMachineLabels();
+
+      if (siteLacksSavedToken()) {
+        clearAnalyticsTables();
+        await fetchBtcPriceUsd();
+        showStatus("Add a Braiins Pool-Auth-Token above (or save one when editing this site) to load pool data. No data is shown without a token.", "error");
+        return;
+      }
+
       await fetchFromApi();
     }
 

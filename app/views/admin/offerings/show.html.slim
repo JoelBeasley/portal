@@ -33,9 +33,11 @@
       - if @sites.any?
         details.group
           summary.cursor-pointer.text-blue-600.hover:text-blue-700.font-medium Select to view sites
-          ul.list-disc.list-inside.space-y-1.mt-3.text-sm.text-gray-700
+          ul.space-y-2.mt-3.text-sm.text-gray-700
             - @sites.each do |site|
-              li = site.name
+              li.flex.flex-wrap.items-center.justify-between.gap-2.border.border-gray-200.rounded-lg.px-3.py-2
+                span.font-medium = site.name
+                = link_to "Pool analytics", admin_site_pool_dashboard_path(site), class: "text-blue-600 hover:underline font-medium"
       - else
         p.text-gray-500.text-sm No sites in this offering yet.
 
