@@ -16,9 +16,14 @@
       - if @investors.any?
         details.group
           summary.cursor-pointer.text-blue-600.hover:text-blue-700.font-medium Select to view investors
-          ul.list-disc.list-inside.space-y-1.mt-3.text-sm.text-gray-700
+          ul.space-y-2.mt-3.text-sm.text-gray-700
             - @investors.each do |investor|
-              li = "#{investor.full_name} (#{investor.email})"
+              li.flex.items-center.justify-between.gap-3.border.border-gray-200.rounded-lg.px-3.py-2
+                span = "#{investor.full_name} (#{investor.email})"
+                - if investor.welcome_password_set_at.present?
+                  span.inline-flex.items-center.rounded-full.bg-emerald-100.text-emerald-700.text-xs.font-medium.px-2.py-1 Invite accepted
+                - else
+                  span.inline-flex.items-center.rounded-full.bg-amber-100.text-amber-800.text-xs.font-medium.px-2.py-1 Invite pending
       - else
         p.text-gray-500.text-sm No investors assigned yet.
 

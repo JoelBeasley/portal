@@ -5,7 +5,7 @@ class Admin::DashboardController < ApplicationController
   def show; end
 
   def send_welcome_emails
-    investors = User.investor.order(:email)
+    investors = User.investor.where(welcome_password_set_at: nil).order(:email)
     sent_count = 0
 
     investors.find_each do |investor|
@@ -14,7 +14,11 @@ class Admin::DashboardController < ApplicationController
       sent_count += 1
     end
 
-    redirect_to admin_dashboard_path, notice: "Queued welcome emails for #{sent_count} investor#{'s' unless sent_count == 1}."
+    if sent_count.zero?
+      redirect_to admin_dashboard_path, notice: "No pending investors found. Everyone has already set a password."
+    else
+      redirect_to admin_dashboard_path, notice: "Queued welcome emails for #{sent_count} investor#{'s' unless sent_count == 1} who still need to set a password."
+    end
   end
 
   private

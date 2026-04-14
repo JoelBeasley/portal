@@ -5,7 +5,7 @@
   .grid.grid-cols-1.md:grid-cols-2.gap-6
     .border.border-gray-200.rounded-2xl.p-6.bg-white
       h2.text-lg.font-semibold.mb-2 Send welcome emails to all investors
-      p.text-sm.text-gray-600.mb-4 Send the branded portal migration email with a secure set-password link to every current investor.
+      p.text-sm.text-gray-600.mb-4 Send the branded portal migration email with a secure set-password link only to investors who have not accepted their invite and set a password yet.
       = button_to "Send Welcome Emails to All Investors", admin_dashboard_send_welcome_emails_path, method: :post, class: "inline-flex items-center bg-emerald-600 text-white px-4 py-2 rounded-xl hover:bg-emerald-700", data: { turbo_confirm: "Send welcome emails to all current investors?" }
 
     .border.border-gray-200.rounded-2xl.p-6.bg-white

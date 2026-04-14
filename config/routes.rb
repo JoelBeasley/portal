@@ -7,7 +7,7 @@ Rails.application.routes.draw do
     }
   end
 
-  devise_for :users
+  devise_for :users, controllers: { passwords: "users/passwords" }
 
   resources :investments, only: [:index, :show] do
     member do
