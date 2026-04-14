@@ -19,8 +19,12 @@ module CashFlowImport
     HEADER_ALIASES = {
       "id" => :import_id,
       "investment_id" => :import_id,
+      "unique_investment_id" => :import_id,
       "external_id" => :import_id,
       "cash_flow_id" => :import_id,
+      "unique_profile_id" => :profile_import_id,
+      "profile_name" => :profile_name,
+      "profile_type" => :profile_type,
       "email" => :email,
       "e_mail" => :email,
       "email_address" => :email,
@@ -49,9 +53,10 @@ module CashFlowImport
       "project" => :project_name,
       "project_name" => :project_name,
       "offering" => :project_name,
-      "offering_name" => :project_name,
+      "offering_name" => :offering_name,
       "fund" => :project_name,
-      "deal" => :project_name,
+      "deal" => :deal_name,
+      "deal_name" => :deal_name,
       "investment_name" => :project_name,
       "legacy_offering_name" => :legacy_offering_name,
       "series_name" => :legacy_offering_name,
@@ -68,12 +73,15 @@ module CashFlowImport
       "phone" => :phone,
       "phone_number" => :phone,
       "mobile" => :phone,
+      "other_investor" => :other_investor_name,
+      "other_investor_name" => :other_investor_name,
+      "other_investor_s_email_address" => :other_investor_email,
+      "date_placed" => :date_placed,
       "street_address" => :street_address,
       "address" => :street_address,
       "street" => :street_address,
       "address_line_1" => :street_address,
       "address_line1" => :street_address,
-      "mailing_address" => :street_address,
       "city" => :city,
       "state" => :state,
       "province" => :state,
@@ -96,11 +104,15 @@ module CashFlowImport
       "accredited" => :accreditation_status,
       "tax_id" => :tax_identifier,
       "tax_identifier" => :tax_identifier,
-      "ein" => :tax_identifier,
-      "ssn" => :tax_identifier,
       "tax_identification_number" => :tax_identifier,
+      "ein" => :ein,
+      "ssn" => :ssn,
+      "spouse_ssn" => :spouse_ssn,
+      "federal_tax_classification" => :federal_tax_classification,
+      "llc_tax_classification" => :llc_tax_classification,
       "bank_name" => :bank_name,
       "bank" => :bank_name,
+      "bank_account_type" => :bank_account_type,
       "bank_account_number" => :bank_account_number,
       "account_number" => :bank_account_number,
       "bank_account" => :bank_account_number,
@@ -110,6 +122,42 @@ module CashFlowImport
       "aba" => :bank_routing_number,
       "distribution_method" => :distribution_method,
       "payout_method" => :distribution_method,
+      "percent_of_class_or_bucket_by_target_raise" => :percent_of_class_or_bucket_by_target_raise,
+      "percent_of_class_by_total_raised" => :percent_of_class_by_total_raised,
+      "ownership_percentage" => :ownership_percentage,
+      "shares_owned" => :shares_owned,
+      "investment_fees" => :investment_fees,
+      "investment_fees_funded" => :investment_fees_funded,
+      "distributed_amount" => :distributed_amount,
+      "reinvest_distributions" => :reinvest_distributions,
+      "accrued_preferred_return" => :accrued_preferred_return,
+      "unpaid_preferred_return" => :unpaid_preferred_return,
+      "preferred_return_start_date" => :preferred_return_start_date,
+      "ach_investment_funding_status" => :ach_investment_funding_status,
+      "waitlist_status" => :waitlist_status,
+      "investment_approval" => :investment_approval,
+      "document_signed_on" => :document_signed_on,
+      "document_countersigned_on" => :document_countersigned_on,
+      "funds_sent_at" => :funds_sent_at,
+      "funding_note" => :funding_note,
+      "received_date" => :received_date,
+      "owning_entity" => :owning_entity,
+      "selected_sponsors" => :selected_sponsors,
+      "payment_method" => :payment_method,
+      "bank_for_further_credit" => :bank_for_further_credit,
+      "bank_distribution_note" => :bank_distribution_note,
+      "check_mailing_address" => :check_mailing_address,
+      "mailing_address" => :mailing_address,
+      "tax_address" => :tax_address,
+      "accreditation_letter_issue_date" => :accreditation_letter_issue_date,
+      "is_disregarded_entity" => :is_disregarded_entity,
+      "beneficial_owner_name" => :beneficial_owner_name,
+      "beneficial_owner_tax_id" => :beneficial_owner_tax_id,
+      "number_of_members" => :number_of_members,
+      "selected_company_member" => :selected_company_member,
+      "ira_account_number" => :ira_account_number,
+      "individual_ira_number" => :individual_ira_number,
+      "investment_tags" => :investment_tags,
       "notes" => :notes,
       "investment_notes" => :notes,
       "comments" => :notes
@@ -119,9 +167,20 @@ module CashFlowImport
     CORE_FIELD_KEYS = (
       %i[
         import_id email first_name last_name invested_amount funded_amount investor_since project_name
-        company_or_nickname bitcoin_address phone legacy_offering_name
+        profile_import_id profile_name profile_type deal_name offering_name company_or_nickname
+        other_investor_name other_investor_email date_placed bitcoin_address phone legacy_offering_name
         street_address city state zip_code country
         share_class cash_flow_status investment_entity_type accreditation_status
+        percent_of_class_or_bucket_by_target_raise percent_of_class_by_total_raised ownership_percentage
+        shares_owned investment_fees investment_fees_funded distributed_amount reinvest_distributions
+        accrued_preferred_return unpaid_preferred_return preferred_return_start_date
+        ach_investment_funding_status waitlist_status investment_approval document_signed_on
+        document_countersigned_on funds_sent_at funding_note received_date owning_entity selected_sponsors
+        payment_method bank_account_type bank_for_further_credit bank_distribution_note
+        check_mailing_address mailing_address tax_address ein ssn spouse_ssn federal_tax_classification
+        llc_tax_classification accreditation_letter_issue_date is_disregarded_entity beneficial_owner_name
+        beneficial_owner_tax_id number_of_members selected_company_member ira_account_number
+        individual_ira_number investment_tags
         tax_identifier bank_name bank_account_number bank_routing_number distribution_method notes
       ]
     ).freeze
@@ -262,7 +321,8 @@ module CashFlowImport
       errs << "last name is required" if data[:last_name].blank?
       return [0, 0, 0, 0, errs] if errs.any?
 
-      project = resolve_project(data[:project_name])
+      project_name = data[:project_name].presence || data[:deal_name].presence || data[:offering_name].presence
+      project = resolve_project(project_name)
       errs << "project could not be resolved (choose Project for this import on the form, or add a column whose values match a project name)" if project.blank?
       return [0, 0, 0, 0, errs] if errs.any?
 
@@ -355,6 +415,13 @@ module CashFlowImport
       %i[
         legacy_offering_name share_class cash_flow_status investment_entity_type accreditation_status
         tax_identifier bank_name bank_account_number bank_routing_number distribution_method
+        profile_import_id profile_name profile_type deal_name offering_name other_investor_name
+        other_investor_email reinvest_distributions ach_investment_funding_status waitlist_status
+        investment_approval owning_entity selected_sponsors payment_method bank_account_type
+        bank_for_further_credit bank_distribution_note check_mailing_address mailing_address tax_address
+        ein ssn spouse_ssn federal_tax_classification llc_tax_classification is_disregarded_entity
+        beneficial_owner_name beneficial_owner_tax_id selected_company_member ira_account_number
+        individual_ira_number investment_tags funding_note
       ].each do |attr|
         next unless data.key?(attr)
         next unless cols.include?(attr.to_s)
@@ -364,6 +431,52 @@ module CashFlowImport
 
       if data.key?(:funded_amount) && cols.include?("funded_amount")
         investment.funded_amount = parse_optional_amount(data[:funded_amount])
+      end
+
+      %i[
+        percent_of_class_or_bucket_by_target_raise percent_of_class_by_total_raised ownership_percentage
+      ].each do |attr|
+        next unless data.key?(attr)
+        next unless cols.include?(attr.to_s)
+
+        investment[attr] = parse_optional_decimal(data[attr])
+      end
+
+      %i[
+        shares_owned
+      ].each do |attr|
+        next unless data.key?(attr)
+        next unless cols.include?(attr.to_s)
+
+        investment[attr] = parse_optional_decimal(data[attr])
+      end
+
+      %i[
+        investment_fees investment_fees_funded distributed_amount accrued_preferred_return
+        unpaid_preferred_return
+      ].each do |attr|
+        next unless data.key?(attr)
+        next unless cols.include?(attr.to_s)
+
+        investment[attr] = parse_optional_amount(data[attr])
+      end
+
+      %i[
+        date_placed preferred_return_start_date document_signed_on document_countersigned_on
+        received_date accreditation_letter_issue_date
+      ].each do |attr|
+        next unless data.key?(attr)
+        next unless cols.include?(attr.to_s)
+
+        investment[attr] = parse_optional_date(data[attr])
+      end
+
+      if data.key?(:funds_sent_at) && cols.include?("funds_sent_at")
+        investment.funds_sent_at = parse_optional_datetime(data[:funds_sent_at])
+      end
+
+      if data.key?(:number_of_members) && cols.include?("number_of_members")
+        investment.number_of_members = parse_optional_integer(data[:number_of_members])
       end
 
       if data.key?(:notes) && cols.include?("notes")
@@ -425,6 +538,42 @@ module CashFlowImport
       return nil if s.blank?
 
       BigDecimal(s)
+    rescue ArgumentError
+      nil
+    end
+
+    def parse_optional_decimal(raw)
+      s = raw.to_s.gsub(/[,%\s]/, "")
+      return nil if s.blank?
+
+      BigDecimal(s)
+    rescue ArgumentError
+      nil
+    end
+
+    def parse_optional_date(raw)
+      s = raw.to_s.strip
+      return nil if s.blank?
+
+      Date.parse(s)
+    rescue ArgumentError
+      nil
+    end
+
+    def parse_optional_datetime(raw)
+      s = raw.to_s.strip
+      return nil if s.blank?
+
+      Time.zone.parse(s)
+    rescue ArgumentError, TypeError
+      nil
+    end
+
+    def parse_optional_integer(raw)
+      s = raw.to_s.gsub(/[,\s]/, "")
+      return nil if s.blank?
+
+      Integer(s, 10)
     rescue ArgumentError
       nil
     end

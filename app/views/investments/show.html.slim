@@ -18,32 +18,28 @@ h1.text-4xl.font-bold.mb-4 = @investment.list_title
     - else
       p.text-gray-600 No sites assigned.
 
-  .mt-10.rounded-2xl.border.border-gray-200.bg-white.overflow-hidden.shadow-sm
-    .bg-slate-50.px-5.py-4.border-b.border-gray-200
-      h2.text-lg.font-semibold.tracking-tight.text-gray-900 Investment details
+  .mt-10 data-controller="investment-tabs"
+    .mb-4.overflow-x-auto.overflow-y-visible.py-1.px-1
+      .inline-flex.items-center.gap-2.min-w-full.pr-1 role="tablist" aria-label="Investment detail sections"
+        - investment_detail_sections.each_with_index do |section, idx|
+          - tab_id = "investment-tab-#{idx}"
+          button.px-3.py-2.5.text-sm.leading-5.font-medium.rounded-lg.border.border-transparent.bg-slate-50.text-gray-600.whitespace-nowrap.hover:bg-white.hover:border-gray-200.focus:outline-none.focus:ring-2.focus:ring-blue-500/40[
+            type="button"
+            role="tab"
+            aria-selected=(idx.zero? ? "true" : "false")
+            data-investment-tabs-target="tab"
+            data-tab-id=tab_id
+            data-action="click->investment-tabs#activate"
+          ]= section[:title]
 
-    .divide-y.divide-gray-100
-      = render "investment_detail_row", label: "Investor", value: format_investment_detail_value(@investment, :user_id)
-      = render "investment_detail_row", label: "Project", value: format_investment_detail_value(@investment, :project_id)
-      = render "investment_detail_row", label: "Investment amount", value: format_investment_detail_value(@investment, :invested_amount)
-      = render "investment_detail_row", label: "Investor since", value: format_investment_detail_value(@investment, :investor_since)
-      = render "investment_detail_row", label: "Company / nickname", value: format_investment_detail_value(@investment, :company_or_nickname)
-      = render "investment_detail_row", label: "Bitcoin address", value: format_investment_detail_value(@investment, :bitcoin_address)
-      = render "investment_detail_row", label: "Import record ID", value: format_investment_detail_value(@investment, :cash_flow_import_id)
-      = render "investment_detail_row", label: "Offering / series name", value: format_investment_detail_value(@investment, :legacy_offering_name)
-      = render "investment_detail_row", label: "Class / share class", value: format_investment_detail_value(@investment, :share_class)
-      = render "investment_detail_row", label: "Status", value: format_investment_detail_value(@investment, :cash_flow_status)
-      = render "investment_detail_row", label: "Investment type", value: format_investment_detail_value(@investment, :investment_entity_type)
-      = render "investment_detail_row", label: "Accreditation", value: format_investment_detail_value(@investment, :accreditation_status)
-      = render "investment_detail_row", label: "Funded amount", value: format_investment_detail_value(@investment, :funded_amount)
-      = render "investment_detail_row", label: "Tax identifier", value: format_investment_detail_value(@investment, :tax_identifier)
-      = render "investment_detail_row", label: "Bank name", value: format_investment_detail_value(@investment, :bank_name)
-      = render "investment_detail_row", label: "Bank account number", value: format_investment_detail_value(@investment, :bank_account_number)
-      = render "investment_detail_row", label: "Routing number", value: format_investment_detail_value(@investment, :bank_routing_number)
-      = render "investment_detail_row", label: "Distribution method", value: format_investment_detail_value(@investment, :distribution_method)
-      = render "investment_detail_row", label: "Notes", value: format_investment_detail_value(@investment, :notes)
-      = render "investment_detail_row", label: "Created at", value: format_investment_detail_value(@investment, :created_at)
-      = render "investment_detail_row", label: "Updated at", value: format_investment_detail_value(@investment, :updated_at)
+    - investment_detail_sections.each_with_index do |section, idx|
+      - tab_id = "investment-tab-#{idx}"
+      section.rounded-xl.border.border-gray-200.bg-white.shadow-sm.mb-4.last:mb-0 data-investment-tabs-target="panel" data-tab-id=tab_id
+        .px-5.py-3.bg-slate-50/70.border-b.border-gray-100
+          h3.text-sm.font-semibold.uppercase.tracking-wide.text-gray-600 = section[:title]
+        .divide-y.divide-gray-100
+          - section[:rows].each do |label, attr|
+            = render "investment_detail_row", label: label, value: format_investment_detail_value(@investment, attr)
 
   .mt-8
     p.text-sm.text-gray-500.mb-2 Documents

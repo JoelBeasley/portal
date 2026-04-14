@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_10_180000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_13_110000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -57,27 +57,77 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_10_180000) do
   end
 
   create_table "investments", force: :cascade do |t|
+    t.date "accreditation_letter_issue_date"
     t.string "accreditation_status"
+    t.decimal "accrued_preferred_return", precision: 12, scale: 2
+    t.string "ach_investment_funding_status"
     t.string "bank_account_number"
+    t.string "bank_account_type"
+    t.text "bank_distribution_note"
+    t.string "bank_for_further_credit"
     t.string "bank_name"
     t.string "bank_routing_number"
+    t.string "beneficial_owner_name"
+    t.string "beneficial_owner_tax_id"
     t.string "bitcoin_address"
     t.string "cash_flow_import_id"
     t.string "cash_flow_status"
+    t.text "check_mailing_address"
     t.string "company_or_nickname"
     t.datetime "created_at", null: false
+    t.date "date_placed"
+    t.string "deal_name"
+    t.decimal "distributed_amount", precision: 12, scale: 2
     t.string "distribution_method"
+    t.date "document_countersigned_on"
+    t.date "document_signed_on"
+    t.string "ein"
+    t.string "federal_tax_classification"
     t.decimal "funded_amount", precision: 12, scale: 2
+    t.text "funding_note"
+    t.datetime "funds_sent_at"
+    t.string "individual_ira_number"
     t.decimal "invested_amount", precision: 12, scale: 2, default: "50000.0", null: false
+    t.string "investment_approval"
     t.string "investment_entity_type"
+    t.decimal "investment_fees", precision: 12, scale: 2
+    t.decimal "investment_fees_funded", precision: 12, scale: 2
+    t.text "investment_tags"
     t.date "investor_since", default: -> { "CURRENT_DATE" }, null: false
+    t.string "ira_account_number"
+    t.string "is_disregarded_entity"
     t.string "legacy_offering_name"
+    t.string "llc_tax_classification"
+    t.text "mailing_address"
     t.text "notes"
+    t.integer "number_of_members"
+    t.string "offering_name"
+    t.string "other_investor_email"
+    t.string "other_investor_name"
+    t.decimal "ownership_percentage", precision: 8, scale: 4
+    t.string "owning_entity"
+    t.string "payment_method"
+    t.decimal "percent_of_class_by_total_raised", precision: 8, scale: 4
+    t.decimal "percent_of_class_or_bucket_by_target_raise", precision: 8, scale: 4
+    t.date "preferred_return_start_date"
+    t.string "profile_import_id"
+    t.string "profile_name"
+    t.string "profile_type"
     t.bigint "project_id", null: false
+    t.date "received_date"
+    t.string "reinvest_distributions"
+    t.string "selected_company_member"
+    t.text "selected_sponsors"
     t.string "share_class"
+    t.decimal "shares_owned", precision: 14, scale: 4
+    t.string "spouse_ssn"
+    t.string "ssn"
+    t.text "tax_address"
     t.string "tax_identifier"
+    t.decimal "unpaid_preferred_return", precision: 12, scale: 2
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
+    t.string "waitlist_status"
     t.index ["cash_flow_import_id"], name: "index_investments_on_cash_flow_import_id_unique", unique: true, where: "(cash_flow_import_id IS NOT NULL)"
     t.index ["project_id"], name: "index_investments_on_project_id"
     t.index ["user_id"], name: "index_investments_on_user_id"

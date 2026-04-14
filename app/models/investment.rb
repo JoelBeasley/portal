@@ -9,9 +9,10 @@ class Investment < ApplicationRecord
             allow_blank: true
 
   def list_title
-    base = user.full_name
-    nick = company_or_nickname.to_s.strip
-    return base if nick.blank?
-    "#{base} (#{nick})"
+    full_name = user.full_name
+    nickname = company_or_nickname.to_s.strip
+    return full_name if nickname.blank? || ["-", "--"].include?(nickname)
+
+    "#{full_name} (#{nickname})"
   end
 end
