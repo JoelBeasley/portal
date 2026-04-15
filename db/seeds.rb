@@ -32,7 +32,7 @@ investor.assign_attributes(
 )
 investor.save!
 
-digital_midstream = Offering.find_or_create_by!(name: "Digital Midstream Genisis")
+digital_midstream = Offering.find_or_create_by!(name: "Digital Midstream Genesis, LLC")
 ["Hash Dock", "Hailey's Mill", "Bluegrass"].each do |site_name|
   Site.find_or_create_by!(name: site_name, offering: digital_midstream)
 end

@@ -3,14 +3,14 @@ require "csv"
 class Admin::OfferingsController < ApplicationController
   before_action :authenticate_user!
   before_action :require_admin
-  before_action :require_super_admin, only: [:new, :create]
+  before_action :require_super_admin, only: [:new, :create, :edit, :update]
+  before_action :set_offering, only: [:show, :edit, :update]
 
   def index
     @offerings = Offering.includes(:sites, investments: :user).order(:name)
   end
 
   def show
-    @offering = Offering.find(params[:id])
     @sites = @offering.sites.order(:name)
     @investments = @offering.investments.includes(:user).order(created_at: :desc)
     @investors = @offering.users.order(:email)
@@ -20,12 +20,22 @@ class Admin::OfferingsController < ApplicationController
     @offering = Offering.new
   end
 
+  def edit; end
+
   def create
     @offering = Offering.new(offering_params)
     if @offering.save
       redirect_to admin_offering_path(@offering), notice: "Offering created successfully."
     else
       render :new, status: :unprocessable_entity
+    end
+  end
+
+  def update
+    if @offering.update(offering_params)
+      redirect_to admin_offering_path(@offering), notice: "Offering updated successfully."
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
@@ -47,6 +57,10 @@ class Admin::OfferingsController < ApplicationController
   end
 
   private
+
+  def set_offering
+    @offering = Offering.find(params[:id])
+  end
 
   def require_admin
     redirect_to root_path, alert: "Access denied." unless current_user.can_access_admin_area?

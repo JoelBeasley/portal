@@ -24,7 +24,7 @@ Rails.application.routes.draw do
     get "site_analytics/btc_price", to: "site_analytics#btc_price"
     post "sites/:site_id/analytics/data", to: "site_analytics#data", as: :site_analytics_site_data
     get "sites/:id/analytics", to: "site_analytics#show", as: :site_pool_dashboard
-    resources :offerings, only: [:index, :show, :new, :create] do
+    resources :offerings, only: [:index, :show, :new, :create, :edit, :update] do
       member do
         get :export_addresses
       end

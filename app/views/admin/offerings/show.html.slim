@@ -2,6 +2,9 @@
   .border.border-gray-200.rounded-2xl.p-6.bg-white
     h1.text-3xl.font-bold.mb-2 = @offering.name
     p.text-gray-600 Investors, sites, and investments in this offering
+    - if current_user.can_manage_projects?
+      .mt-4
+        = link_to "Edit Offering", edit_admin_offering_path(@offering), class: "inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
 
   - if current_user.can_access_admin_area?
     .border.border-gray-200.rounded-2xl.p-6.bg-white

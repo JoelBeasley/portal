@@ -10,6 +10,9 @@ h1.text-3xl.font-bold.mb-6 Offerings
     .border.border-gray-200.rounded-xl.p-5
       .flex.items-center.justify-between
         .font-semibold.text-lg = offering.name
-        = link_to "View Investors", admin_offering_path(offering), class: "text-blue-600 hover:underline"
+        .flex.items-center.gap-4
+          = link_to "View Investors", admin_offering_path(offering), class: "text-blue-600 hover:underline"
+          - if current_user.can_manage_projects?
+            = link_to "Edit Offering", edit_admin_offering_path(offering), class: "text-blue-600 hover:underline"
       .text-sm.text-gray-500.mt-1
         = "#{pluralize(offering.sites.size, 'site')} • #{pluralize(offering.users.size, 'investor')}"
