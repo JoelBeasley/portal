@@ -7,7 +7,7 @@ module InvestmentsHelper
     case attr
     when :user_id
       u = inv.user
-      u ? "#{u.full_name} · #{u.email} (##{u.id})" : MISSING
+      u ? "#{u.full_name} · #{u.email}" : MISSING
     when :offering_id
       inv.offering&.name || MISSING
     when :invested_amount
@@ -19,6 +19,9 @@ module InvestmentsHelper
     when :created_at, :updated_at
       t = inv.read_attribute(attr)
       t.present? ? l(t, format: :long) : MISSING
+    when :profile_type
+      v = inv.read_attribute(:profile_type)
+      v.blank? ? MISSING : v.to_s.strip.tr("_", " ").squeeze(" ").titleize
     when :id
       inv.id.to_s
     else

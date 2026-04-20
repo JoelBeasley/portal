@@ -1,4 +1,12 @@
 module ApplicationHelper
+  # e.g. Dec 11th, 2025
+  def format_ordinal_date(value)
+    return if value.blank?
+
+    d = value.respond_to?(:to_date) ? value.to_date : value
+    "#{d.strftime('%b')} #{d.day.ordinalize}, #{d.year}"
+  end
+
   # Propshaft fingerprints CSS, but browsers (especially mobile) can still serve a stale Tailwind file in dev.
   # Append a build timestamp in development so every tailwindcss rebuild gets a fresh URL.
   def tailwind_stylesheet_link_tag

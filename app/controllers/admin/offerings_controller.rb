@@ -12,8 +12,11 @@ class Admin::OfferingsController < ApplicationController
 
   def show
     @sites = @offering.sites.order(:name)
-    @investments = @offering.investments.includes(:user).order(created_at: :desc)
-    @investors = @offering.users.order(:email)
+    @investor_investments =
+      @offering.investments
+        .joins(:user)
+        .includes(:user)
+        .order("users.email ASC, investments.id ASC")
   end
 
   def new

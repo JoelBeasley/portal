@@ -12,52 +12,58 @@
       p.text-sm.text-gray-600.mb-4 Export investor names, bitcoin addresses, and offering name to CSV.
       = link_to "Export Addresses", export_addresses_admin_offering_path(@offering), class: "bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 inline-flex items-center"
 
-  .grid.grid-cols-1.lg:grid-cols-2.gap-8
-    .border.border-gray-200.rounded-2xl.p-5.bg-white
-      h2.text-xl.font-semibold.mb-3 Investors
-      p.text-sm.text-gray-600.mb-4 = "#{@investors.count} investor#{'s' unless @investors.count == 1}"
-      - if @investors.any?
-        details.group
-          summary.cursor-pointer.text-blue-600.hover:text-blue-700.font-medium Select to view investors
-          ul.space-y-2.mt-3.text-sm.text-gray-700
-            - @investors.each do |investor|
-              li.flex.items-center.justify-between.gap-3.border.border-gray-200.rounded-lg.px-3.py-2
-                span = "#{investor.full_name} (#{investor.email})"
-                - if investor.welcome_password_set_at.present?
-                  span.inline-flex.items-center.rounded-full.bg-emerald-100.text-emerald-700.text-xs.font-medium.px-2.py-1 Invite accepted
-                - else
-                  span.inline-flex.items-center.rounded-full.bg-amber-100.text-amber-800.text-xs.font-medium.px-2.py-1 Invite pending
-      - else
-        p.text-gray-500.text-sm No investors assigned yet.
-
-    .border.border-gray-200.rounded-2xl.p-5.bg-white
-      h2.text-xl.font-semibold.mb-3 Sites
-      p.text-sm.text-gray-600.mb-4 = "#{@sites.count} site#{'s' unless @sites.count == 1}"
-      - if @sites.any?
-        details.group
-          summary.cursor-pointer.text-blue-600.hover:text-blue-700.font-medium Select to view sites
-          ul.space-y-2.mt-3.text-sm.text-gray-700
-            - @sites.each do |site|
-              li.flex.flex-wrap.items-center.justify-between.gap-2.border.border-gray-200.rounded-lg.px-3.py-2
-                span.font-medium = site.name
-                = link_to "Pool analytics", admin_site_pool_dashboard_path(site), class: "text-blue-600 hover:underline font-medium"
-      - else
-        p.text-gray-500.text-sm No sites in this offering yet.
-
-  .border.border-gray-200.rounded-2xl.p-6.bg-white
-    h2.text-xl.font-semibold.mb-3 Investments
-    - if @investments.any?
-      .space-y-2
-        - @investments.each do |investment|
-          .border.border-gray-200.rounded-xl.p-3
-            .font-medium
-              = link_to investment.list_title, investment_path(investment), class: "text-blue-600 hover:underline"
-            .text-sm.text-gray-600
-              = number_to_currency(investment.invested_amount, precision: 0)
-            .text-sm.text-gray-500 = investment.user.email
-            .mt-2
-              = link_to "View investment", investment_path(investment), class: "text-sm text-blue-600 hover:underline"
+  .border.border-gray-200.rounded-2xl.p-5.bg-white
+    h2.text-xl.font-semibold.mb-3 Investments in this offering
+    p.text-sm.text-gray-600.mb-4 = "#{@investor_investments.size} investment#{'s' unless @investor_investments.size == 1}"
+    - if @investor_investments.any?
+      .overflow-x-auto.max-w-full.touch-pan-x.-mx-4.px-4.sm:mx-0.sm:px-0
+        table.w-full.min-w-max.text-left
+          thead.bg-gray-50.border-b.border-gray-200
+            tr
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Name
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Email
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Invite
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Investor since
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Document signed on
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Document countersigned on
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Funds sent at
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Received date
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Status
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 View
+          tbody
+            - @investor_investments.each do |investment|
+              - investor = investment.user
+              tr.border-b.border-gray-100
+                td.px-4.py-3.text-sm.text-gray-900 = investor.full_name
+                td.px-4.py-3.text-sm.text-gray-900 = investor.email
+                td.px-4.py-3
+                  - if investor.welcome_password_set_at.present?
+                    span.inline-flex.items-center.rounded-full.bg-emerald-100.text-emerald-700.text-xs.font-medium.px-2.py-1 Invite accepted
+                  - else
+                    span.inline-flex.items-center.rounded-full.bg-amber-100.text-amber-800.text-xs.font-medium.px-2.py-1 Invite pending
+                td.px-4.py-3.text-sm.text-gray-700 = format_ordinal_date(investment.investor_since) || "—"
+                td.px-4.py-3.text-sm.text-gray-700 = format_ordinal_date(investment.document_signed_on) || "—"
+                td.px-4.py-3.text-sm.text-gray-700 = format_ordinal_date(investment.document_countersigned_on) || "—"
+                td.px-4.py-3.text-sm.text-gray-700 = format_ordinal_date(investment.funds_sent_at) || "—"
+                td.px-4.py-3.text-sm.text-gray-700 = format_ordinal_date(investment.received_date) || "—"
+                td.px-4.py-3.text-sm.text-gray-700 = investment.cash_flow_status.present? ? investment.cash_flow_status : "—"
+                td.px-4.py-3.text-sm
+                  = link_to "View investment", investment_path(investment), class: "text-blue-600 hover:underline font-medium"
     - else
       p.text-gray-500.text-sm No investments in this offering yet.
+
+  .border.border-gray-200.rounded-2xl.p-5.bg-white
+    h2.text-xl.font-semibold.mb-3 Sites
+    p.text-sm.text-gray-600.mb-4 = "#{@sites.count} site#{'s' unless @sites.count == 1}"
+    - if @sites.any?
+      details.group
+        summary.cursor-pointer.text-blue-600.hover:text-blue-700.font-medium Select to view sites
+        ul.space-y-2.mt-3.text-sm.text-gray-700
+          - @sites.each do |site|
+            li.flex.flex-wrap.items-center.justify-between.gap-2.border.border-gray-200.rounded-lg.px-3.py-2
+              span.font-medium = site.name
+              = link_to "Pool analytics", admin_site_pool_dashboard_path(site), class: "text-blue-600 hover:underline font-medium"
+    - else
+      p.text-gray-500.text-sm No sites in this offering yet.
 
   = link_to "← Back to Offerings", admin_offerings_path, class: "text-blue-600 hover:underline"
