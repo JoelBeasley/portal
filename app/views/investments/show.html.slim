@@ -20,7 +20,9 @@ h1.text-4xl.font-bold.mb-4 = @investment.list_title
             p.text-xs.text-gray-500.mt-1 Showing the account investor profile. It will link automatically when this investment is saved.
         - if @investment.user == current_user && current_user.investor?
           = link_to "Edit profile", edit_investor_profile_path(@investor_profile), class: "text-blue-600 hover:underline font-medium text-sm"
-      = render "investor_profiles/display", investor_profile: @investor_profile
+          = render "investor_profiles/display",
+                   investor_profile: @investor_profile,
+                   section_grid_class: "grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
   - else
     .mt-8.border-t.border-gray-200.pt-8
       h2.text-xl.font-semibold.mb-2 Investor profile
