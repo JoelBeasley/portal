@@ -17,8 +17,6 @@ nav.bg-black.border-b.border-slate-800.shadow-sm data-controller="mobile-nav"
               = link_to "Account", edit_user_registration_path, class: "block px-4 py-2.5 text-sm text-slate-100 hover:bg-slate-800"
               - if current_user.investor?
                 = link_to "Investor Profiles", investor_profiles_path, class: "block px-4 py-2.5 text-sm text-slate-100 hover:bg-slate-800"
-                - if current_user.investor_profile
-                  = link_to "Edit investor profile", edit_investor_profile_path(current_user.investor_profile), class: "block px-4 py-2.5 text-sm text-slate-100 hover:bg-slate-800"
               div class="mt-1 border-t border-slate-700 pt-1"
                 = link_to "Sign out", destroy_user_session_path,
                           data: { turbo_method: :delete },
@@ -53,8 +51,6 @@ nav.bg-black.border-b.border-slate-800.shadow-sm data-controller="mobile-nav"
           = link_to "Account", edit_user_registration_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-slate-100 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
           - if current_user.investor?
             = link_to "Investor Profiles", investor_profiles_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-slate-100 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
-            - if current_user.investor_profile
-              = link_to "Edit investor profile", edit_investor_profile_path(current_user.investor_profile), class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-slate-100 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
           - if current_user.can_access_admin_area?
             = link_to "Offerings", admin_offerings_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
             = link_to "Admin", admin_dashboard_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
