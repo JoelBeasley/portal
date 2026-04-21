@@ -6,5 +6,5 @@
 </p>
 
 <p style="margin: 0;">
-  <%= link_to "Confirm my account", confirmation_url(@resource, confirmation_token: @token), style: "display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 18px; border-radius: 10px;" %>
+  <%= link_to "Confirm my account", user_confirmation_url(confirmation_token: @token), style: "display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 18px; border-radius: 10px;" %>
 </p>

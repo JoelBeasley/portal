@@ -6,5 +6,5 @@
 </p>
 
 <p style="margin: 0;">
-  <%= link_to "Unlock my account", unlock_url(@resource, unlock_token: @token), style: "display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 18px; border-radius: 10px;" %>
+  <%= link_to "Unlock my account", user_unlock_url(unlock_token: @token), style: "display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 18px; border-radius: 10px;" %>
 </p>

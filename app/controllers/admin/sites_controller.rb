@@ -60,6 +60,18 @@ class Admin::SitesController < ApplicationController
   end
 
   def site_params
-    params.require(:site).permit(:name, :slug, :description, :offering_id, :braiins_pool_auth_token)
+    params.require(:site).permit(
+      :name,
+      :slug,
+      :description,
+      :offering_id,
+      :braiins_pool_auth_token,
+      :location,
+      :power_source,
+      :model,
+      :size_kw,
+      :status,
+      :power_cost
+    )
   end
 end

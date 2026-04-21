@@ -6,6 +6,26 @@
     h1.text-3xl.font-bold.mb-2 = @site.name
     p.text-gray-600.mb-4 = @site.offering.name
 
+    .grid.grid-cols-1.sm:grid-cols-2.gap-4.mb-4
+      div
+        p.text-xs.uppercase.text-gray-500 Location
+        p.text-sm.text-gray-900 = @site.location.presence || "N/A"
+      div
+        p.text-xs.uppercase.text-gray-500 Power Source
+        p.text-sm.text-gray-900 = @site.power_source.presence || "N/A"
+      div
+        p.text-xs.uppercase.text-gray-500 Model
+        p.text-sm.text-gray-900 = @site.model.presence || "N/A"
+      div
+        p.text-xs.uppercase.text-gray-500 Size (KW)
+        p.text-sm.text-gray-900 = @site.size_kw.present? ? @site.size_kw : "N/A"
+      div
+        p.text-xs.uppercase.text-gray-500 Status
+        p.text-sm.text-gray-900 = @site.status.present? ? @site.status.humanize : "N/A"
+      div
+        p.text-xs.uppercase.text-gray-500 Power Cost
+        p.text-sm.text-gray-900 = @site.power_cost.present? ? number_with_precision(@site.power_cost, precision: 4, strip_insignificant_zeros: true) : "N/A"
+
     .flex.flex-wrap.gap-3
       = link_to "Pool analytics (Braiins)", admin_site_pool_dashboard_path(@site), class: "inline-flex items-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"
       - if current_user.can_manage_sites?
