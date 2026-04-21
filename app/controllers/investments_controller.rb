@@ -13,6 +13,7 @@ class InvestmentsController < ApplicationController
 
   def show
     @typed_documents = @investment.investment_documents.with_attached_file.order(created_at: :desc)
+    @investor_profile = @investment.investor_profile_for_display
   end
 
   def documents
@@ -60,11 +61,12 @@ class InvestmentsController < ApplicationController
   end
 
   def set_investment
+    includes = [:offering, :investor_profile, :sites, :investment_documents, { user: :investor_profile }]
     @investment =
       if current_user.can_access_admin_area?
-        Investment.find(params[:id])
+        Investment.includes(*includes).find(params[:id])
       else
-        current_user.investments.find(params[:id])
+        current_user.investments.includes(*includes).find(params[:id])
       end
   end
 

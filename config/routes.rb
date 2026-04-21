@@ -7,7 +7,12 @@ Rails.application.routes.draw do
     }
   end
 
-  devise_for :users, controllers: { passwords: "users/passwords" }
+  devise_for :users, controllers: {
+    passwords: "users/passwords",
+    registrations: "users/registrations"
+  }
+
+  resources :investor_profiles, only: [:index, :create, :show, :edit, :update]
 
   resources :investments, only: [:index, :show] do
     member do
@@ -30,6 +35,9 @@ Rails.application.routes.draw do
       end
     end
     resources :sites, only: [:index, :show, :new, :create, :edit, :update]
+    resources :investors, only: [:index, :show] do
+      resource :investor_profile, only: [:edit, :update], module: :investors
+    end
     resources :users, only: [:index, :new, :create, :update] do
       member do
         post :send_welcome_email

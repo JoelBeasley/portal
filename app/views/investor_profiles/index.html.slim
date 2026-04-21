@@ -1,0 +1,32 @@
+.space-y-8
+  div
+    h1.text-3xl.font-bold.mb-1 Investor profiles
+    p.text-sm.text-gray-600 View your portal investor profile, your investments, or create a profile if you do not have one yet.
+
+  .border.border-gray-200.rounded-2xl.p-6.bg-white
+    h2.text-xl.font-semibold.mb-3 Your investor profile
+    - if @investor_profile
+      p.text-sm.text-gray-600.mb-4 You have one investor profile on file. Open it to review details or edit contact information.
+      .flex.flex-wrap.gap-3
+        = link_to "View profile", investor_profile_path(@investor_profile), class: "inline-flex bg-gray-100 text-gray-900 px-5 py-2.5 rounded-xl hover:bg-gray-200 font-medium"
+        = link_to "Edit profile", edit_investor_profile_path(@investor_profile), class: "inline-flex bg-blue-600 text-white px-5 py-2.5 rounded-xl hover:bg-blue-700 font-medium"
+    - else
+      p.text-sm.text-gray-600.mb-4 You do not have an investor profile yet. Create one to store structured contact and name information for offerings and communications.
+      = button_to "Create investor profile", investor_profiles_path, method: :post, class: "bg-blue-600 text-white px-6 py-3 rounded-2xl hover:bg-blue-700 font-medium cursor-pointer"
+
+  .border.border-gray-200.rounded-2xl.p-6.bg-white
+    h2.text-xl.font-semibold.mb-3 My investments
+    - if @investments.any?
+      ul.divide-y.divide-gray-100
+        - @investments.each do |investment|
+          li.py-4.flex.flex-wrap.items-center.justify-between.gap-3
+            div
+              p.font-medium.text-gray-900 = investment.list_title
+              p.text-sm.text-gray-600
+                | Offering:
+                = " #{investment.offering&.name || "—"}"
+            = link_to "View", investment_path(investment), class: "text-blue-600 hover:underline font-medium text-sm"
+    - else
+      p.text-sm.text-gray-500 You do not have any investments yet.
+
+  = link_to "← Back to investments", investments_path, class: "text-blue-600 hover:underline"

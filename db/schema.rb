@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_14_162449) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_20_140000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -104,6 +104,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_162449) do
     t.decimal "investment_fees", precision: 12, scale: 2
     t.decimal "investment_fees_funded", precision: 12, scale: 2
     t.text "investment_tags"
+    t.bigint "investor_profile_id"
     t.date "investor_since", default: -> { "CURRENT_DATE" }, null: false
     t.string "ira_account_number"
     t.string "is_disregarded_entity"
@@ -140,8 +141,30 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_162449) do
     t.bigint "user_id", null: false
     t.string "waitlist_status"
     t.index ["cash_flow_import_id"], name: "index_investments_on_cash_flow_import_id_unique", unique: true, where: "(cash_flow_import_id IS NOT NULL)"
+    t.index ["investor_profile_id"], name: "index_investments_on_investor_profile_id"
     t.index ["offering_id"], name: "index_investments_on_offering_id"
     t.index ["user_id"], name: "index_investments_on_user_id"
+  end
+
+  create_table "investor_profiles", force: :cascade do |t|
+    t.text "address_primary"
+    t.string "business_email"
+    t.string "business_phone"
+    t.datetime "created_at", null: false
+    t.string "first_name"
+    t.string "home_phone"
+    t.string "last_name"
+    t.text "mailing_address"
+    t.string "middle_name"
+    t.string "mobile_phone_primary"
+    t.string "name_prefix"
+    t.string "name_suffix"
+    t.string "nickname"
+    t.string "personal_email_primary"
+    t.string "time_zone"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_investor_profiles_on_user_id", unique: true
   end
 
   create_table "offerings", force: :cascade do |t|
@@ -190,7 +213,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_14_162449) do
   add_foreign_key "impersonation_events", "users", column: "target_user_id"
   add_foreign_key "investment_documents", "investments"
   add_foreign_key "investment_documents", "users"
+  add_foreign_key "investments", "investor_profiles"
   add_foreign_key "investments", "offerings"
   add_foreign_key "investments", "users"
+  add_foreign_key "investor_profiles", "users"
   add_foreign_key "sites", "offerings"
 end

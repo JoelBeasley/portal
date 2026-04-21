@@ -1,0 +1,58 @@
+.space-y-8
+  div
+    h3.text-lg.font-semibold.mb-3 Profile / name
+    .grid.grid-cols-1.sm:grid-cols-2.gap-4
+      div
+        = f.label :name_prefix, "Prefix", class: "block text-sm font-medium mb-2"
+        = f.text_field :name_prefix, class: "w-full border border-gray-300 rounded-xl p-3"
+      div
+        = f.label :first_name, "First name", class: "block text-sm font-medium mb-2"
+        = f.text_field :first_name, class: "w-full border border-gray-300 rounded-xl p-3"
+      div
+        = f.label :middle_name, "Middle name", class: "block text-sm font-medium mb-2"
+        = f.text_field :middle_name, class: "w-full border border-gray-300 rounded-xl p-3"
+      div
+        = f.label :last_name, "Last name", class: "block text-sm font-medium mb-2"
+        = f.text_field :last_name, class: "w-full border border-gray-300 rounded-xl p-3"
+      div
+        = f.label :name_suffix, "Suffix", class: "block text-sm font-medium mb-2"
+        = f.text_field :name_suffix, class: "w-full border border-gray-300 rounded-xl p-3"
+      div
+        = f.label :nickname, "Nickname", class: "block text-sm font-medium mb-2"
+        = f.text_field :nickname, class: "w-full border border-gray-300 rounded-xl p-3"
+
+  div
+    h3.text-lg.font-semibold.mb-3 Location
+    .space-y-4
+      div
+        = f.label :address_primary, "Address (primary)", class: "block text-sm font-medium mb-2"
+        = f.text_area :address_primary, rows: 4, class: "w-full border border-gray-300 rounded-xl p-3"
+      div
+        = f.label :mailing_address, "Mailing address", class: "block text-sm font-medium mb-2"
+        = f.text_area :mailing_address, rows: 4, class: "w-full border border-gray-300 rounded-xl p-3"
+      div
+        = f.label :time_zone, "Time zone", class: "block text-sm font-medium mb-2"
+        = f.text_field :time_zone, placeholder: "e.g. America/Denver", class: "w-full border border-gray-300 rounded-xl p-3"
+
+  div
+    h3.text-lg.font-semibold.mb-3 Contact information
+    .grid.grid-cols-1.sm:grid-cols-2.gap-4
+      div
+        = f.label :home_phone, "Home phone", class: "block text-sm font-medium mb-2"
+        = f.text_field :home_phone, class: "w-full border border-gray-300 rounded-xl p-3"
+      div
+        = f.label :mobile_phone_primary, "Mobile phone (primary)", class: "block text-sm font-medium mb-2"
+        = f.text_field :mobile_phone_primary, class: "w-full border border-gray-300 rounded-xl p-3"
+      div.sm:col-span-2
+        = f.label :business_phone, "Business phone", class: "block text-sm font-medium mb-2"
+        = f.text_field :business_phone, class: "w-full border border-gray-300 rounded-xl p-3"
+
+  div
+    h3.text-lg.font-semibold.mb-3 Email address
+    .grid.grid-cols-1.sm:grid-cols-2.gap-4
+      div
+        = f.label :personal_email_primary, "Personal (primary)", class: "block text-sm font-medium mb-2"
+        = f.email_field :personal_email_primary, class: "w-full border border-gray-300 rounded-xl p-3"
+      div
+        = f.label :business_email, "Business", class: "block text-sm font-medium mb-2"
+        = f.email_field :business_email, class: "w-full border border-gray-300 rounded-xl p-3"

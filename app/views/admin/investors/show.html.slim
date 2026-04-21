@@ -1,0 +1,46 @@
+.space-y-6
+  .border.border-gray-200.rounded-2xl.p-6.bg-white
+    h1.text-3xl.font-bold.mb-2 = @investor.full_name
+    p.text-gray-600 = @investor.email
+    .mt-3
+      - if @investor.welcome_password_set_at.present?
+        span.inline-flex.items-center.rounded-full.bg-emerald-100.text-emerald-700.text-xs.font-medium.px-2.py-1 Invite accepted
+      - else
+        span.inline-flex.items-center.rounded-full.bg-amber-100.text-amber-800.text-xs.font-medium.px-2.py-1 Invite pending
+
+  .border.border-gray-200.rounded-2xl.p-6.bg-white
+    .flex.flex-wrap.items-start.justify-between.gap-4.mb-4
+      h2.text-xl.font-semibold Investor profile
+      = link_to "Edit profile", edit_admin_investor_investor_profile_path(@investor), class: "text-blue-600 hover:underline font-medium"
+    = render "investor_profiles/display", investor_profile: @investor_profile
+
+  .border.border-gray-200.rounded-2xl.p-6.bg-white
+    h2.text-xl.font-semibold.mb-3 Investments
+    p.text-sm.text-gray-600.mb-4 = "#{@investments.size} investment#{'s' unless @investments.size == 1}"
+
+    - if @investments.any?
+      .space-y-6
+        - @investments.each do |investment|
+          .border.border-gray-200.rounded-xl.p-4.bg-white
+            .flex.flex-wrap.items-center.justify-between.gap-3.mb-4
+              .space-y-1
+                h3.text-lg.font-semibold = investment.list_title
+                p.text-sm.text-gray-600
+                  | Offering:
+                  = " #{investment.offering&.name || '--'}"
+              = link_to "View investment", investment_path(investment), class: "text-blue-600 hover:underline font-medium"
+
+            - investment_detail_sections.each do |section|
+              details.group.mt-3
+                summary.cursor-pointer.text-blue-600.hover:text-blue-700.font-medium = section[:title]
+                .overflow-x-auto.mt-2
+                  table.w-full.min-w-max.text-left
+                    tbody
+                      - section[:rows].each do |label, attr|
+                        tr.border-b.border-gray-100
+                          th.px-3.py-2.text-xs.font-semibold.text-gray-600.w-72 = label
+                          td.px-3.py-2.text-sm.text-gray-900 = format_investment_detail_value(investment, attr)
+    - else
+      p.text-gray-500.text-sm This investor has no investments yet.
+
+  = link_to "← Back to Investors", admin_investors_path, class: "text-blue-600 hover:underline"

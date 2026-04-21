@@ -8,15 +8,28 @@ nav.bg-black.border-b.border-slate-800.shadow-sm data-controller="mobile-nav"
       .hidden.md:flex.items-center.gap-4.lg:gap-6.flex-wrap.justify-end
         - if user_signed_in?
           = link_to "My Investments", investments_path, class: "text-sm lg:text-base text-slate-200 hover:text-white whitespace-nowrap transition"
+          details class="relative inline-block text-left group"
+            summary class="inline-flex cursor-pointer list-none items-center gap-1.5 rounded-lg pl-2 pr-2 py-1.5 text-sm lg:text-base font-medium text-slate-100 select-none hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-400 [&::-webkit-details-marker]:hidden"
+              span class="truncate max-w-[14rem]" = current_user.full_name
+              svg class="w-4 h-4 shrink-0 text-slate-400 transition-transform group-open:rotate-180" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"
+            div class="absolute right-0 top-full z-50 mt-1 min-w-[12rem] rounded-xl border border-slate-700 bg-slate-900 py-1 shadow-lg"
+              = link_to "Account", edit_user_registration_path, class: "block px-4 py-2.5 text-sm text-slate-100 hover:bg-slate-800"
+              - if current_user.investor?
+                = link_to "Investor Profiles", investor_profiles_path, class: "block px-4 py-2.5 text-sm text-slate-100 hover:bg-slate-800"
+                - if current_user.investor_profile
+                  = link_to "Edit investor profile", edit_investor_profile_path(current_user.investor_profile), class: "block px-4 py-2.5 text-sm text-slate-100 hover:bg-slate-800"
+              div class="mt-1 border-t border-slate-700 pt-1"
+                = link_to "Sign out", destroy_user_session_path,
+                          data: { turbo_method: :delete },
+                          class: "block px-4 py-2.5 text-sm text-red-300 hover:bg-slate-800 hover:text-red-200"
           - if current_user.can_access_admin_area?
             = link_to "Offerings", admin_offerings_path, class: "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 whitespace-nowrap transition"
             = link_to "Admin", admin_dashboard_path, class: "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 whitespace-nowrap transition"
             = link_to "Sites", admin_sites_path, class: "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 whitespace-nowrap transition"
             - if true_current_user.can_manage_user_directory?
+              = link_to "Investors", admin_investors_path, class: "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 whitespace-nowrap transition"
               = link_to "Users", admin_users_path, class: "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 whitespace-nowrap transition"
-          = link_to "Sign out", destroy_user_session_path,
-                    data: { turbo_method: :delete },
-                    class: "text-sm lg:text-base text-red-300 hover:text-red-200 whitespace-nowrap transition"
         - else
           = link_to "Sign in", new_user_session_path, class: "text-sm lg:text-base text-blue-300 hover:text-blue-200 whitespace-nowrap transition"
 
@@ -33,12 +46,21 @@ nav.bg-black.border-b.border-slate-800.shadow-sm data-controller="mobile-nav"
     #mobile-nav-menu.hidden.md:hidden.border-t.border-slate-800.bg-black data-mobile-nav-target="panel" data-action="click->mobile-nav#navigate"
       .flex.flex-col.py-2.pb-4
         - if user_signed_in?
+          .px-3.py-3.border-b.border-slate-800/80
+            p.text-xs.font-medium.uppercase.tracking-wide.text-slate-500 Signed in as
+            p.text-sm.font-semibold.text-slate-100 = current_user.full_name
           = link_to "My Investments", investments_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-slate-100 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
+          = link_to "Account", edit_user_registration_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-slate-100 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
+          - if current_user.investor?
+            = link_to "Investor Profiles", investor_profiles_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-slate-100 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
+            - if current_user.investor_profile
+              = link_to "Edit investor profile", edit_investor_profile_path(current_user.investor_profile), class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-slate-100 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
           - if current_user.can_access_admin_area?
             = link_to "Offerings", admin_offerings_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
             = link_to "Admin", admin_dashboard_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
             = link_to "Sites", admin_sites_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
             - if true_current_user.can_manage_user_directory?
+              = link_to "Investors", admin_investors_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
               = link_to "Users", admin_users_path, class: "flex items-center min-h-12 px-2 py-3 text-base font-medium text-blue-300 border-b border-slate-800/80 active:bg-slate-900 rounded-lg"
           = link_to "Sign out", destroy_user_session_path,
                     data: { turbo_method: :delete },

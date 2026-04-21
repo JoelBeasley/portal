@@ -9,6 +9,25 @@ h1.text-4xl.font-bold.mb-4 = @investment.list_title
     p.text-lg = @investment.user.full_name
     p.text-sm.text-gray-500 = @investment.user.email
 
+  - if @investor_profile
+    .mt-8.border-t.border-gray-200.pt-8
+      .flex.flex-wrap.items-start.justify-between.gap-4.mb-4
+        div
+          h2.text-xl.font-semibold Investor profile
+          - if @investment.investor_profile_id.present?
+            p.text-xs.text-gray-500.mt-1 Profile linked to this investment.
+          - else
+            p.text-xs.text-gray-500.mt-1 Showing the account investor profile. It will link automatically when this investment is saved.
+        - if @investment.user == current_user && current_user.investor?
+          = link_to "Edit profile", edit_investor_profile_path(@investor_profile), class: "text-blue-600 hover:underline font-medium text-sm"
+      = render "investor_profiles/display", investor_profile: @investor_profile
+  - else
+    .mt-8.border-t.border-gray-200.pt-8
+      h2.text-xl.font-semibold.mb-2 Investor profile
+      p.text-sm.text-gray-600 No investor profile is on file for this account yet.
+      - if @investment.user == current_user && current_user.investor?
+        = link_to "Set up investor profile", investor_profiles_path, class: "text-blue-600 hover:underline font-medium text-sm mt-2 inline-block"
+
   .mt-6
     p.text-sm.text-gray-500.mb-2 Sites
     - if @investment.sites.any?

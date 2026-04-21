@@ -1,0 +1,59 @@
+.space-y-6.max-w-2xl
+  div
+    h1.text-3xl.font-bold.mb-1 Account
+    p.text-sm.text-gray-600 Manage profile details and password separately.
+
+  .border.border-gray-200.rounded-2xl.p-6.bg-white
+    h2.text-lg.font-semibold.mb-4 Profile information
+    = form_with model: resource, url: user_registration_path, method: :put, local: true do |f|
+      = render "devise/shared/error_messages", resource: resource
+
+      .space-y-5
+        .grid.grid-cols-1.sm:grid-cols-2.gap-4
+          div
+            = f.label :first_name, class: "block text-sm font-medium mb-2"
+            = f.text_field :first_name, autocomplete: "given-name", class: "w-full border border-gray-300 rounded-xl p-3"
+          div
+            = f.label :last_name, class: "block text-sm font-medium mb-2"
+            = f.text_field :last_name, autocomplete: "family-name", class: "w-full border border-gray-300 rounded-xl p-3"
+
+        div
+          = f.label :email, class: "block text-sm font-medium mb-2"
+          = f.email_field :email, autocomplete: "email", class: "w-full border border-gray-300 rounded-xl p-3"
+        div
+          = f.label :phone, class: "block text-sm font-medium mb-2"
+          = f.text_field :phone, autocomplete: "tel", class: "w-full border border-gray-300 rounded-xl p-3"
+
+      .mt-6.flex.flex-wrap.gap-4
+        = f.submit "Save profile", class: "bg-blue-600 text-white px-8 py-3 rounded-2xl hover:bg-blue-700 cursor-pointer"
+
+  .border.border-gray-200.rounded-2xl.p-6.bg-white
+    h2.text-lg.font-semibold.mb-2 Change password
+    p.text-xs.text-gray-500.mb-4 Enter your current password to confirm this change.
+    = form_with model: resource, url: user_registration_path, method: :put, local: true do |f|
+      = render "devise/shared/error_messages", resource: resource
+
+      .space-y-4
+        div
+          = f.label :password, "New password", class: "block text-sm font-medium mb-2"
+          = f.password_field :password, autocomplete: "new-password", class: "w-full border border-gray-300 rounded-xl p-3"
+          - if @minimum_password_length
+            p.mt-1.text-xs.text-gray-500
+              = "#{@minimum_password_length} characters minimum"
+        div
+          = f.label :password_confirmation, "Confirm new password", class: "block text-sm font-medium mb-2"
+          = f.password_field :password_confirmation, autocomplete: "new-password", class: "w-full border border-gray-300 rounded-xl p-3"
+        div
+          = f.label :current_password, class: "block text-sm font-medium mb-2"
+          = f.password_field :current_password, autocomplete: "current-password", class: "w-full border border-gray-300 rounded-xl p-3"
+
+      .mt-6.flex.flex-wrap.gap-4
+        = f.submit "Update password", class: "bg-blue-600 text-white px-8 py-3 rounded-2xl hover:bg-blue-700 cursor-pointer"
+
+  .flex.flex-wrap.gap-4
+    = link_to "Back", root_path, class: "bg-gray-200 px-8 py-3 rounded-2xl inline-flex items-center"
+
+  .border.border-gray-200.rounded-2xl.p-6.bg-white.space-y-3
+    h2.text-lg.font-semibold Password reset email
+    p.text-sm.text-gray-600 If you cannot remember your password, we can email you a link to choose a new one.
+    = link_to "Send password reset email", new_user_password_path, class: "inline-flex text-blue-600 hover:underline font-medium text-sm"

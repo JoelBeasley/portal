@@ -1,0 +1,15 @@
+h1.text-3xl.font-bold.mb-6 Edit my investor profile
+
+- if @investor_profile.errors.any?
+  .mb-6.rounded-xl.border.border-red-200.bg-red-50.p-4.text-sm.text-red-800
+    p.font-semibold.mb-2 Please fix the following:
+    ul.list-disc.pl-5.space-y-1
+      - @investor_profile.errors.full_messages.each do |msg|
+        li = msg
+
+= form_with model: @investor_profile, local: true do |f|
+  = render "fields", f: f
+
+  .mt-8.flex.flex-wrap.gap-4
+    = f.submit "Save profile", class: "bg-blue-600 text-white px-8 py-3 rounded-2xl hover:bg-blue-700"
+    = link_to "Cancel", investor_profiles_path, class: "bg-gray-200 px-8 py-3 rounded-2xl inline-flex items-center"

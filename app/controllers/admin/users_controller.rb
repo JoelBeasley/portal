@@ -36,6 +36,8 @@ class Admin::UsersController < ApplicationController
     ActiveRecord::Base.transaction do
       @user.save!
 
+      InvestorProfile.prefill_from_user!(@user) if @user.investor?
+
       if selected_offering_id.present?
         offering = Offering.find(selected_offering_id)
         Investment.create!(

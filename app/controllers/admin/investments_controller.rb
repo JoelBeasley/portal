@@ -76,6 +76,8 @@ class Admin::InvestmentsController < ApplicationController
     invested_amount = parse_invested_amount(params[:invested_amount])
     investor_since = parse_investor_since(params[:investor_since])
 
+    InvestorProfile.prefill_from_user!(user) if user.investor?
+
     investment = Investment.new(
       user: user,
       offering: offering,

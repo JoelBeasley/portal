@@ -68,3 +68,11 @@ investor_investment.assign_attributes(
   company_or_nickname: "Atlas Mining Co."
 )
 investor_investment.save!
+
+User.investor.find_each { |user| InvestorProfile.prefill_from_user!(user) }
+
+Investment.find_each do |investment|
+  next unless (pid = investment.user&.investor_profile&.id)
+
+  investment.update_column(:investor_profile_id, pid) if investment.investor_profile_id != pid
+end

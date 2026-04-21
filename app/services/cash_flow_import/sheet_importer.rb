@@ -340,6 +340,8 @@ module CashFlowImport
           raise ActiveRecord::Rollback
         end
 
+        ensure_investor_profile_for_import!(user)
+
         investment, was_new_investment = build_investment_for_import(
           user: user,
           offering: offering,
@@ -576,6 +578,13 @@ module CashFlowImport
       Integer(s, 10)
     rescue ArgumentError
       nil
+    end
+
+    def ensure_investor_profile_for_import!(user)
+      return unless user.investor?
+      return if user.investor_profile.present?
+
+      InvestorProfile.prefill_from_user!(user)
     end
 
     def parse_date(raw)

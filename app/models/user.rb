@@ -6,6 +6,7 @@ class User < ApplicationRecord
 
   enum :role, { investor: 0, admin: 1, partner: 2, super_admin: 3 }
 
+  has_one :investor_profile, dependent: :destroy
   has_many :investments, dependent: :destroy
   has_many :investment_documents, dependent: :destroy
   has_many :offerings, -> { distinct }, through: :investments
