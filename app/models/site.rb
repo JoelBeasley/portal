@@ -4,7 +4,8 @@ class Site < ApplicationRecord
   enum :status, {
     operating: 0,
     construction: 1,
-    development: 2
+    development: 2,
+    paused: 3
   }, prefix: true
 
   normalizes :braiins_pool_auth_token, with: ->(v) { v.to_s.strip.presence }

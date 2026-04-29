@@ -20,9 +20,9 @@ h1.text-4xl.font-bold.mb-4 = @investment.list_title
             p.text-xs.text-gray-500.mt-1 Showing the account investor profile. It will link automatically when this investment is saved.
         - if @investment.user == current_user && current_user.investor?
           = link_to "Edit profile", edit_investor_profile_path(@investor_profile), class: "text-blue-600 hover:underline font-medium text-sm"
-          = render "investor_profiles/display",
-                   investor_profile: @investor_profile,
-                   section_grid_class: "grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
+      = render "investor_profiles/display",
+               investor_profile: @investor_profile,
+               section_grid_class: "grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6"
   - else
     .mt-8.border-t.border-gray-200.pt-8
       h2.text-xl.font-semibold.mb-2 Investor profile
@@ -41,9 +41,9 @@ h1.text-4xl.font-bold.mb-4 = @investment.list_title
               th.px-4.py-2.text-left.text-xs.font-semibold.text-gray-600.uppercase.tracking-wide Location
               th.px-4.py-2.text-left.text-xs.font-semibold.text-gray-600.uppercase.tracking-wide Power Source
               th.px-4.py-2.text-left.text-xs.font-semibold.text-gray-600.uppercase.tracking-wide Model
-              th.px-4.py-2.text-left.text-xs.font-semibold.text-gray-600.uppercase.tracking-wide Size (KW)
+              th.px-4.py-2.text-left.text-xs.font-semibold.text-gray-600.uppercase.tracking-wide Size (MW)
               th.px-4.py-2.text-left.text-xs.font-semibold.text-gray-600.uppercase.tracking-wide Status
-              th.px-4.py-2.text-left.text-xs.font-semibold.text-gray-600.uppercase.tracking-wide Power Cost
+              th.px-4.py-2.text-left.text-xs.font-semibold.text-gray-600.tracking-wide POWER COST (kWh)
           tbody.divide-y.divide-gray-100.bg-white
             - @investment.sites.order(:name).each do |site|
               tr
@@ -51,9 +51,9 @@ h1.text-4xl.font-bold.mb-4 = @investment.list_title
                 td.px-4.py-2.text-sm.text-gray-700 = site.location.presence || "N/A"
                 td.px-4.py-2.text-sm.text-gray-700 = site.power_source.presence || "N/A"
                 td.px-4.py-2.text-sm.text-gray-700 = site.model.presence || "N/A"
-                td.px-4.py-2.text-sm.text-gray-700 = site.size_kw.present? ? number_with_precision(site.size_kw, precision: 2, strip_insignificant_zeros: true) : "N/A"
+                td.px-4.py-2.text-sm.text-gray-700 = site.size_mw.present? ? number_with_precision(site.size_mw, precision: 2, strip_insignificant_zeros: true) : "N/A"
                 td.px-4.py-2.text-sm.text-gray-700 = site.status.present? ? site.status.humanize : "N/A"
-                td.px-4.py-2.text-sm.text-gray-700 = site.power_cost.present? ? number_with_precision(site.power_cost, precision: 4, strip_insignificant_zeros: true) : "N/A"
+                td.px-4.py-2.text-sm.text-gray-700 = site.power_cost.present? ? number_to_currency(site.power_cost, precision: 4, strip_insignificant_zeros: true) : "N/A"
     - else
       p.text-gray-600 No sites assigned.
 

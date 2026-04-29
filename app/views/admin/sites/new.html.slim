@@ -27,8 +27,8 @@ h1.text-3xl.font-bold.mb-6 New Site
       = f.text_field :model, class: "w-full border border-gray-300 rounded-xl p-3"
 
     div
-      = f.label :size_kw, "Size (KW)", class: "block text-sm font-medium mb-2"
-      = f.number_field :size_kw, min: 0, step: :any, class: "w-full border border-gray-300 rounded-xl p-3"
+      = f.label :size_mw, "Size (MW)", class: "block text-sm font-medium mb-2"
+      = f.number_field :size_mw, min: 0, step: :any, class: "w-full border border-gray-300 rounded-xl p-3"
 
     div
       = f.label :status, class: "block text-sm font-medium mb-2"

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_04_21_123000) do
+ActiveRecord::Schema[8.1].define(version: 2026_04_29_151300) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -184,7 +184,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_04_21_123000) do
     t.bigint "offering_id", null: false
     t.decimal "power_cost", precision: 10, scale: 4
     t.string "power_source"
-    t.decimal "size_kw", precision: 10, scale: 2
+    t.decimal "size_mw", precision: 10, scale: 3
     t.string "slug"
     t.integer "status"
     t.datetime "updated_at", null: false

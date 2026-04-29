@@ -33,8 +33,49 @@ investor.assign_attributes(
 investor.save!
 
 digital_midstream = Offering.find_or_create_by!(name: "Digital Midstream Genesis, LLC")
-["Hash Dock", "Hailey's Mill", "Bluegrass"].each do |site_name|
-  Site.find_or_create_by!(name: site_name, offering: digital_midstream)
+
+# Site size is stored in MW; n/a leaves size_mw blank.
+[
+  {
+    name: "Liberty Point",
+    location: "TN",
+    power_source: "Natural Gas / Ethane",
+    model: "BTC Mining / CO2",
+    size_mw: 8.35,
+    status: :paused,
+    power_cost: -0.04
+  },
+  {
+    name: "Hailey's Mill",
+    location: "KY",
+    power_source: "Natural Gas",
+    model: "BTC Mining",
+    size_mw: 1.5,
+    status: :construction,
+    power_cost: 0.02
+  },
+  {
+    name: "Bluegrass",
+    location: "KY",
+    power_source: "Natural Gas",
+    model: "BTC Mining",
+    size_mw: 1.5,
+    status: :development,
+    power_cost: 0.01
+  },
+  {
+    name: "Hash Dock",
+    location: "KY",
+    power_source: "Grid",
+    model: "BTC Mining",
+    size_mw: nil,
+    status: :operating,
+    power_cost: 0.08
+  }
+].each do |attrs|
+  site = Site.find_or_initialize_by(name: attrs.fetch(:name), offering: digital_midstream)
+  site.assign_attributes(attrs.except(:name))
+  site.save!
 end
 
 digital_investment = super_admin.investments.find_or_initialize_by(offering: digital_midstream)

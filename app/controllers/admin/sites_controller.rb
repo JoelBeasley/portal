@@ -69,7 +69,7 @@ class Admin::SitesController < ApplicationController
       :location,
       :power_source,
       :model,
-      :size_kw,
+      :size_mw,
       :status,
       :power_cost
     )
