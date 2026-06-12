@@ -1,7 +1,10 @@
 - content_for :title, "Set new password - Investor Portal"
+- show_bitcoin_section = @welcome_bitcoin_investments&.any?
+- submitted_addresses = @submitted_bitcoin_addresses || {}
+- investment_errors = @investment_bitcoin_errors || {}
 
 .min-h-screen.flex.items-start.justify-center.px-4.pb-16
-  .max-w-md.w-full
+  .w-full class=(show_bitcoin_section ? "max-w-lg" : "max-w-md")
     .text-center.pt-10
       = image_tag "sovrn_logo_black.png", alt: "Sovrn Capital", class: "mx-auto mb-14 h-24 w-auto"
 
@@ -30,6 +33,28 @@
           = f.label :password_confirmation, "Confirm new password", class: "block text-sm font-medium text-gray-700"
           = f.password_field :password_confirmation, autocomplete: "new-password",
                              class: "w-full px-5 py-4 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+
+        - if show_bitcoin_section
+          .pt-4.border-t.border-gray-200.space-y-4
+            h3.text-lg.font-semibold.text-gray-900 Bitcoin payout addresses (optional)
+            p.text-sm.text-gray-600
+              | If we do not have a Bitcoin payout address on file for an investment below, you can add one now. You can also leave these blank and update them later.
+
+            - @welcome_bitcoin_investments.each do |investment|
+              .space-y-2
+                = label_tag "investment_bitcoin_addresses_#{investment.id}",
+                            investment.offering.name,
+                            class: "block text-sm font-medium text-gray-700"
+                - if investment.company_or_nickname.present? && !["-", "--"].include?(investment.company_or_nickname.to_s.strip)
+                  p.text-xs.text-gray-500 = investment.list_title
+                = text_field_tag "investment_bitcoin_addresses[#{investment.id}]",
+                                 submitted_addresses[investment.id.to_s],
+                                 id: "investment_bitcoin_addresses_#{investment.id}",
+                                 placeholder: "bc1q...",
+                                 autocomplete: "off",
+                                 class: "w-full px-5 py-4 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                - if investment_errors[investment.id].present?
+                  p.text-sm.text-red-700 = investment_errors[investment.id]
 
         = f.submit "Update password",
                   class: "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-2xl transition mt-6"

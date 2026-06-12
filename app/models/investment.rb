@@ -1,4 +1,6 @@
 class Investment < ApplicationRecord
+  BITCOIN_ADDRESS_REGEX = /\A(?:[13][a-km-zA-HJ-NP-Z1-9]{25,34}|bc1[a-z0-9]{25,87})\z/
+
   belongs_to :user
   belongs_to :offering
   belongs_to :investor_profile, optional: true
@@ -7,7 +9,7 @@ class Investment < ApplicationRecord
   has_many :investment_documents, dependent: :destroy
 
   validates :bitcoin_address,
-            format: { with: /\A(bc1|[13])[a-km-zA-HJ-NP-Z1-9]{25,34}\z/, message: "must be a valid Bitcoin address" },
+            format: { with: BITCOIN_ADDRESS_REGEX, message: "must be a valid Bitcoin address" },
             allow_blank: true
 
   before_validation :sync_investor_profile_from_user

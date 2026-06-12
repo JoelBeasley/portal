@@ -57,6 +57,13 @@ class User < ApplicationRecord
     [first_name, last_name].map { |s| s.to_s.strip }.reject(&:blank?).join(" ").presence || email
   end
 
+  def investments_missing_bitcoin_address
+    investments.includes(:offering)
+               .references(:offering)
+               .where(bitcoin_address: [nil, ""])
+               .order("offerings.name")
+  end
+
   def can_impersonate?(target_user)
     return false if target_user.blank? || target_user == self
 

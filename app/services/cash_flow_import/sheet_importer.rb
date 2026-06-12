@@ -185,7 +185,7 @@ module CashFlowImport
       ]
     ).freeze
 
-    BITCOIN_REGEX = /\A(bc1|[13])[a-km-zA-HJ-NP-Z1-9]{25,34}\z/
+    BITCOIN_REGEX = Investment::BITCOIN_ADDRESS_REGEX
 
     def initialize(default_offering_id:, io: nil, string: nil, filename: "import.csv")
       @default_offering_id = default_offering_id.presence
