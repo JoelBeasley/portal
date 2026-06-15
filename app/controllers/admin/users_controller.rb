@@ -4,7 +4,9 @@ class Admin::UsersController < ApplicationController
   before_action :require_super_admin, only: [:update]
 
   def index
-    @users = true_current_user.manageable_users_scope.order(:email)
+    @users = true_current_user.manageable_users_scope
+                               .includes(investments: :offering)
+                               .order(:email)
   end
 
   def new

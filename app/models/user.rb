@@ -64,6 +64,10 @@ class User < ApplicationRecord
                .order("offerings.name")
   end
 
+  def investments_with_bitcoin_address
+    investments.select { |investment| investment.bitcoin_address.present? }
+  end
+
   def can_impersonate?(target_user)
     return false if target_user.blank? || target_user == self
 

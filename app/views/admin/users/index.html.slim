@@ -11,6 +11,7 @@ h1.text-3xl.font-bold.mb-6 User Access
           th.px-4.py-3.text-sm.font-semibold.text-gray-700 Name
           th.px-4.py-3.text-sm.font-semibold.text-gray-700 Email
           th.px-4.py-3.text-sm.font-semibold.text-gray-700 Current Role
+          th.px-4.py-3.text-sm.font-semibold.text-gray-700 BTC Addresses
           th.px-4.py-3.text-sm.font-semibold.text-gray-700 Welcome Email
           - if true_current_user.can_manage_roles?
             th.px-4.py-3.text-sm.font-semibold.text-gray-700 Update Role
@@ -21,6 +22,21 @@ h1.text-3xl.font-bold.mb-6 User Access
             td.px-4.py-3.text-sm.text-gray-900 = user.full_name
             td.px-4.py-3.text-sm.text-gray-900 = user.email
             td.px-4.py-3.text-sm.text-gray-600 = user.role.humanize
+            td.px-4.py-3
+              - investments_with_address = user.investments_with_bitcoin_address
+              - if investments_with_address.any?
+                details
+                  summary.cursor-pointer.text-blue-600.hover:text-blue-700.text-sm.font-medium
+                    = "#{investments_with_address.size} address#{'es' unless investments_with_address.size == 1}"
+                  .mt-2.space-y-2.min-w-64
+                    - investments_with_address.each do |investment|
+                      .text-sm
+                        .text-xs.text-gray-500 = investment.offering&.name || "Unknown offering"
+                        .font-mono.text-gray-900.break-all = investment.bitcoin_address
+              - elsif user.investor?
+                span.text-xs.text-gray-400 None
+              - else
+                span.text-xs.text-gray-400 N/A
             td.px-4.py-3
               - if user.investor?
                 - if user.welcome_password_set_at.nil?
