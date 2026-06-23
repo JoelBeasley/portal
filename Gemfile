@@ -27,6 +27,7 @@ gem "pundit"
 gem "slim-rails"
 gem "tailwindcss-rails"
 gem "postmark-rails"
+gem "audited"
 
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ windows jruby ]

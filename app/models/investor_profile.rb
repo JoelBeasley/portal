@@ -1,4 +1,6 @@
 class InvestorProfile < ApplicationRecord
+  audited associated_with: :user
+
   belongs_to :user
   has_many :investments, dependent: :nullify
 

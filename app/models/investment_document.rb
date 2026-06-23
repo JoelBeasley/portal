@@ -1,4 +1,6 @@
 class InvestmentDocument < ApplicationRecord
+  audited associated_with: :user
+
   belongs_to :investment
   belongs_to :user
   has_one_attached :file

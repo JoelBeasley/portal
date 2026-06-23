@@ -7,6 +7,8 @@ class ApplicationController < ActionController::Base
 
   helper_method :true_current_user, :impersonating?, :impersonated_user
 
+  before_action :set_audited_request_store
+
   def true_current_user
     @true_current_user ||= warden&.user(scope: :user)
   end
@@ -26,5 +28,15 @@ class ApplicationController < ActionController::Base
   def impersonated_user
     return unless impersonating?
     @impersonated_user ||= User.find_by(id: session[:impersonated_user_id])
+  end
+
+  private
+
+  def set_audited_request_store
+    return unless defined?(Audited)
+
+    Audited.store[:comment] = "Impersonating #{impersonated_user.email}" if impersonating?
+    Audited.store[:remote_address] = request.remote_ip
+    Audited.store[:request_uuid] = request.uuid
   end
 end

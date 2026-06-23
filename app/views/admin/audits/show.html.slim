@@ -1,0 +1,52 @@
+.space-y-6
+  .flex.flex-wrap.items-start.justify-between.gap-4
+    div
+      h1.text-3xl.font-bold.mb-2 Audit details
+      p.text-gray-600 = audit_record_label(@audit)
+
+  .grid.grid-cols-1.md:grid-cols-2.gap-4
+    .border.border-gray-200.rounded-2xl.p-5.bg-white
+      p.text-sm.text-gray-500.mb-1 When
+      p.text-lg.font-medium = l(@audit.created_at, format: :long)
+    .border.border-gray-200.rounded-2xl.p-5.bg-white
+      p.text-sm.text-gray-500.mb-1 Action
+      span.inline-flex.items-center.rounded-full.text-sm.font-medium.px-3.py-1 class=audit_action_badge_class(@audit.action)
+        = @audit.action.titleize
+    .border.border-gray-200.rounded-2xl.p-5.bg-white
+      p.text-sm.text-gray-500.mb-1 Changed by
+      p.text-lg.font-medium = audit_user_label(@audit)
+      - if @audit.comment.present?
+        p.text-sm.text-amber-700.mt-2 = @audit.comment
+    .border.border-gray-200.rounded-2xl.p-5.bg-white
+      p.text-sm.text-gray-500.mb-1 Request
+      p.text-sm.text-gray-700
+        - if @audit.remote_address.present?
+          div IP: #{@audit.remote_address}
+        - if @audit.request_uuid.present?
+          div UUID: #{@audit.request_uuid}
+
+  .border.border-gray-200.rounded-2xl.bg-white.overflow-hidden
+    h2.text-lg.font-semibold.px-5.py-4.border-b.border-gray-200 Changes
+    - rows = audit_change_rows(@audit)
+    - if rows.any?
+      .overflow-x-auto
+        table.w-full.min-w-max.text-left
+          thead.bg-gray-50.border-b.border-gray-200
+            tr
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Field
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Before
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 After
+          tbody
+            - rows.each do |attribute, before, after|
+              tr.border-b.border-gray-100
+                td.px-4.py-3.text-sm.font-medium.text-gray-900 = attribute.to_s.humanize
+                td.px-4.py-3.text-sm.text-gray-700.whitespace-pre-wrap.break-words = format_audit_value(before)
+                td.px-4.py-3.text-sm.text-gray-900.whitespace-pre-wrap.break-words = format_audit_value(after)
+    - else
+      p.p-5.text-gray-500.text-sm No field changes were recorded for this entry.
+
+  .flex.flex-wrap.gap-4
+    = link_to "← Back to audit log", admin_audits_path, class: "text-blue-600 hover:underline"
+    = link_to "Filter this record",
+              admin_audits_path(auditable_type: @audit.auditable_type, auditable_id: @audit.auditable_id),
+              class: "text-blue-600 hover:underline"

@@ -31,6 +31,11 @@
       p.text-sm.text-gray-600.mb-4 Upload and map investment documents to investors.
       = link_to "Open Import Documents", new_admin_investment_document_path, class: "inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700"
 
+    .border.border-gray-200.rounded-2xl.p-6.bg-white
+      h2.text-lg.font-semibold.mb-2 Audit log
+      p.text-sm.text-gray-600.mb-4 Review who changed investments, profiles, users, offerings, and sites.
+      = link_to "Open Audit Log", admin_audits_path, class: "inline-flex items-center bg-slate-700 text-white px-4 py-2 rounded-xl hover:bg-slate-800"
+
     - if current_user.can_assign_investments?
       .border.border-gray-200.rounded-2xl.p-6.bg-white
         h2.text-lg.font-semibold.mb-2 Import investments

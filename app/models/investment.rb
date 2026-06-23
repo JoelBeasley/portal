@@ -1,4 +1,6 @@
 class Investment < ApplicationRecord
+  audited associated_with: :user
+
   BITCOIN_ADDRESS_REGEX = /\A(?:[13][a-km-zA-HJ-NP-Z1-9]{25,34}|bc1[a-z0-9]{25,87})\z/
 
   READONLY_ATTRIBUTES = %i[id created_at updated_at investor_profile_id].freeze

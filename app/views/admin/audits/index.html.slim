@@ -1,0 +1,61 @@
+.space-y-6
+  .flex.flex-wrap.items-start.justify-between.gap-4
+    div
+      h1.text-3xl.font-bold.mb-2 Audit log
+      p.text-gray-600 Record changes across investments, profiles, users, offerings, and sites.
+
+  .border.border-gray-200.rounded-2xl.p-5.bg-white
+    = form_with url: admin_audits_path, method: :get, local: true, class: "grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 items-end" do
+      div
+        label.block.text-sm.font-medium.text-gray-700.mb-2 Record type
+        = select_tag :auditable_type,
+                     options_for_select([["All types", ""]] + @auditable_types.map { |type| [type, type] }, params[:auditable_type]),
+                     class: "w-full border border-gray-300 rounded-xl p-3"
+      div
+        label.block.text-sm.font-medium.text-gray-700.mb-2 Changed by
+        = select_tag :user_id,
+                     options_from_collection_for_select(@audit_users, :id, :email, params[:user_id]),
+                     include_blank: "Anyone",
+                     class: "w-full border border-gray-300 rounded-xl p-3"
+      div
+        label.block.text-sm.font-medium.text-gray-700.mb-2 Action
+        = select_tag :audit_action,
+                     options_for_select([["All actions", ""], ["Created", "create"], ["Updated", "update"], ["Deleted", "destroy"]], params[:audit_action]),
+                     class: "w-full border border-gray-300 rounded-xl p-3"
+      div.flex.gap-3
+        = submit_tag "Filter", class: "bg-blue-600 text-white px-5 py-3 rounded-xl hover:bg-blue-700"
+        = link_to "Clear", admin_audits_path, class: "bg-gray-200 px-5 py-3 rounded-xl inline-flex items-center"
+
+  .border.border-gray-200.rounded-2xl.bg-white.overflow-hidden
+    - if @audits.any?
+      .overflow-x-auto
+        table.w-full.min-w-max.text-left
+          thead.bg-gray-50.border-b.border-gray-200
+            tr
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 When
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Action
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Record
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Changed by
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Fields
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700
+          tbody
+            - @audits.each do |audit|
+              tr.border-b.border-gray-100
+                td.px-4.py-3.text-sm.text-gray-700 = l(audit.created_at, format: :long)
+                td.px-4.py-3
+                  span.inline-flex.items-center.rounded-full.text-xs.font-medium.px-2.py-1 class=audit_action_badge_class(audit.action)
+                    = audit.action.titleize
+                td.px-4.py-3.text-sm.text-gray-900 = audit_record_label(audit)
+                td.px-4.py-3.text-sm.text-gray-700
+                  = audit_user_label(audit)
+                  - if audit.comment.present?
+                    .text-xs.text-amber-700.mt-1 = audit.comment
+                td.px-4.py-3.text-sm.text-gray-700 = (audit.audited_changes || {}).keys.map { |key| key.to_s.humanize }.join(", ")
+                td.px-4.py-3.text-sm
+                  = link_to "Details", admin_audit_path(audit), class: "text-blue-600 hover:underline font-medium"
+    - else
+      p.p-6.text-gray-500.text-sm No audit entries match these filters yet.
+
+  p.text-xs.text-gray-500 Showing the latest #{Admin::AuditsController::PER_PAGE} matching entries.
+
+  = link_to "← Back to Admin", admin_dashboard_path, class: "text-blue-600 hover:underline"

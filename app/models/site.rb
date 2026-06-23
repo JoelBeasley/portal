@@ -1,4 +1,6 @@
 class Site < ApplicationRecord
+  audited
+
   belongs_to :offering
 
   enum :status, {

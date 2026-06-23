@@ -1,4 +1,11 @@
 class User < ApplicationRecord
+  audited except: %i[
+    encrypted_password
+    reset_password_token
+    reset_password_sent_at
+    remember_created_at
+  ]
+
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
@@ -13,6 +20,7 @@ class User < ApplicationRecord
   has_many :sites, through: :offerings
   has_many :started_impersonation_events, class_name: "ImpersonationEvent", foreign_key: :admin_user_id, inverse_of: :admin_user, dependent: :nullify
   has_many :targeted_impersonation_events, class_name: "ImpersonationEvent", foreign_key: :target_user_id, inverse_of: :target_user, dependent: :nullify
+  has_associated_audits
 
   generates_token_for :btc_address_reminder, expires_in: 14.days do
     investments.where(bitcoin_address: [nil, ""]).count
