@@ -30,19 +30,30 @@ class Users::PasswordsController < Devise::PasswordsController
   end
 
   def update_with_welcome_bitcoin
-    self.resource = load_resource_from_reset_token
-    password_valid = validate_password_without_save(resource)
-
-    bitcoin_errors = {}
-    if password_valid
-      prepare_welcome_bitcoin_setup
-      bitcoin_errors = validate_investment_bitcoin_addresses(resource, @submitted_bitcoin_addresses)
+    user = user_from_reset_token_param
+    unless user&.persisted?
+      self.resource = resource_class.reset_password_by_token(resource_params)
+      set_minimum_password_length
+      render :edit, status: :unprocessable_entity
+      return
     end
 
-    if password_valid && bitcoin_errors.empty?
-      save_password_and_bitcoin_addresses
+    @investment_bitcoin_errors = validate_investment_bitcoin_addresses(user, @submitted_bitcoin_addresses)
+    if @investment_bitcoin_errors.any?
+      self.resource = user
+      resource.reset_password_token = resource_params[:reset_password_token]
+      prepare_welcome_bitcoin_setup
+      set_minimum_password_length
+      render :edit, status: :unprocessable_entity
+      return
+    end
+
+    self.resource = resource_class.reset_password_by_token(resource_params)
+    if resource.errors.empty?
+      apply_investment_bitcoin_addresses!(resource, @submitted_bitcoin_addresses)
+      mark_welcome_password_set!
+      complete_successful_password_reset
     else
-      @investment_bitcoin_errors = bitcoin_errors
       prepare_welcome_bitcoin_setup if welcome_bitcoin_setup?
       set_minimum_password_length
       render :edit, status: :unprocessable_entity
@@ -70,57 +81,8 @@ class Users::PasswordsController < Devise::PasswordsController
     resource_class.find_by(reset_password_token: digest)
   end
 
-  def load_resource_from_reset_token
-    token = resource_params[:reset_password_token]
-    digest = Devise.token_generator.digest(resource_class, :reset_password_token, token)
-    user = resource_class.find_or_initialize_with_error_by(:reset_password_token, digest)
-
-    if user.persisted? && !user.reset_password_period_valid?
-      user.errors.add(:reset_password_token, :expired)
-    end
-
-    user.reset_password_token = token if user.reset_password_token.present?
-    user
-  end
-
-  def validate_password_without_save(user)
-    password = resource_params[:password]
-    confirmation = resource_params[:password_confirmation]
-
-    if password.blank?
-      user.errors.add(:password, :blank)
-      return false
-    end
-
-    user.password = password
-    user.password_confirmation = confirmation
-    user.valid?
-  end
-
-  def save_password_and_bitcoin_addresses
-    success = false
-
-    ActiveRecord::Base.transaction do
-      unless resource.reset_password(resource_params[:password], resource_params[:password_confirmation])
-        raise ActiveRecord::Rollback
-      end
-
-      apply_investment_bitcoin_addresses!(resource, @submitted_bitcoin_addresses) if welcome_bitcoin_setup?
-      mark_welcome_password_set!
-      success = true
-    end
-
-    if success && resource.errors.empty?
-      complete_successful_password_reset
-    else
-      set_minimum_password_length
-      prepare_welcome_bitcoin_setup if welcome_bitcoin_setup?
-      render :edit, status: :unprocessable_entity
-    end
-  end
-
   def welcome_bitcoin_setup?(user = resource)
-    user&.investor? && user.welcome_password_set_at.blank?
+    user&.persisted? && user.investor? && user.welcome_password_set_at.blank?
   end
 
   def prepare_welcome_bitcoin_setup(user = resource)
