@@ -40,21 +40,10 @@
             p.text-sm.text-gray-600
               | If we do not have a Bitcoin payout address on file for an investment below, you can add one now. You can also leave these blank and update them later.
 
-            - @welcome_bitcoin_investments.each do |investment|
-              .space-y-2
-                = label_tag "investment_bitcoin_addresses_#{investment.id}",
-                            investment.offering.name,
-                            class: "block text-sm font-medium text-gray-700"
-                - if investment.company_or_nickname.present? && !["-", "--"].include?(investment.company_or_nickname.to_s.strip)
-                  p.text-xs.text-gray-500 = investment.list_title
-                = text_field_tag "investment_bitcoin_addresses[#{investment.id}]",
-                                 submitted_addresses[investment.id.to_s],
-                                 id: "investment_bitcoin_addresses_#{investment.id}",
-                                 placeholder: "bc1q...",
-                                 autocomplete: "off",
-                                 class: "w-full px-5 py-4 border border-gray-300 rounded-2xl focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                - if investment_errors[investment.id].present?
-                  p.text-sm.text-red-700 = investment_errors[investment.id]
+            = render "shared/investment_bitcoin_address_fields",
+                     investments: @welcome_bitcoin_investments,
+                     submitted_addresses: submitted_addresses,
+                     investment_errors: investment_errors
 
         = f.submit "Update password",
                   class: "w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 rounded-2xl transition mt-6"

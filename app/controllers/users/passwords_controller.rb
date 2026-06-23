@@ -1,4 +1,5 @@
 class Users::PasswordsController < Devise::PasswordsController
+  include ManagesInvestmentBitcoinAddresses
   def edit
     super
     prepare_welcome_bitcoin_setup(user_from_reset_token_param)
@@ -12,7 +13,7 @@ class Users::PasswordsController < Devise::PasswordsController
     bitcoin_errors = {}
     if password_valid && welcome_bitcoin_setup?
       prepare_welcome_bitcoin_setup
-      bitcoin_errors = validate_welcome_bitcoin_addresses
+      bitcoin_errors = validate_investment_bitcoin_addresses(resource, @submitted_bitcoin_addresses)
     end
 
     if password_valid && bitcoin_errors.empty?
@@ -70,7 +71,7 @@ class Users::PasswordsController < Devise::PasswordsController
         raise ActiveRecord::Rollback
       end
 
-      apply_welcome_bitcoin_addresses! if welcome_bitcoin_setup?
+      apply_investment_bitcoin_addresses!(resource, @submitted_bitcoin_addresses) if welcome_bitcoin_setup?
       mark_welcome_password_set!
       success = true
     end
@@ -101,44 +102,6 @@ class Users::PasswordsController < Devise::PasswordsController
     return unless welcome_bitcoin_setup?(user)
 
     @welcome_bitcoin_investments = user.investments_missing_bitcoin_address
-  end
-
-  def investment_bitcoin_address_params
-    params.fetch(:investment_bitcoin_addresses, {}).permit!.to_h
-  end
-
-  def validate_welcome_bitcoin_addresses
-    errors_by_id = {}
-    editable_investments = resource.investments_missing_bitcoin_address.index_by(&:id)
-
-    @submitted_bitcoin_addresses.each do |id_str, address|
-      investment = editable_investments[id_str.to_i]
-      next unless investment
-
-      address = address.to_s.strip
-      next if address.blank?
-
-      investment.bitcoin_address = address
-      next if investment.valid?
-
-      errors_by_id[investment.id] = investment.errors.full_messages_for(:bitcoin_address).join(", ")
-    end
-
-    errors_by_id
-  end
-
-  def apply_welcome_bitcoin_addresses!
-    editable_investments = resource.investments_missing_bitcoin_address.index_by(&:id)
-
-    @submitted_bitcoin_addresses.each do |id_str, address|
-      investment = editable_investments[id_str.to_i]
-      next unless investment
-
-      address = address.to_s.strip
-      next if address.blank?
-
-      investment.update!(bitcoin_address: address)
-    end
   end
 
   def mark_welcome_password_set!

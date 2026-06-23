@@ -15,6 +15,10 @@ Rails.application.routes.draw do
   resources :investor_profiles, only: [:index, :create, :show, :edit, :update]
 
   resources :investments, only: [:index, :show] do
+    collection do
+      patch :update_bitcoin_addresses
+    end
+
     member do
       post :upload_document
       get :documents

@@ -1,5 +1,21 @@
 h1.text-4xl.font-bold.mb-8 My Investments
 
+- if @investments_missing_bitcoin_address.any?
+  .mb-10.rounded-3xl.border.border-amber-200.bg-amber-50.p-8
+    h2.text-xl.font-semibold.text-amber-900.mb-2 Add your Bitcoin payout address
+    p.text-sm.text-amber-800.mb-6
+      | We need a Bitcoin payout address on file for
+      = " #{pluralize(@investments_missing_bitcoin_address.size, 'investment')}"
+      | . Add one below so we can send distributions to the right wallet.
+
+    = form_with url: update_bitcoin_addresses_investments_path, method: :patch, local: true, class: "space-y-5" do
+      = render "shared/investment_bitcoin_address_fields",
+               investments: @investments_missing_bitcoin_address,
+               submitted_addresses: (@submitted_bitcoin_addresses || {}),
+               investment_errors: (@investment_bitcoin_errors || {})
+      = submit_tag "Save Bitcoin address#{'es' unless @investments_missing_bitcoin_address.size == 1}",
+                   class: "bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-4 rounded-2xl transition"
+
 .grid.grid-cols-1.md:grid-cols-2.lg:grid-cols-3.gap-6
   - @investments.each do |investment|
     .border.border-gray-200.rounded-3xl.p-8.hover:shadow-lg.transition
