@@ -27,7 +27,21 @@ class Investment < ApplicationRecord
   end
 
   def display_company_or_nickname
-    investment_label = InvestorProfile.normalize_label(company_or_nickname)
+    resolved_display_label(company_or_nickname)
+  end
+
+  def display_profile_name
+    resolved_display_label(profile_name)
+  end
+
+  def investor_profile_for_display
+    investor_profile || user&.investor_profile
+  end
+
+  private
+
+  def resolved_display_label(investment_value)
+    investment_label = InvestorProfile.normalize_label(investment_value)
     profile_label = InvestorProfile.normalize_label(investor_profile_for_display&.nickname)
 
     if user.investments.count == 1 && profile_label.present?
@@ -36,12 +50,6 @@ class Investment < ApplicationRecord
 
     investment_label || profile_label
   end
-
-  def investor_profile_for_display
-    investor_profile || user&.investor_profile
-  end
-
-  private
 
   def sync_investor_profile_from_user
     return if user_id.blank?

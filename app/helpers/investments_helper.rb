@@ -23,6 +23,10 @@ module InvestmentsHelper
     when :profile_type
       v = inv.read_attribute(:profile_type)
       v.blank? ? MISSING : v.to_s.strip.tr("_", " ").squeeze(" ").titleize
+    when :profile_name
+      detail_string_or_dash(inv.display_profile_name)
+    when :company_or_nickname
+      detail_string_or_dash(inv.display_company_or_nickname)
     when :id
       inv.id.to_s
     else

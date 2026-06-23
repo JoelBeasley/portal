@@ -73,10 +73,16 @@ class InvestorProfile < ApplicationRecord
     single_investment = investments.count == 1
 
     investments.find_each do |investment|
-      current = self.class.normalize_label(investment.company_or_nickname)
-      next unless current.blank? || current == old_label || single_investment
+      company_current = self.class.normalize_label(investment.company_or_nickname)
+      profile_current = self.class.normalize_label(investment.profile_name)
+      update_company = company_current.blank? || company_current == old_label || single_investment
+      update_profile = profile_current.blank? || profile_current == old_label || single_investment
+      next unless update_company || update_profile
 
-      investment.assign_attributes(company_or_nickname: new_label)
+      attrs = {}
+      attrs[:company_or_nickname] = new_label if update_company
+      attrs[:profile_name] = new_label if update_profile
+      investment.assign_attributes(attrs)
       investment.save(validate: false)
     end
   end
