@@ -1,5 +1,9 @@
 h1.text-4xl.font-bold.mb-4 = @investment.list_title
 
+- if current_user.can_access_admin_area?
+  .mb-4
+    = link_to "Edit investment", edit_admin_investment_path(@investment), class: "inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 font-medium"
+
 .bg-white.border.border-gray-200.rounded-2xl.p-6
   p.text-sm.text-gray-500.mb-2 Offering
   p.text-2xl.font-semibold = @investment.offering.name

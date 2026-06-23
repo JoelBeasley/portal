@@ -29,6 +29,7 @@
                   | Offering:
                   = " #{investment.offering&.name || '--'}"
               = link_to "View investment", investment_path(investment), class: "text-blue-600 hover:underline font-medium"
+              = link_to "Edit investment", edit_admin_investment_path(investment), class: "text-blue-600 hover:underline font-medium ml-4"
 
             - investment_detail_sections.each do |section|
               details.group.mt-3

@@ -1,6 +1,9 @@
 class Investment < ApplicationRecord
   BITCOIN_ADDRESS_REGEX = /\A(?:[13][a-km-zA-HJ-NP-Z1-9]{25,34}|bc1[a-z0-9]{25,87})\z/
 
+  READONLY_ATTRIBUTES = %i[id created_at updated_at investor_profile_id].freeze
+  PERMITTED_ATTRIBUTES = (column_names.map(&:to_sym) - READONLY_ATTRIBUTES).freeze
+
   belongs_to :user
   belongs_to :offering
   belongs_to :investor_profile, optional: true
@@ -17,10 +20,21 @@ class Investment < ApplicationRecord
 
   def list_title
     full_name = user.full_name
-    nickname = company_or_nickname.to_s.strip
-    return full_name if nickname.blank? || ["-", "--"].include?(nickname)
+    nickname = display_company_or_nickname
+    return full_name if nickname.blank?
 
     "#{full_name} (#{nickname})"
+  end
+
+  def display_company_or_nickname
+    investment_label = InvestorProfile.normalize_label(company_or_nickname)
+    profile_label = InvestorProfile.normalize_label(investor_profile_for_display&.nickname)
+
+    if user.investments.count == 1 && profile_label.present?
+      return profile_label
+    end
+
+    investment_label || profile_label
   end
 
   def investor_profile_for_display

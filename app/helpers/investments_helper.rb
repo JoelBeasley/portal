@@ -2,6 +2,7 @@
 
 module InvestmentsHelper
   MISSING = "--".freeze
+  INVESTMENT_FORM_FIELD_CLASS = "w-full border border-gray-300 rounded-xl p-3".freeze
 
   def format_investment_detail_value(inv, attr)
     case attr
@@ -146,5 +147,59 @@ module InvestmentsHelper
         ]
       }
     ]
+  end
+
+  def investment_form_field(f, attr, users: nil, offerings: nil)
+    return unless Investment::PERMITTED_ATTRIBUTES.include?(attr)
+
+    case attr
+    when :user_id
+      collection_select_for_investment(f, :user_id, users, :id, :email, attr)
+    when :offering_id
+      collection_select_for_investment(f, :offering_id, offerings, :id, :name, attr)
+    else
+      column = Investment.columns_hash[attr.to_s]
+      return if column.nil?
+
+      label = attr.to_s.humanize
+      field =
+        case column.type
+        when :text
+          f.text_area(attr, rows: 3, class: INVESTMENT_FORM_FIELD_CLASS)
+        when :date
+          f.date_field(attr, class: INVESTMENT_FORM_FIELD_CLASS)
+        when :datetime
+          f.datetime_local_field(attr, class: INVESTMENT_FORM_FIELD_CLASS)
+        when :decimal, :integer
+          f.number_field(attr, step: :any, class: INVESTMENT_FORM_FIELD_CLASS)
+        else
+          f.text_field(attr, class: INVESTMENT_FORM_FIELD_CLASS)
+        end
+
+      tag.div(class: "space-y-2") do
+        safe_join([f.label(attr, label, class: "block text-sm font-medium text-gray-700"), field])
+      end
+    end
+  end
+
+  private
+
+  def collection_select_for_investment(f, method, collection, _value_method, _text_method, attr)
+    return if collection.blank?
+
+    label = attr.to_s.humanize
+    options =
+      if method == :user_id
+        collection.map { |user| ["#{user.full_name} — #{user.email}", user.id] }
+      else
+        collection.map { |record| [record.name, record.id] }
+      end
+
+    tag.div(class: "space-y-2") do
+      safe_join([
+        f.label(method, label, class: "block text-sm font-medium text-gray-700"),
+        f.select(method, options, {}, class: INVESTMENT_FORM_FIELD_CLASS)
+      ])
+    end
   end
 end

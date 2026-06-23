@@ -29,7 +29,7 @@
               th.px-4.py-3.text-sm.font-semibold.text-gray-700 Funds sent at
               th.px-4.py-3.text-sm.font-semibold.text-gray-700 Received date
               th.px-4.py-3.text-sm.font-semibold.text-gray-700 Status
-              th.px-4.py-3.text-sm.font-semibold.text-gray-700 View
+              th.px-4.py-3.text-sm.font-semibold.text-gray-700 Actions
           tbody
             - @investor_investments.each do |investment|
               - investor = investment.user
@@ -48,7 +48,9 @@
                 td.px-4.py-3.text-sm.text-gray-700 = format_ordinal_date(investment.received_date) || "—"
                 td.px-4.py-3.text-sm.text-gray-700 = investment.cash_flow_status.present? ? investment.cash_flow_status : "—"
                 td.px-4.py-3.text-sm
-                  = link_to "View investment", investment_path(investment), class: "text-blue-600 hover:underline font-medium"
+                  .flex.flex-wrap.gap-3
+                    = link_to "View", investment_path(investment), class: "text-blue-600 hover:underline font-medium"
+                    = link_to "Edit", edit_admin_investment_path(investment), class: "text-blue-600 hover:underline font-medium"
     - else
       p.text-gray-500.text-sm No investments in this offering yet.
 

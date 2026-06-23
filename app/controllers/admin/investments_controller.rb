@@ -2,6 +2,18 @@ class Admin::InvestmentsController < ApplicationController
   before_action :authenticate_user!
   before_action :require_admin
   before_action :require_super_admin, only: [:assign, :create_assignment, :import, :create_import]
+  before_action :set_investment, only: [:edit, :update]
+  before_action :load_form_collections, only: [:edit, :update]
+
+  def edit; end
+
+  def update
+    if @investment.update(investment_params)
+      redirect_to investment_path(@investment), notice: "Investment updated successfully."
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
 
   def assign
     @investment = Investment.new
@@ -96,6 +108,19 @@ class Admin::InvestmentsController < ApplicationController
   end
 
   private
+
+  def set_investment
+    @investment = Investment.includes(:user, :offering).find(params[:id])
+  end
+
+  def load_form_collections
+    @users = User.where(role: [:investor, :admin, :super_admin]).order(:email)
+    @offerings = Offering.order(:name)
+  end
+
+  def investment_params
+    params.require(:investment).permit(*Investment::PERMITTED_ATTRIBUTES)
+  end
 
   def require_admin
     redirect_to root_path, alert: "Access denied." unless current_user.can_access_admin_area?

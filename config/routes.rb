@@ -52,7 +52,7 @@ Rails.application.routes.draw do
     end
     resource :impersonation, only: [:create, :destroy]
 
-    resources :investments, only: [] do
+    resources :investments, only: [:edit, :update] do
       collection do
         get :assign
         post :create_assignment

@@ -1,0 +1,7 @@
+.space-y-8
+  - investment_detail_sections.each do |section|
+    .border.border-gray-200.rounded-2xl.p-6.bg-white
+      h2.text-lg.font-semibold.mb-4 = section[:title]
+      .grid.grid-cols-1.md:grid-cols-2.gap-4
+        - section[:rows].each do |_label, attr|
+          = investment_form_field(f, attr, users: users, offerings: offerings)

@@ -1,0 +1,16 @@
+h1.text-3xl.font-bold.mb-2 Edit investment
+p.text-gray-600.mb-6 = @investment.list_title
+
+- if @investment.errors.any?
+  .mb-6.rounded-xl.border.border-red-200.bg-red-50.p-4.text-sm.text-red-800
+    p.font-semibold.mb-2 Please fix the following:
+    ul.list-disc.pl-5.space-y-1
+      - @investment.errors.full_messages.each do |msg|
+        li = msg
+
+= form_with model: @investment, url: admin_investment_path(@investment), local: true do |f|
+  = render "fields", f: f, users: @users, offerings: @offerings
+
+  .mt-8.flex.flex-wrap.gap-4
+    = f.submit "Save investment", class: "bg-blue-600 text-white px-8 py-3 rounded-2xl hover:bg-blue-700"
+    = link_to "Cancel", investment_path(@investment), class: "bg-gray-200 px-8 py-3 rounded-2xl inline-flex items-center"

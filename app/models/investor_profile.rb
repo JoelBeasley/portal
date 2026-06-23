@@ -15,6 +15,15 @@ class InvestorProfile < ApplicationRecord
   validates :personal_email_primary, format: { with: Devise.email_regexp, allow_blank: true }
   validates :business_email, format: { with: Devise.email_regexp, allow_blank: true }
 
+  after_update :sync_nickname_to_investments, if: :saved_change_to_nickname?
+
+  def self.normalize_label(value)
+    raw = value.to_s.strip
+    return if raw.blank? || ["-", "--"].include?(raw)
+
+    raw
+  end
+
   def self.prefill_from_user!(user)
     return user.investor_profile if user.investor_profile.present?
 
@@ -55,5 +64,22 @@ class InvestorProfile < ApplicationRecord
 
     lines.join("\n")
   end
+
+  def sync_nickname_to_investments
+    old_nickname, new_nickname = saved_change_to_nickname
+    old_label = self.class.normalize_label(old_nickname)
+    new_label = self.class.normalize_label(new_nickname)
+    investments = user.investments
+    single_investment = investments.count == 1
+
+    investments.find_each do |investment|
+      current = self.class.normalize_label(investment.company_or_nickname)
+      next unless current.blank? || current == old_label || single_investment
+
+      investment.assign_attributes(company_or_nickname: new_label)
+      investment.save(validate: false)
+    end
+  end
+
   private_class_method :sanitize_email_for_import, :format_address_from_user
 end
