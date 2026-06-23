@@ -14,6 +14,8 @@ Rails.application.routes.draw do
 
   resources :investor_profiles, only: [:index, :create, :show, :edit, :update]
 
+  get "investor/access/:token", to: "investor_magic_links#show", as: :investor_magic_link
+
   resources :investments, only: [:index, :show] do
     collection do
       patch :update_bitcoin_addresses
@@ -29,6 +31,7 @@ Rails.application.routes.draw do
   namespace :admin do
     get "dashboard", to: "dashboard#show"
     post "dashboard/send_welcome_emails", to: "dashboard#send_welcome_emails"
+    post "dashboard/send_btc_reminder_emails", to: "dashboard#send_btc_reminder_emails"
     get "site_analytics", to: redirect("/admin/sites")
     get "site_analytics/btc_price", to: "site_analytics#btc_price"
     post "sites/:site_id/analytics/data", to: "site_analytics#data", as: :site_analytics_site_data

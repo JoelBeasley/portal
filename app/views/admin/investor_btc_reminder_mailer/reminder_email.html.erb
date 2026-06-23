@@ -1,0 +1,16 @@
+<p style="margin: 0 0 12px; font-size: 20px; font-weight: 700; color: #111827;">Add your Bitcoin payout address</p>
+
+<p style="margin: 0 0 14px;">Hi <strong><%= @user.full_name.presence || @user.email %></strong>,</p>
+<p style="margin: 0 0 20px;">
+  We need a Bitcoin payout address on file for
+  <%= @missing_count == 1 ? "one of your investments" : "#{@missing_count} of your investments" %>.
+  Click below to sign in and add <%= @missing_count == 1 ? "it" : "them" %> on your dashboard.
+</p>
+
+<p style="margin: 0 0 24px;">
+  <%= link_to "Add Bitcoin payout address", investor_magic_link_url(token: @token), style: "display: inline-block; background-color: #2563eb; color: #ffffff; text-decoration: none; font-weight: 600; padding: 12px 18px; border-radius: 10px;" %>
+</p>
+
+<p style="margin: 0; color: #374151;">
+  This secure link signs you in automatically and expires after 14 days.
+</p>

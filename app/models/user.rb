@@ -14,6 +14,18 @@ class User < ApplicationRecord
   has_many :started_impersonation_events, class_name: "ImpersonationEvent", foreign_key: :admin_user_id, inverse_of: :admin_user, dependent: :nullify
   has_many :targeted_impersonation_events, class_name: "ImpersonationEvent", foreign_key: :target_user_id, inverse_of: :target_user, dependent: :nullify
 
+  generates_token_for :btc_address_reminder, expires_in: 14.days do
+    investments.where(bitcoin_address: [nil, ""]).count
+  end
+
+  scope :investors_needing_bitcoin_address, lambda {
+    investor
+      .where.not(welcome_password_set_at: nil)
+      .joins(:investments)
+      .where(investments: { bitcoin_address: [nil, ""] })
+      .distinct
+  }
+
   def admin_or_super_admin?
     admin? || super_admin?
   end
