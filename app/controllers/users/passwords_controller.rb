@@ -1,5 +1,6 @@
 class Users::PasswordsController < Devise::PasswordsController
   include ManagesInvestmentBitcoinAddresses
+
   def edit
     super
     prepare_welcome_bitcoin_setup(user_from_reset_token_param)
@@ -7,11 +8,33 @@ class Users::PasswordsController < Devise::PasswordsController
 
   def update
     @submitted_bitcoin_addresses = investment_bitcoin_address_params
+
+    if welcome_bitcoin_setup?(user_from_reset_token_param)
+      update_with_welcome_bitcoin
+    else
+      update_with_standard_reset
+    end
+  end
+
+  private
+
+  def update_with_standard_reset
+    self.resource = resource_class.reset_password_by_token(resource_params)
+
+    if resource.errors.empty?
+      complete_successful_password_reset
+    else
+      set_minimum_password_length
+      respond_with(resource)
+    end
+  end
+
+  def update_with_welcome_bitcoin
     self.resource = load_resource_from_reset_token
     password_valid = validate_password_without_save(resource)
 
     bitcoin_errors = {}
-    if password_valid && welcome_bitcoin_setup?
+    if password_valid
       prepare_welcome_bitcoin_setup
       bitcoin_errors = validate_investment_bitcoin_addresses(resource, @submitted_bitcoin_addresses)
     end
@@ -26,7 +49,18 @@ class Users::PasswordsController < Devise::PasswordsController
     end
   end
 
-  private
+  def complete_successful_password_reset
+    resource.unlock_access! if unlockable?(resource)
+    if sign_in_after_reset_password?
+      flash_message = resource.active_for_authentication? ? :updated : :updated_not_active
+      set_flash_message!(:notice, flash_message)
+      resource.after_database_authentication
+      sign_in(resource_name, resource)
+    else
+      set_flash_message!(:notice, :updated_not_active)
+    end
+    respond_with(resource, location: after_resetting_password_path_for(resource))
+  end
 
   def user_from_reset_token_param
     token = params[:reset_password_token].presence || resource_params[:reset_password_token]
@@ -77,16 +111,7 @@ class Users::PasswordsController < Devise::PasswordsController
     end
 
     if success && resource.errors.empty?
-      resource.unlock_access! if unlockable?(resource)
-      if sign_in_after_reset_password?
-        flash_message = resource.active_for_authentication? ? :updated : :updated_not_active
-        set_flash_message!(:notice, flash_message)
-        resource.after_database_authentication
-        sign_in(resource_name, resource)
-      else
-        set_flash_message!(:notice, :updated_not_active)
-      end
-      respond_with resource, location: after_resetting_password_path_for(resource)
+      complete_successful_password_reset
     else
       set_minimum_password_length
       prepare_welcome_bitcoin_setup if welcome_bitcoin_setup?
