@@ -42,6 +42,46 @@ class User < ApplicationRecord
     admin_or_super_admin?
   end
 
+  def can_access_call_list?
+    partner? || admin_or_super_admin?
+  end
+
+  def invite_accepted?
+    welcome_password_set_at.present?
+  end
+
+  def call_list_phone_numbers
+    [
+      phone,
+      investor_profile&.mobile_phone_primary,
+      investor_profile&.home_phone,
+      investor_profile&.business_phone
+    ].map { |number| number.to_s.strip }.reject(&:blank?).uniq
+  end
+
+  def bitcoin_addresses_for_call_list
+    investments.map { |investment| investment.bitcoin_address.to_s.strip }.reject(&:blank?).uniq
+  end
+
+  def bitcoin_address_status
+    return :no_investments if investments.empty?
+    return :complete if investments_missing_bitcoin_address.empty?
+
+    :missing
+  end
+
+  def bitcoin_address_status_label
+    case bitcoin_address_status
+    when :complete
+      "Complete"
+    when :missing
+      missing_count = investments_missing_bitcoin_address.size
+      "Missing (#{missing_count})"
+    else
+      "No investments"
+    end
+  end
+
   def can_assign_investments?
     super_admin?
   end

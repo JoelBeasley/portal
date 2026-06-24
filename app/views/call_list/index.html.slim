@@ -1,0 +1,31 @@
+.space-y-6
+  .flex.flex-wrap.items-start.justify-between.gap-4
+    div
+      h1.text-3xl.font-bold.mb-2 Call list
+      p.text-gray-600 = "#{@investors.size} investor#{'s' unless @investors.size == 1} · click a column header to sort"
+
+  .border.border-gray-200.rounded-2xl.bg-white.overflow-hidden
+    .overflow-x-auto.max-w-full.touch-pan-x
+      table.w-full.min-w-max.text-left
+        thead.bg-gray-50.border-b.border-gray-200
+          tr
+            th.px-4.py-3.text-sm.font-semibold.text-gray-700 = call_list_sort_link("name", "Name")
+            th.px-4.py-3.text-sm.font-semibold.text-gray-700 = call_list_sort_link("phone", "Phone")
+            th.px-4.py-3.text-sm.font-semibold.text-gray-700 = call_list_sort_link("email", "Email")
+            th.px-4.py-3.text-sm.font-semibold.text-gray-700 = call_list_sort_link("invite", "Invite")
+            th.px-4.py-3.text-sm.font-semibold.text-gray-700 = call_list_sort_link("btc", "BTC status")
+            th.px-4.py-3.text-sm.font-semibold.text-gray-700 BTC address
+        tbody
+          - if @investors.any?
+            - @investors.each do |investor|
+              tr.border-b.border-gray-100.align-top
+                td.px-4.py-3.text-sm.font-medium.text-gray-900 = investor.full_name
+                td.px-4.py-3.text-sm.text-gray-700 = call_list_phone_display(investor)
+                td.px-4.py-3.text-sm.text-gray-900
+                  = link_to investor.email, "mailto:#{investor.email}", class: "text-blue-600 hover:underline break-all"
+                td.px-4.py-3 = call_list_invite_badge(investor)
+                td.px-4.py-3 = call_list_btc_badge(investor)
+                td.px-4.py-3.text-sm.text-gray-700.max-w-xs = call_list_bitcoin_addresses_display(investor)
+          - else
+            tr
+              td.px-4.py-6.text-sm.text-gray-500 colspan="6" No investors found.

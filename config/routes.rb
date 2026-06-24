@@ -14,6 +14,8 @@ Rails.application.routes.draw do
 
   resources :investor_profiles, only: [:index, :create, :show, :edit, :update]
 
+  get "call_list", to: "call_list#index", as: :call_list
+
   get "investor/access/:token", to: "investor_magic_links#show", as: :investor_magic_link
 
   resources :investments, only: [:index, :show] do
