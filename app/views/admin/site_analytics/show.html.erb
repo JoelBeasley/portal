@@ -194,9 +194,26 @@
   </p>
 </div>
 
-<script>
+<script type="module">
+    import {
+      computeMachineScales,
+      computeWeightedEfficiency as calcWeightedEfficiency,
+      computeTableRows,
+    } from "site_analytics/calculator";
+
     let currentHrData = null;
     let currentRewardData = null;
+    let baselineCurrentMachines = null;
+
+    function captureBaselineFromInputs() {
+      baselineCurrentMachines = parseFloat(document.getElementById("currentMachines").value) || 80;
+    }
+
+    function machineScalesFromInputs() {
+      const projectedMachines = document.getElementById("projectedMachines").value;
+      const currentMachines = document.getElementById("currentMachines").value;
+      return computeMachineScales(projectedMachines, currentMachines, baselineCurrentMachines);
+    }
 
     function showStatus(msg, type = "", meta = null) {
       const el = document.getElementById("status");
@@ -237,12 +254,9 @@
     }
 
     function updateWeightedEfficiency() {
-      const percentPro = parseFloat(document.getElementById("percentPro").value) || 0;
-      const percentStandard = parseFloat(document.getElementById("percentStandard").value) || 0;
-      const effPro = 15.0;
-      const effStandard = 17.5;
-      const weighted = (percentPro / 100 * effPro) + (percentStandard / 100 * effStandard);
-      document.getElementById("efficiency").value = weighted.toFixed(2);
+      const percentPro = document.getElementById("percentPro").value;
+      const percentStandard = document.getElementById("percentStandard").value;
+      document.getElementById("efficiency").value = calcWeightedEfficiency(percentPro, percentStandard).toFixed(2);
     }
 
     function updateProjectedMachineLabels() {
@@ -273,10 +287,7 @@
 
       const eff = parseFloat(document.getElementById("efficiency").value) || 15.5;
       const costKwh = parseFloat(document.getElementById("costPerKwh").value) || 0.02;
-      const projectedMachines = parseFloat(document.getElementById("projectedMachines").value) || 325;
-      const currentMachines = parseFloat(document.getElementById("currentMachines").value) || 80;
       const btcPrice = parseFloat(document.getElementById("btcPrice").value) || 68800;
-      const scaleFactor = projectedMachines / currentMachines;
       updateProjectedMachineLabels();
       updateCurrentMachineLabels();
 
@@ -292,7 +303,9 @@
           return;
         }
 
-        renderTable(currentHrData.btc, currentRewardData.btc.daily_rewards, eff, costKwh, scaleFactor, btcPrice);
+        captureBaselineFromInputs();
+        const { currentScale, projectedScale } = machineScalesFromInputs();
+        renderTable(currentHrData.btc, currentRewardData.btc.daily_rewards, eff, costKwh, currentScale, projectedScale, btcPrice);
         showStatus("✅ Table calculated successfully.", "success");
 
       } catch (e) {
@@ -305,14 +318,12 @@
 
       const eff = parseFloat(document.getElementById("efficiency").value) || 15.5;
       const costKwh = parseFloat(document.getElementById("costPerKwh").value) || 0.02;
-      const projectedMachines = parseFloat(document.getElementById("projectedMachines").value) || 325;
-      const currentMachines = parseFloat(document.getElementById("currentMachines").value) || 80;
       const btcPrice = parseFloat(document.getElementById("btcPrice").value) || 68800;
-      const scaleFactor = projectedMachines / currentMachines;
       updateProjectedMachineLabels();
       updateCurrentMachineLabels();
 
-      renderTable(currentHrData.btc, currentRewardData.btc.daily_rewards, eff, costKwh, scaleFactor, btcPrice);
+      const { currentScale, projectedScale } = machineScalesFromInputs();
+      renderTable(currentHrData.btc, currentRewardData.btc.daily_rewards, eff, costKwh, currentScale, projectedScale, btcPrice);
     }
 
     function normalizeHashratePayload(payload) {
@@ -379,6 +390,7 @@
     function clearAnalyticsTables() {
       currentHrData = null;
       currentRewardData = null;
+      baselineCurrentMachines = null;
       ["resultsTableCurrent", "resultsTableProjected"].forEach(tableId => {
         const table = document.getElementById(tableId);
         const tbody = table?.querySelector("tbody");
@@ -432,16 +444,15 @@
         currentHrData = { btc: hrArray };
         currentRewardData = { btc: { daily_rewards: rewardArray } };
 
+        captureBaselineFromInputs();
         const eff = parseFloat(document.getElementById("efficiency").value) || 15.5;
         const costKwh = parseFloat(document.getElementById("costPerKwh").value) || 0.02;
-        const projectedMachines = parseFloat(document.getElementById("projectedMachines").value) || 325;
-        const currentMachines = parseFloat(document.getElementById("currentMachines").value) || 80;
-        const scaleFactor = projectedMachines / currentMachines;
         updateProjectedMachineLabels();
         updateCurrentMachineLabels();
 
         const btcPrice = parseFloat(document.getElementById("btcPrice").value) || 68800;
-        renderTable(hrArray, rewardArray, eff, costKwh, scaleFactor, btcPrice);
+        const { currentScale, projectedScale } = machineScalesFromInputs();
+        renderTable(hrArray, rewardArray, eff, costKwh, currentScale, projectedScale, btcPrice);
         const cachedAtRaw = proxyPayload.cached_at != null ? proxyPayload.cached_at : proxyPayload.cachedAt;
         const refreshHrs = proxyPayload.refresh_interval_hours != null ? proxyPayload.refresh_interval_hours : proxyPayload.refreshIntervalHours;
         showStatus("✅ Loaded from Braiins API.", "success", {
@@ -471,88 +482,41 @@
       return `${mm}/${dd}/${yy}`;
     }
 
-    function renderTable(hrArray, rewardArray, efficiency, costKwh, scaleFactor, btcPrice) {
+    function renderTable(hrArray, rewardArray, efficiency, costKwh, currentScale, projectedScale, btcPrice) {
       revealAnalyticsTables();
       const tbodyCurrent = document.getElementById("resultsTableCurrent").querySelector("tbody");
       const tbodyProjected = document.getElementById("resultsTableProjected").querySelector("tbody");
       tbodyCurrent.innerHTML = "";
       tbodyProjected.innerHTML = "";
 
-      const rewardMap = {};
-      rewardArray.forEach(r => {
-        if (r.date) rewardMap[r.date] = parseFloat(r.total_reward) || 0;
-      });
+      const rows = computeTableRows(hrArray, rewardArray, efficiency, costKwh, currentScale, projectedScale, btcPrice);
 
-      const rowsToRender = hrArray
-        .filter(day =>
-          day.date &&
-          Object.prototype.hasOwnProperty.call(rewardMap, day.date) &&
-          (parseFloat(day.hash_rate_24h) || 0) > 0
-        )
-        .sort((a, b) => a.date - b.date)
-        .slice(-10);
-
-      rowsToRender.forEach(day => {
-        const dateUnix = day.date;
-        const hashratePh = parseFloat(day.hash_rate_24h) || 0;
-        const ths = hashratePh / 1000;
-
-        const powerKwCurrent = (ths * efficiency) / 1000;
-        const dailyKwhCurrent = powerKwCurrent * 24;
-        const elecCostCurrent = dailyKwhCurrent * costKwh;
-        const btcReward = rewardMap[dateUnix] || 0;
-        const gross = btcReward * btcPrice;
-        const netCurrent = gross - elecCostCurrent;
-
-        const thsProjected = ths * scaleFactor;
-        const powerKwProjected = (thsProjected * efficiency) / 1000;
-        const dailyKwhProjected = powerKwProjected * 24;
-        const elecCostProjected = dailyKwhProjected * costKwh;
-        const grossProjected = gross * scaleFactor;
-        const btcRewardScaled = btcReward * scaleFactor;
-        const netProjected = grossProjected - elecCostProjected;
-
-        const generatorCost = 4000 / 30;
-
-        const operatorCostCurrent = netCurrent * 0.07;
-        const projectProfitCurrent = netCurrent - operatorCostCurrent - generatorCost;
-        const dmgProfitCurrent = projectProfitCurrent * 0.60;
-        const partnerPoolCurrent = dmgProfitCurrent * 0.20;
-        const sovrnCurrent = partnerPoolCurrent / 4;
-        const sovrn30Current = sovrnCurrent * 30;
-
-        const operatorCostProjected = netProjected * 0.07;
-        const projectProfitProjected = netProjected - operatorCostProjected - generatorCost;
-        const dmgProfitProjected = projectProfitProjected * 0.60;
-        const partnerPoolProjected = dmgProfitProjected * 0.20;
-        const sovrnProjected = partnerPoolProjected / 4;
-        const sovrn30Projected = sovrnProjected * 30;
-
-        const dateStr = formatTableDateMmDdYy(dateUnix);
+      rows.forEach(row => {
+        const dateStr = formatTableDateMmDdYy(row.date);
 
         const rowCurrent = document.createElement("tr");
         rowCurrent.innerHTML = `
           <td class="text-left min-w-[140px] px-3 py-2">${dateStr}</td>
-          <td class="px-3 py-2">${ths.toFixed(2)}</td>
-          <td class="px-3 py-2">$${elecCostCurrent.toFixed(2)}</td>
-          <td class="px-3 py-2">${btcReward.toFixed(8)}</td>
-          <td class="px-3 py-2">$${gross.toFixed(2)}</td>
-          <td class="px-3 py-2 ${netCurrent >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${netCurrent.toFixed(2)}</td>
-          <td class="px-3 py-2 ${sovrnCurrent >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${sovrnCurrent.toFixed(2)}</td>
-          <td class="px-3 py-2 ${sovrn30Current >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${sovrn30Current.toFixed(2)}</td>
+          <td class="px-3 py-2">${row.ths.toFixed(2)}</td>
+          <td class="px-3 py-2">$${row.elecCostCurrent.toFixed(2)}</td>
+          <td class="px-3 py-2">${row.btcReward.toFixed(8)}</td>
+          <td class="px-3 py-2">$${row.gross.toFixed(2)}</td>
+          <td class="px-3 py-2 ${row.netCurrent >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${row.netCurrent.toFixed(2)}</td>
+          <td class="px-3 py-2 ${row.sovrnCurrent >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${row.sovrnCurrent.toFixed(2)}</td>
+          <td class="px-3 py-2 ${row.sovrn30Current >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${row.sovrn30Current.toFixed(2)}</td>
         `;
         tbodyCurrent.appendChild(rowCurrent);
 
         const rowProjected = document.createElement("tr");
         rowProjected.innerHTML = `
           <td class="text-left min-w-[140px] px-3 py-2">${dateStr}</td>
-          <td class="px-3 py-2">${thsProjected.toFixed(2)}</td>
-          <td class="px-3 py-2">$${elecCostProjected.toFixed(2)}</td>
-          <td class="px-3 py-2">${btcRewardScaled.toFixed(8)}</td>
-          <td class="px-3 py-2">$${grossProjected.toFixed(2)}</td>
-          <td class="px-3 py-2 ${netProjected >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${netProjected.toFixed(2)}</td>
-          <td class="px-3 py-2 ${sovrnProjected >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${sovrnProjected.toFixed(2)}</td>
-          <td class="px-3 py-2 ${sovrn30Projected >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${sovrn30Projected.toFixed(2)}</td>
+          <td class="px-3 py-2">${row.thsProjected.toFixed(2)}</td>
+          <td class="px-3 py-2">$${row.elecCostProjected.toFixed(2)}</td>
+          <td class="px-3 py-2">${row.btcRewardScaled.toFixed(8)}</td>
+          <td class="px-3 py-2">$${row.grossProjected.toFixed(2)}</td>
+          <td class="px-3 py-2 ${row.netProjected >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${row.netProjected.toFixed(2)}</td>
+          <td class="px-3 py-2 ${row.sovrnProjected >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${row.sovrnProjected.toFixed(2)}</td>
+          <td class="px-3 py-2 ${row.sovrn30Projected >= 0 ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}">$${row.sovrn30Projected.toFixed(2)}</td>
         `;
         tbodyProjected.appendChild(rowProjected);
       });
@@ -591,4 +555,7 @@
       window.__siteAnalyticsTurboInit = true;
       document.addEventListener("turbo:load", initSiteAnalyticsPage);
     }
+
+    window.fetchFromApi = fetchFromApi;
+    window.calculateFromManual = calculateFromManual;
 </script>
