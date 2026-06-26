@@ -23,7 +23,7 @@ class Admin::SitesController < ApplicationController
     @offerings = Offering.order(:name)
 
     if @site.save
-      redirect_to admin_sites_path, notice: "Site created successfully."
+      redirect_to admin_sites_path, notice: "Site created successfully.", status: :see_other
     else
       render :new, status: :unprocessable_entity
     end
@@ -39,7 +39,7 @@ class Admin::SitesController < ApplicationController
     permitted = permitted.except(:braiins_pool_auth_token) if permitted[:braiins_pool_auth_token].blank?
 
     if @site.update(permitted)
-      redirect_to admin_site_path(@site), notice: "Site updated successfully."
+      redirect_to admin_site_path(@site), notice: "Site updated successfully.", status: :see_other
     else
       render :edit, status: :unprocessable_entity
     end
@@ -56,7 +56,7 @@ class Admin::SitesController < ApplicationController
   end
 
   def require_super_admin
-    redirect_to root_path, alert: "Access denied." unless current_user.can_manage_sites?
+    redirect_to root_path, alert: "Access denied." unless true_current_user.can_manage_sites?
   end
 
   def site_params
