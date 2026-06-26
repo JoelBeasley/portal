@@ -3,7 +3,7 @@ class Investment < ApplicationRecord
 
   BITCOIN_ADDRESS_REGEX = /\A(?:[13][a-km-zA-HJ-NP-Z1-9]{25,34}|bc1[a-z0-9]{25,87})\z/
 
-  READONLY_ATTRIBUTES = %i[id created_at updated_at investor_profile_id].freeze
+  READONLY_ATTRIBUTES = %i[id created_at updated_at investor_profile_id archived_at].freeze
   PERMITTED_ATTRIBUTES = (column_names.map(&:to_sym) - READONLY_ATTRIBUTES).freeze
 
   belongs_to :user
@@ -19,6 +19,21 @@ class Investment < ApplicationRecord
 
   before_validation :sync_investor_profile_from_user
   validate :investor_profile_matches_user
+
+  scope :active, -> { where(archived_at: nil) }
+  scope :archived, -> { where.not(archived_at: nil) }
+
+  def archived?
+    archived_at.present?
+  end
+
+  def archive!
+    update_columns(archived_at: Time.current, updated_at: Time.current)
+  end
+
+  def unarchive!
+    update_columns(archived_at: nil, updated_at: Time.current)
+  end
 
   def list_title
     full_name = user.full_name

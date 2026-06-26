@@ -3,11 +3,11 @@ class Admin::InvestorsController < ApplicationController
   before_action :require_user_directory_access
 
   def index
-    @investors = User.investor.order(:last_name, :first_name, :email)
+    @investors = User.investor_directory.order(:last_name, :first_name, :email)
   end
 
   def show
-    @investor = User.investor.find(params[:id])
+    @investor = User.investor_directory.find(params[:id])
     @investor_profile = @investor.investor_profile || @investor.create_investor_profile!
     @investments = @investor.investments.includes(:offering).order(created_at: :desc)
   end

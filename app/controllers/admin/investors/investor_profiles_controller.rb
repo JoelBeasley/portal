@@ -19,7 +19,7 @@ class Admin::Investors::InvestorProfilesController < ApplicationController
   private
 
   def set_investor
-    @investor = User.investor.find(params[:investor_id])
+    @investor = User.investor_directory.find(params[:investor_id])
   end
 
   def require_user_directory_access

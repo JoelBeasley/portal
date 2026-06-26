@@ -27,6 +27,8 @@ Rails.application.routes.draw do
       post :upload_document
       get :documents
       patch :documents
+      patch :archive
+      patch :unarchive
     end
   end
 
@@ -40,7 +42,8 @@ Rails.application.routes.draw do
     get "sites/:id/analytics", to: "site_analytics#show", as: :site_pool_dashboard
     resources :offerings, only: [:index, :show, :new, :create, :edit, :update] do
       member do
-        get :export_addresses
+        post :export_addresses
+        post :preview_export_addresses
       end
     end
     resources :sites, only: [:index, :show, :new, :create, :edit, :update]

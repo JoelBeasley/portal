@@ -17,7 +17,7 @@ class Admin::InvestmentsController < ApplicationController
 
   def assign
     @investment = Investment.new
-    @users = User.where(role: [:investor, :admin, :super_admin]).order(:email)
+    @users = User.where(role: [:investor, :partner, :admin, :super_admin]).order(:email)
     @offerings = Offering.order(:name)
   end
 
@@ -114,7 +114,7 @@ class Admin::InvestmentsController < ApplicationController
   end
 
   def load_form_collections
-    @users = User.where(role: [:investor, :admin, :super_admin]).order(:email)
+    @users = User.where(role: [:investor, :partner, :admin, :super_admin]).order(:email)
     @offerings = Offering.order(:name)
   end
 

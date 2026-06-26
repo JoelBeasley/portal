@@ -4,19 +4,15 @@ class Admin::OfferingsController < ApplicationController
   before_action :authenticate_user!
   before_action :require_admin
   before_action :require_super_admin, only: [:new, :create, :edit, :update]
-  before_action :set_offering, only: [:show, :edit, :update]
+  before_action :set_offering, only: [:show, :edit, :update, :export_addresses, :preview_export_addresses]
 
   def index
     @offerings = Offering.includes(:sites, investments: :user).order(:name)
   end
 
   def show
-    @sites = @offering.sites.order(:name)
-    @investor_investments =
-      @offering.investments
-        .joins(:user)
-        .includes(:user)
-        .order("users.email ASC, investments.id ASC")
+    load_show_associations
+    @show_preview = false
   end
 
   def new
@@ -43,13 +39,12 @@ class Admin::OfferingsController < ApplicationController
   end
 
   def export_addresses
-    offering = Offering.find(params[:id])
-    investments = offering.investments.includes(:user).order(created_at: :desc)
+    rows = build_export_rows(params[:btc_amount])
 
     csv_data = CSV.generate(headers: true) do |csv|
-      csv << ["name", "bitcoin_address", "offering_name"]
-      investments.each do |investment|
-        csv << [investment.user.full_name, investment.bitcoin_address, offering.name]
+      csv << ["name", "bitcoin_address", "btc_amount", "offering_name"]
+      rows.each do |row|
+        csv << [row[:name], row[:bitcoin_address], row[:btc_amount], row[:offering_name]]
       end
     end
 
@@ -57,12 +52,49 @@ class Admin::OfferingsController < ApplicationController
     send_data csv_data,
               filename: "address_export_#{date_fragment}.csv",
               type: "text/csv"
+  rescue OfferingBtcExportCalculator::Error => e
+    load_show_associations
+    flash.now[:alert] = e.message
+    render :show, status: :unprocessable_entity
+  end
+
+  def preview_export_addresses
+    load_show_associations
+    @preview_btc_amount = params[:btc_amount]
+    export_rows = build_export_rows(params[:btc_amount])
+    @preview_total_btc_amount = OfferingBtcExportCalculator.format_btc_amount(
+      export_rows.sum { |row| BigDecimal(row[:btc_amount]) }
+    )
+    @preview_rows = export_rows
+    @show_preview = true
+    render :show
+  rescue OfferingBtcExportCalculator::Error => e
+    load_show_associations
+    @preview_btc_amount = params[:btc_amount]
+    @preview_error = e.message
+    @show_preview = true
+    render :show, status: :unprocessable_entity
   end
 
   private
 
   def set_offering
     @offering = Offering.find(params[:id])
+  end
+
+  def load_show_associations
+    @sites = @offering.sites.order(:name)
+    investment_order = "users.email ASC, investments.id ASC"
+    @investor_investments =
+      @offering.active_investments
+        .joins(:user)
+        .includes(:user)
+        .order(investment_order)
+    @archived_investments =
+      @offering.archived_investments
+        .joins(:user)
+        .includes(:user)
+        .order(investment_order)
   end
 
   def require_admin
@@ -74,6 +106,29 @@ class Admin::OfferingsController < ApplicationController
   end
 
   def offering_params
-    params.require(:offering).permit(:name, :description)
+    params.require(:offering).permit(
+      :name,
+      :description,
+      :carried_interest,
+      :carried_interest_bitcoin_address
+    )
+  end
+
+  def build_export_rows(btc_amount)
+    investments = @offering.active_investments.includes(:user).order(created_at: :desc)
+    calculator = OfferingBtcExportCalculator.new(
+      offering: @offering,
+      total_btc: btc_amount,
+      investments: investments
+    )
+
+    calculator.rows.map do |row|
+      {
+        name: row.name,
+        bitcoin_address: row.bitcoin_address,
+        btc_amount: OfferingBtcExportCalculator.format_btc_amount(row.btc_amount),
+        offering_name: @offering.name
+      }
+    end
   end
 end

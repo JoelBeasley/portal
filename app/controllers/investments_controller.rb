@@ -2,7 +2,7 @@ class InvestmentsController < ApplicationController
   include ManagesInvestmentBitcoinAddresses
 
   before_action :authenticate_user!
-  before_action :set_investment, only: [:show, :documents, :update, :upload_document]
+  before_action :set_investment, only: [:show, :documents, :update, :upload_document, :archive, :unarchive]
 
   def index
     load_investments_index_data
@@ -54,6 +54,36 @@ class InvestmentsController < ApplicationController
       @typed_documents = @investment.investment_documents.with_attached_file.order(created_at: :desc)
       render :documents, status: :unprocessable_entity
     end
+  end
+
+  def archive
+    unless current_user.can_access_admin_area?
+      redirect_to investment_path(@investment), alert: "Access denied."
+      return
+    end
+
+    if @investment.archived?
+      redirect_to investment_path(@investment), alert: "This investment is already archived."
+      return
+    end
+
+    @investment.archive!
+    redirect_to investment_path(@investment), notice: "Investment archived successfully."
+  end
+
+  def unarchive
+    unless current_user.can_access_admin_area?
+      redirect_to investment_path(@investment), alert: "Access denied."
+      return
+    end
+
+    unless @investment.archived?
+      redirect_to investment_path(@investment), alert: "This investment is not archived."
+      return
+    end
+
+    @investment.unarchive!
+    redirect_to investment_path(@investment), notice: "Investment unarchived successfully."
   end
 
   def upload_document

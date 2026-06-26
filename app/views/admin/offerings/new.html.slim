@@ -16,6 +16,14 @@ h1.text-3xl.font-bold.mb-6 New Offering
       = f.label :description, "Description (optional)", class: "block text-sm font-medium text-gray-700"
       = f.text_area :description, rows: 4, class: "w-full rounded-xl border border-gray-300 px-4 py-3"
 
+    .space-y-2
+      = f.label :carried_interest, "Carried interest (%)", class: "block text-sm font-medium text-gray-700"
+      = f.number_field :carried_interest, step: 0.01, min: 0, max: 100, class: "w-full rounded-xl border border-gray-300 px-4 py-3"
+
+    .space-y-2
+      = f.label :carried_interest_bitcoin_address, "Carried interest Bitcoin address", class: "block text-sm font-medium text-gray-700"
+      = f.text_field :carried_interest_bitcoin_address, class: "w-full rounded-xl border border-gray-300 px-4 py-3"
+
     .flex.items-center.gap-3.pt-2
       = f.submit "Create offering", class: "bg-blue-600 text-white px-5 py-2 rounded-xl hover:bg-blue-700"
       = link_to "Cancel", admin_offerings_path, class: "text-gray-600 hover:underline"

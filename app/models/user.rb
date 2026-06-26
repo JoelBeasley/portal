@@ -26,8 +26,12 @@ class User < ApplicationRecord
     investments.where(bitcoin_address: [nil, ""]).count
   end
 
+  scope :investor_directory, lambda {
+    where(role: :investor).or(where(id: Investment.select(:user_id)))
+  }
+
   scope :investors_needing_bitcoin_address, lambda {
-    investor
+    investor_directory
       .where.not(welcome_password_set_at: nil)
       .joins(:investments)
       .where(investments: { bitcoin_address: [nil, ""] })

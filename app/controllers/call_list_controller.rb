@@ -17,7 +17,7 @@ class CallListController < ApplicationController
   end
 
   def sorted_investors
-    scope = User.investor
+    scope = User.investor_directory
     direction = @direction.upcase
 
     case @sort

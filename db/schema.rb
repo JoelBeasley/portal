@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_25_120000) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_26_224617) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -94,6 +94,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_120000) do
     t.string "accreditation_status"
     t.decimal "accrued_preferred_return", precision: 12, scale: 2
     t.string "ach_investment_funding_status"
+    t.datetime "archived_at"
     t.string "bank_account_number"
     t.string "bank_account_type"
     t.text "bank_distribution_note"
@@ -142,7 +143,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_120000) do
     t.decimal "ownership_percentage", precision: 8, scale: 4
     t.string "owning_entity"
     t.string "payment_method"
-    t.decimal "percent_of_class_by_total_raised", precision: 8, scale: 4
+    t.decimal "percent_of_class_by_total_raised", precision: 8, scale: 2
     t.decimal "percent_of_class_or_bucket_by_target_raise", precision: 8, scale: 4
     t.date "preferred_return_start_date"
     t.string "profile_import_id"
@@ -162,6 +163,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_120000) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.string "waitlist_status"
+    t.index ["archived_at"], name: "index_investments_on_archived_at"
     t.index ["cash_flow_import_id"], name: "index_investments_on_cash_flow_import_id_unique", unique: true, where: "(cash_flow_import_id IS NOT NULL)"
     t.index ["investor_profile_id"], name: "index_investments_on_investor_profile_id"
     t.index ["offering_id"], name: "index_investments_on_offering_id"
@@ -190,6 +192,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_25_120000) do
   end
 
   create_table "offerings", force: :cascade do |t|
+    t.decimal "carried_interest", precision: 5, scale: 2
+    t.string "carried_interest_bitcoin_address"
     t.datetime "created_at", null: false
     t.text "description"
     t.string "name", null: false

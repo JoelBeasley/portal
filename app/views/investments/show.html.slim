@@ -1,8 +1,16 @@
 h1.text-4xl.font-bold.mb-4 = @investment.list_title
 
+- if @investment.archived?
+  .mb-4.rounded-xl.border.border-amber-200.bg-amber-50.px-4.py-3.text-sm.text-amber-900
+    | This investment is archived. It is excluded from offering lists and address exports.
+
 - if current_user.can_access_admin_area?
-  .mb-4
+  .mb-4.flex.flex-wrap.gap-3
     = link_to "Edit investment", edit_admin_investment_path(@investment), class: "inline-flex items-center bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 font-medium"
+    - if @investment.archived?
+      = button_to "Unarchive investment", unarchive_investment_path(@investment), method: :patch, class: "inline-flex items-center bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-50 font-medium", data: { turbo_confirm: "Restore this investment to the active offering list and address export?" }
+    - else
+      = button_to "Archive investment", archive_investment_path(@investment), method: :patch, class: "inline-flex items-center bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-xl hover:bg-gray-50 font-medium", data: { turbo_confirm: "Archive this investment? It will be removed from the offering list and address export." }
 
 .bg-white.border.border-gray-200.rounded-2xl.p-6
   p.text-sm.text-gray-500.mb-2 Offering

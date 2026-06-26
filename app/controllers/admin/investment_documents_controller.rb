@@ -94,7 +94,7 @@ class Admin::InvestmentDocumentsController < ApplicationController
   end
 
   def load_form_collections
-    @users = User.where(role: [:investor, :admin, :super_admin]).order(:email)
+    @users = User.where(role: [:investor, :partner, :admin, :super_admin]).order(:email)
     @investments = Investment.includes(:user, :offering).order(created_at: :desc)
     @document_type_options = [
       ["K-1", "k1"],
