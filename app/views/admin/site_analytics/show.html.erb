@@ -25,6 +25,56 @@
   <div id="status" class="text-sm flex flex-wrap items-baseline gap-x-2 gap-y-1" role="status" aria-live="polite"></div>
 
   <div id="analytics-tables" class="space-y-6 <%= "hidden" if @site.braiins_pool_auth_token.blank? %>">
+    <div id="pool-workers-section">
+      <h2 class="mb-2 text-lg font-semibold text-gray-900">Pool workers</h2>
+      <p class="mb-3 text-sm text-gray-600">Live worker status from Braiins for this site's pool account.</p>
+
+      <div id="worker-summary-cards" class="mb-4 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <p class="text-xs font-medium uppercase tracking-wide text-gray-500">OK</p>
+          <p id="workerCountOk" class="mt-1 text-2xl font-bold text-emerald-700">—</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <p class="text-xs font-medium uppercase tracking-wide text-gray-500">Low</p>
+          <p id="workerCountLow" class="mt-1 text-2xl font-bold text-amber-700">—</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <p class="text-xs font-medium uppercase tracking-wide text-gray-500">Offline</p>
+          <p id="workerCountOff" class="mt-1 text-2xl font-bold text-red-700">—</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+          <p class="text-xs font-medium uppercase tracking-wide text-gray-500">Disabled</p>
+          <p id="workerCountDis" class="mt-1 text-2xl font-bold text-gray-700">—</p>
+        </div>
+        <div class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm col-span-2 sm:col-span-1">
+          <p class="text-xs font-medium uppercase tracking-wide text-gray-500">Account hashrate (5m)</p>
+          <p id="workerAccountHashrate" class="mt-1 text-lg font-bold text-gray-900">—</p>
+        </div>
+      </div>
+
+      <div class="relative overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-sm" style="max-height: 50vh;">
+        <div class="analytics-table-loading hidden absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-white/90" aria-hidden="true">
+          <svg class="h-8 w-8 animate-spin text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p class="text-sm font-medium text-gray-600">Loading pool data…</p>
+        </div>
+        <table id="workersTable" class="w-full border-collapse text-right text-sm">
+          <thead class="sticky top-0 z-10 bg-gray-50">
+            <tr>
+              <th class="border border-gray-200 px-3 py-2 text-left min-w-[180px]">Worker</th>
+              <th class="border border-gray-200 px-3 py-2 text-left">Status</th>
+              <th class="border border-gray-200 px-3 py-2">Hashrate 5m</th>
+              <th class="border border-gray-200 px-3 py-2">Hashrate 24h</th>
+              <th class="border border-gray-200 px-3 py-2 text-left">Last share</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </div>
+
     <div>
       <h2 class="mb-2 text-lg font-semibold text-gray-900">Current machines (<span id="currentMachinesHeading"><%= @site.default_current_machines %></span>)</h2>
       <div class="relative overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-sm" style="max-height: 70vh;">
@@ -241,6 +291,14 @@
       computeWeightedEfficiency as calcWeightedEfficiency,
       computeTableRows,
     } from "site_analytics/calculator";
+    import {
+      parseWorkerSummary,
+      parseWorkerRows,
+      workerStateLabel,
+      workerStateBadgeClass,
+      formatHashRate,
+      formatLastShare,
+    } from "site_analytics/workers";
 
     let currentHrData = null;
     let currentRewardData = null;
@@ -441,11 +499,21 @@
       if (tablesRoot) tablesRoot.setAttribute("aria-busy", isLoading ? "true" : "false");
     }
 
+    function clearWorkers() {
+      ["workerCountOk", "workerCountLow", "workerCountOff", "workerCountDis", "workerAccountHashrate"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = "—";
+      });
+      const tbody = document.getElementById("workersTable")?.querySelector("tbody");
+      if (tbody) tbody.innerHTML = "";
+    }
+
     function clearAnalyticsTables() {
       setTablesLoading(false);
       currentHrData = null;
       currentRewardData = null;
       baselineCurrentMachines = null;
+      clearWorkers();
       ["resultsTableCurrent", "resultsTableProjected"].forEach(tableId => {
         const table = document.getElementById(tableId);
         const tbody = table?.querySelector("tbody");
@@ -510,6 +578,7 @@
         const btcPrice = parseFloat(document.getElementById("btcPrice").value) || 68800;
         const { currentScale, projectedScale } = machineScalesFromInputs();
         renderTable(hrArray, rewardArray, eff, costKwh, currentScale, projectedScale, btcPrice);
+        renderWorkers(proxyPayload.profile, proxyPayload.workers);
         const cachedAtRaw = proxyPayload.cached_at != null ? proxyPayload.cached_at : proxyPayload.cachedAt;
         const refreshHrs = proxyPayload.refresh_interval_hours != null ? proxyPayload.refresh_interval_hours : proxyPayload.refreshIntervalHours;
         showStatus("✅ Loaded from Braiins API.", "success", {
@@ -538,6 +607,42 @@
       const dd = String(d.getUTCDate()).padStart(2, "0");
       const yy = String(d.getUTCFullYear()).slice(-2);
       return `${mm}/${dd}/${yy}`;
+    }
+
+    function renderWorkers(profilePayload, workersPayload) {
+      revealAnalyticsTables();
+
+      const summary = parseWorkerSummary(profilePayload);
+      document.getElementById("workerCountOk").textContent = String(summary.ok);
+      document.getElementById("workerCountLow").textContent = String(summary.low);
+      document.getElementById("workerCountOff").textContent = String(summary.off);
+      document.getElementById("workerCountDis").textContent = String(summary.dis);
+      document.getElementById("workerAccountHashrate").textContent = formatHashRate(summary.hashRate5m, summary.unit);
+
+      const tbody = document.getElementById("workersTable").querySelector("tbody");
+      tbody.innerHTML = "";
+
+      const rows = parseWorkerRows(workersPayload);
+      if (rows.length === 0) {
+        const emptyRow = document.createElement("tr");
+        emptyRow.innerHTML = `<td colspan="5" class="px-3 py-4 text-center text-sm text-gray-500">No workers reported for this pool account.</td>`;
+        tbody.appendChild(emptyRow);
+        return;
+      }
+
+      rows.forEach(row => {
+        const tr = document.createElement("tr");
+        const badgeClass = workerStateBadgeClass(row.state);
+        const label = workerStateLabel(row.state);
+        tr.innerHTML = `
+          <td class="text-left px-3 py-2 font-mono text-xs">${row.name}</td>
+          <td class="text-left px-3 py-2"><span class="inline-flex rounded-full px-2.5 py-0.5 text-xs font-semibold ${badgeClass}">${label}</span></td>
+          <td class="px-3 py-2">${formatHashRate(row.hashRate5m, row.unit)}</td>
+          <td class="px-3 py-2">${formatHashRate(row.hashRate24h, row.unit)}</td>
+          <td class="text-left px-3 py-2">${formatLastShare(row.lastShareAt)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
     }
 
     function renderTable(hrArray, rewardArray, efficiency, costKwh, currentScale, projectedScale, btcPrice) {

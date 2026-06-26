@@ -8,6 +8,8 @@ class Admin::SiteAnalyticsController < ApplicationController
 
   CACHE_TTL = 6.hours
   BTC_USD_CACHE_TTL = 5.minutes
+  BRAIINS_PROFILE_ENDPOINT = "https://pool.braiins.com/accounts/profile/json/btc/"
+  BRAIINS_WORKERS_ENDPOINT = "https://pool.braiins.com/accounts/workers/json/btc/"
 
   def show
     @site = Site.includes(:offering).find(params[:id])
@@ -57,7 +59,7 @@ class Admin::SiteAnalyticsController < ApplicationController
     end
 
     cache_key = [
-      "site_analytics/braiins/v2",
+      "site_analytics/braiins/v3",
       site.id,
       hashrate_endpoint,
       rewards_endpoint,
@@ -68,6 +70,8 @@ class Admin::SiteAnalyticsController < ApplicationController
       {
         hashrate: fetch_braiins_json(hashrate_endpoint, token),
         rewards: fetch_braiins_json(rewards_endpoint, token),
+        profile: fetch_braiins_json(BRAIINS_PROFILE_ENDPOINT, token),
+        workers: fetch_braiins_json(BRAIINS_WORKERS_ENDPOINT, token),
         cached_at: Time.current.utc.iso8601
       }
     end
