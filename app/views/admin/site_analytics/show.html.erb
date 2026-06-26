@@ -8,7 +8,11 @@
     <p class="text-sm text-gray-500 mb-1">
       <%= link_to "Sites", admin_sites_path, class: "text-blue-600 hover:underline" %>
       <span class="mx-1">/</span>
-      <%= link_to @site.name, admin_site_path(@site), class: "text-blue-600 hover:underline" %>
+      <% if @manage_sites %>
+        <%= link_to @site.name, admin_site_path(@site), class: "text-blue-600 hover:underline" %>
+      <% else %>
+        <span><%= @site.name %></span>
+      <% end %>
       <span class="mx-1">/</span>
       <span>Pool analytics</span>
     </p>
@@ -65,13 +69,23 @@
   <div class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
     <div class="grid gap-4 md:grid-cols-2">
       <div class="md:col-span-2">
-        <label class="mb-1 block text-sm font-semibold text-gray-700">Braiins API token (Pool-Auth-Token)</label>
-        <% if @site.braiins_pool_auth_token.present? %>
-          <p id="apiKeySavedHint" class="mb-2 text-sm text-emerald-800">A token is saved for this site. Leave the field blank to use it, or enter a value to override for this session only.</p>
+        <% if @manage_sites %>
+          <label class="mb-1 block text-sm font-semibold text-gray-700">Braiins API token (Pool-Auth-Token)</label>
+          <% if @site.braiins_pool_auth_token.present? %>
+            <p id="apiKeySavedHint" class="mb-2 text-sm text-emerald-800">A token is saved for this site. Leave the field blank to use it, or enter a value to override for this session only.</p>
+          <% else %>
+            <p id="apiKeySavedHint" class="mb-2 text-sm text-amber-900 font-medium">Pool data is hidden until you add a Braiins Pool-Auth-Token. Enter one below and choose “Fetch from API”, or <%= link_to "save a token on the site", edit_admin_site_path(@site), class: "text-blue-700 hover:underline" %> so it loads automatically next time.</p>
+          <% end %>
+          <input type="password" id="apiKey" value="<%= h(@site.braiins_pool_auth_token.to_s) %>" autocomplete="off" placeholder="Pool-Auth-Token (optional if saved on site)" class="w-full rounded-xl border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900">
         <% else %>
-          <p id="apiKeySavedHint" class="mb-2 text-sm text-amber-900 font-medium">Pool data is hidden until you add a Braiins Pool-Auth-Token. Enter one below and choose “Fetch from API”, or <%= link_to "save a token on the site", edit_admin_site_path(@site), class: "text-blue-700 hover:underline" %> so it loads automatically next time.</p>
+          <label class="mb-1 block text-sm font-semibold text-gray-700">Braiins pool data</label>
+          <% if @site.braiins_pool_auth_token.present? %>
+            <p id="apiKeySavedHint" class="mb-2 text-sm text-emerald-800">Pool data is configured for this site. Use “Fetch from API” to load the latest numbers.</p>
+          <% else %>
+            <p id="apiKeySavedHint" class="mb-2 text-sm text-amber-900 font-medium">Pool data is not available yet. An administrator needs to configure the Braiins token for this site.</p>
+          <% end %>
+          <input type="hidden" id="apiKey" value="">
         <% end %>
-        <input type="password" id="apiKey" value="<%= h(@site.braiins_pool_auth_token.to_s) %>" autocomplete="off" placeholder="Pool-Auth-Token (optional if saved on site)" class="w-full rounded-xl border border-gray-300 px-3 py-2 font-mono text-sm text-gray-900">
       </div>
 
       <div>
@@ -118,8 +132,18 @@
         Fetch from API (Primary)
       </button>
     </div>
+
+    <% unless @manage_sites %>
+      <input type="hidden" id="hashrateEndpoint" value="https://pool.braiins.com/accounts/hash_rate_daily/json/btc">
+      <input type="hidden" id="rewardsEndpoint" value="https://pool.braiins.com/accounts/rewards/json/btc">
+      <textarea id="hrJson" class="hidden" aria-hidden="true"></textarea>
+      <textarea id="rewardJson" class="hidden" aria-hidden="true"></textarea>
+      <textarea id="rawHashrateResponse" class="hidden" aria-hidden="true"></textarea>
+      <textarea id="rawRewardsResponse" class="hidden" aria-hidden="true"></textarea>
+    <% end %>
   </div>
 
+  <% if @manage_sites %>
   <details class="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm">
     <summary class="cursor-pointer text-lg font-semibold text-gray-900">Advanced / Fallback Data (Endpoints + Manual Paste)</summary>
 
@@ -187,6 +211,7 @@
       </div>
     </div>
   </details>
+  <% end %>
 
   <p class="text-sm text-gray-600">
     Weighted Efficiency auto-calculated from % mix (80% S21 Pro + 20% S21 = 15.5 J/TH).<br>

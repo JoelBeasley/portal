@@ -46,6 +46,10 @@ class User < ApplicationRecord
     partner? || admin_or_super_admin?
   end
 
+  def can_access_sites?
+    partner? || admin_or_super_admin?
+  end
+
   def invite_accepted?
     welcome_password_set_at.present?
   end

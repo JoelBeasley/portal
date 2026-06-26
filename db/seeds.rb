@@ -22,6 +22,16 @@ regular_admin.assign_attributes(
 )
 regular_admin.save!
 
+partner = User.find_or_initialize_by(email: "partner@sovrn.com")
+partner.assign_attributes(
+  first_name: "Jordan",
+  last_name: "Reed",
+  role: :partner,
+  password: "password",
+  password_confirmation: "password"
+)
+partner.save!
+
 investor = User.find_or_initialize_by(email: "investor@sovrn.com")
 investor.assign_attributes(
   first_name: "Riley",

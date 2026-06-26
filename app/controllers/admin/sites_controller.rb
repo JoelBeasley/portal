@@ -1,6 +1,6 @@
 class Admin::SitesController < ApplicationController
   before_action :authenticate_user!
-  before_action :require_admin
+  before_action :require_sites_access
   before_action :require_super_admin, only: [:new, :create, :edit, :update]
   before_action :set_site, only: [:show, :edit, :update]
 
@@ -51,8 +51,8 @@ class Admin::SitesController < ApplicationController
     @site = Site.find(params[:id])
   end
 
-  def require_admin
-    redirect_to root_path, alert: "Access denied." unless current_user.can_access_admin_area?
+  def require_sites_access
+    redirect_to root_path, alert: "Access denied." unless true_current_user&.can_access_sites?
   end
 
   def require_super_admin

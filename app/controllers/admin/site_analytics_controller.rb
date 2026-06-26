@@ -4,13 +4,14 @@ class Admin::SiteAnalyticsController < ApplicationController
   require "net/http"
 
   before_action :authenticate_user!
-  before_action :require_admin
+  before_action :require_sites_access
 
   CACHE_TTL = 6.hours
   BTC_USD_CACHE_TTL = 5.minutes
 
   def show
     @site = Site.includes(:offering).find(params[:id])
+    @manage_sites = true_current_user.can_manage_sites?
   rescue ActiveRecord::RecordNotFound
     redirect_to admin_sites_path, alert: "Site not found."
   end
@@ -125,8 +126,8 @@ class Admin::SiteAnalyticsController < ApplicationController
     JSON.parse(response.body)
   end
 
-  def require_admin
-    redirect_to root_path, alert: "Access denied." unless current_user.can_access_admin_area?
+  def require_sites_access
+    redirect_to root_path, alert: "Access denied." unless true_current_user&.can_access_sites?
   end
 
   def fetch_braiins_json(endpoint, token)
