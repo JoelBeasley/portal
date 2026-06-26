@@ -3,7 +3,9 @@
      data-analytics-data-url="<%= admin_site_analytics_site_data_path(@site) %>"
      data-site-token-configured="<%= @site.braiins_pool_auth_token.present? ? "true" : "false" %>"
      data-site-lacks-saved-token="<%= @site.braiins_pool_auth_token.blank? ? "true" : "false" %>"
-     data-site-id="<%= @site.id %>">
+     data-site-id="<%= @site.id %>"
+     data-default-current-machines="<%= @site.default_current_machines %>"
+     data-default-projected-machines="<%= @site.default_projected_machines %>">
   <div>
     <p class="text-sm text-gray-500 mb-1">
       <%= link_to "Sites", admin_sites_path, class: "text-blue-600 hover:underline" %>
@@ -24,19 +26,26 @@
 
   <div id="analytics-tables" class="space-y-6 <%= "hidden" if @site.braiins_pool_auth_token.blank? %>">
     <div>
-      <h2 class="mb-2 text-lg font-semibold text-gray-900">Current machines (<span id="currentMachinesHeading">80</span>)</h2>
-      <div class="overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-sm" style="max-height: 70vh;">
+      <h2 class="mb-2 text-lg font-semibold text-gray-900">Current machines (<span id="currentMachinesHeading"><%= @site.default_current_machines %></span>)</h2>
+      <div class="relative overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-sm" style="max-height: 70vh;">
+        <div class="analytics-table-loading hidden absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-white/90" aria-hidden="true">
+          <svg class="h-8 w-8 animate-spin text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p class="text-sm font-medium text-gray-600">Loading pool data…</p>
+        </div>
         <table id="resultsTableCurrent" class="w-full border-collapse text-right text-sm">
           <thead class="sticky top-0 z-10 bg-gray-50">
             <tr>
               <th class="border border-gray-200 px-3 py-2 text-left min-w-[140px]">Date</th>
               <th class="border border-gray-200 px-3 py-2">Hashrate (TH/s)</th>
-              <th class="border border-gray-200 px-3 py-2">Energy Cost (<span id="currentMachinesLabelA">80</span> machines)</th>
+              <th class="border border-gray-200 px-3 py-2">Energy Cost (<span id="currentMachinesLabelA"><%= @site.default_current_machines %></span> machines)</th>
               <th class="border border-gray-200 px-3 py-2">BTC Reward</th>
               <th class="border border-gray-200 px-3 py-2">Gross Revenue (USD)</th>
-              <th class="border border-gray-200 px-3 py-2">Daily Net Profit (<span id="currentMachinesLabelB">80</span> machines)</th>
-              <th class="border border-gray-200 px-3 py-2">Daily Sovrn Partner Return (<span id="currentMachinesLabelC">80</span> machines)</th>
-              <th class="border border-gray-200 px-3 py-2">Monthly Sovrn Partner Return (<span id="currentMachinesLabelD">80</span> machines)</th>
+              <th class="border border-gray-200 px-3 py-2">Daily Net Profit (<span id="currentMachinesLabelB"><%= @site.default_current_machines %></span> machines)</th>
+              <th class="border border-gray-200 px-3 py-2">Daily Sovrn Partner Return (<span id="currentMachinesLabelC"><%= @site.default_current_machines %></span> machines)</th>
+              <th class="border border-gray-200 px-3 py-2">Monthly Sovrn Partner Return (<span id="currentMachinesLabelD"><%= @site.default_current_machines %></span> machines)</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -45,19 +54,26 @@
     </div>
 
     <div>
-      <h2 class="mb-2 text-lg font-semibold text-gray-900">Projected machines (<span id="projectedMachinesHeading">325</span>)</h2>
-      <div class="overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-sm" style="max-height: 70vh;">
+      <h2 class="mb-2 text-lg font-semibold text-gray-900">Projected machines (<span id="projectedMachinesHeading"><%= @site.default_projected_machines %></span>)</h2>
+      <div class="relative overflow-y-auto rounded-2xl border border-gray-200 bg-white shadow-sm" style="max-height: 70vh;">
+        <div class="analytics-table-loading hidden absolute inset-0 z-20 flex flex-col items-center justify-center gap-3 bg-white/90" aria-hidden="true">
+          <svg class="h-8 w-8 animate-spin text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p class="text-sm font-medium text-gray-600">Loading pool data…</p>
+        </div>
         <table id="resultsTableProjected" class="w-full border-collapse text-right text-sm">
           <thead class="sticky top-0 z-10 bg-gray-50">
             <tr>
               <th class="border border-gray-200 px-3 py-2 text-left min-w-[140px]">Date</th>
               <th class="border border-gray-200 px-3 py-2">Hashrate (TH/s)</th>
-              <th class="border border-gray-200 px-3 py-2">Energy Cost (<span id="projectedMachinesLabelA">325</span> machines)</th>
+              <th class="border border-gray-200 px-3 py-2">Energy Cost (<span id="projectedMachinesLabelA"><%= @site.default_projected_machines %></span> machines)</th>
               <th class="border border-gray-200 px-3 py-2">BTC Reward (scaled)</th>
               <th class="border border-gray-200 px-3 py-2">Gross Revenue (USD)</th>
-              <th class="border border-gray-200 px-3 py-2">Daily Net Profit (<span id="projectedMachinesLabelB">325</span> machines)</th>
-              <th class="border border-gray-200 px-3 py-2">Daily Sovrn Partner Return (<span id="projectedMachinesLabelC">325</span> machines)</th>
-              <th class="border border-gray-200 px-3 py-2">Monthly Sovrn Partner Return (<span id="projectedMachinesLabelD">325</span> machines)</th>
+              <th class="border border-gray-200 px-3 py-2">Daily Net Profit (<span id="projectedMachinesLabelB"><%= @site.default_projected_machines %></span> machines)</th>
+              <th class="border border-gray-200 px-3 py-2">Daily Sovrn Partner Return (<span id="projectedMachinesLabelC"><%= @site.default_projected_machines %></span> machines)</th>
+              <th class="border border-gray-200 px-3 py-2">Monthly Sovrn Partner Return (<span id="projectedMachinesLabelD"><%= @site.default_projected_machines %></span> machines)</th>
             </tr>
           </thead>
           <tbody></tbody>
@@ -110,12 +126,12 @@
 
       <div>
         <label class="mb-1 block text-sm font-semibold text-gray-700">Current Machines</label>
-        <input type="number" id="currentMachines" value="80" step="1" min="1" class="w-full rounded-xl border border-gray-300 px-3 py-2">
+        <input type="number" id="currentMachines" value="<%= @site.default_current_machines %>" step="1" min="1" class="w-full rounded-xl border border-gray-300 px-3 py-2">
       </div>
 
       <div>
         <label class="mb-1 block text-sm font-semibold text-gray-700">Projected Machines</label>
-        <input type="number" id="projectedMachines" value="325" step="1" class="w-full rounded-xl border border-gray-300 px-3 py-2">
+        <input type="number" id="projectedMachines" value="<%= @site.default_projected_machines %>" step="1" class="w-full rounded-xl border border-gray-300 px-3 py-2">
       </div>
 
       <div>
@@ -230,8 +246,12 @@
     let currentRewardData = null;
     let baselineCurrentMachines = null;
 
+    const analyticsRoot = document.getElementById("site-analytics-root");
+    const DEFAULT_CURRENT_MACHINES = parseInt(analyticsRoot?.dataset.defaultCurrentMachines, 10) || 80;
+    const DEFAULT_PROJECTED_MACHINES = parseInt(analyticsRoot?.dataset.defaultProjectedMachines, 10) || 325;
+
     function captureBaselineFromInputs() {
-      baselineCurrentMachines = parseFloat(document.getElementById("currentMachines").value) || 80;
+      baselineCurrentMachines = parseFloat(document.getElementById("currentMachines").value) || DEFAULT_CURRENT_MACHINES;
     }
 
     function machineScalesFromInputs() {
@@ -285,7 +305,7 @@
     }
 
     function updateProjectedMachineLabels() {
-      const projectedMachines = parseFloat(document.getElementById("projectedMachines").value) || 325;
+      const projectedMachines = parseFloat(document.getElementById("projectedMachines").value) || DEFAULT_PROJECTED_MACHINES;
       const text = String(projectedMachines);
       ["projectedMachinesHeading", "projectedMachinesLabelA", "projectedMachinesLabelB", "projectedMachinesLabelC", "projectedMachinesLabelD"].forEach(id => {
         const el = document.getElementById(id);
@@ -294,7 +314,7 @@
     }
 
     function updateCurrentMachineLabels() {
-      const currentMachines = parseFloat(document.getElementById("currentMachines").value) || 80;
+      const currentMachines = parseFloat(document.getElementById("currentMachines").value) || DEFAULT_CURRENT_MACHINES;
       const text = String(currentMachines);
       ["currentMachinesHeading", "currentMachinesLabelA", "currentMachinesLabelB", "currentMachinesLabelC", "currentMachinesLabelD"].forEach(id => {
         const el = document.getElementById(id);
@@ -412,7 +432,17 @@
       document.getElementById("analytics-tables")?.classList.remove("hidden");
     }
 
+    function setTablesLoading(isLoading) {
+      document.querySelectorAll(".analytics-table-loading").forEach(el => {
+        el.classList.toggle("hidden", !isLoading);
+        el.setAttribute("aria-hidden", isLoading ? "false" : "true");
+      });
+      const tablesRoot = document.getElementById("analytics-tables");
+      if (tablesRoot) tablesRoot.setAttribute("aria-busy", isLoading ? "true" : "false");
+    }
+
     function clearAnalyticsTables() {
+      setTablesLoading(false);
       currentHrData = null;
       currentRewardData = null;
       baselineCurrentMachines = null;
@@ -437,6 +467,8 @@
       }
 
       try {
+        revealAnalyticsTables();
+        setTablesLoading(true);
         showStatus("Loading from Braiins API...");
         const proxyRes = await fetch(analyticsDataPostUrl(), {
           method: "POST",
@@ -485,6 +517,7 @@
           refreshHours: refreshHrs != null ? refreshHrs : 6
         });
       } catch (e) {
+        setTablesLoading(false);
         showStatus("⚠️ " + String(e.message) + " — using manual pasted data if available.", "error");
         updateDebugPayloads(
           { error: "API request failed", message: String(e) },
@@ -509,6 +542,7 @@
 
     function renderTable(hrArray, rewardArray, efficiency, costKwh, currentScale, projectedScale, btcPrice) {
       revealAnalyticsTables();
+      setTablesLoading(false);
       const tbodyCurrent = document.getElementById("resultsTableCurrent").querySelector("tbody");
       const tbodyProjected = document.getElementById("resultsTableProjected").querySelector("tbody");
       tbodyCurrent.innerHTML = "";

@@ -40,6 +40,16 @@ h1.text-3xl.font-bold.mb-6 Edit site
       = f.number_field :power_cost, min: 0, step: :any, class: "w-full border border-gray-300 rounded-xl p-3"
 
     div
+      = f.label :default_current_machines, "Default current machines (analytics)", class: "block text-sm font-medium mb-2"
+      = f.number_field :default_current_machines, min: 1, step: 1, class: "w-full border border-gray-300 rounded-xl p-3"
+      p.mt-1.text-xs.text-gray-500 Default for the current machines count on the site analytics page.
+
+    div
+      = f.label :default_projected_machines, "Default projected machines (analytics)", class: "block text-sm font-medium mb-2"
+      = f.number_field :default_projected_machines, min: 1, step: 1, class: "w-full border border-gray-300 rounded-xl p-3"
+      p.mt-1.text-xs.text-gray-500 Default for the projected machines count on the site analytics page.
+
+    div
       = f.label :offering_id, "Offering", class: "block text-sm font-medium mb-2"
       = f.select :offering_id, @offerings.map { |o| [o.name, o.id] }, {},
                  class: "w-full border border-gray-300 rounded-xl p-3"

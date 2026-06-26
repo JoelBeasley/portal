@@ -11,4 +11,7 @@ class Site < ApplicationRecord
   }, prefix: true
 
   normalizes :braiins_pool_auth_token, with: ->(v) { v.to_s.strip.presence }
+
+  validates :default_current_machines, numericality: { only_integer: true, greater_than: 0 }
+  validates :default_projected_machines, numericality: { only_integer: true, greater_than: 0 }
 end

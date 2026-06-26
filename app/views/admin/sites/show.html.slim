@@ -25,6 +25,12 @@
       div
         p.text-xs.uppercase.text-gray-500 Power Cost
         p.text-sm.text-gray-900 = @site.power_cost.present? ? number_with_precision(@site.power_cost, precision: 4, strip_insignificant_zeros: true) : "N/A"
+      div
+        p.text-xs.uppercase.text-gray-500 Default current machines
+        p.text-sm.text-gray-900 = @site.default_current_machines
+      div
+        p.text-xs.uppercase.text-gray-500 Default projected machines
+        p.text-sm.text-gray-900 = @site.default_projected_machines
 
     .flex.flex-wrap.gap-3
       = link_to "Pool analytics (Braiins)", admin_site_pool_dashboard_path(@site), class: "inline-flex items-center rounded-xl bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-blue-700"

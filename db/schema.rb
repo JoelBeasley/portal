@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_23_230701) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_25_120000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -199,6 +199,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_23_230701) do
   create_table "sites", force: :cascade do |t|
     t.text "braiins_pool_auth_token"
     t.datetime "created_at", null: false
+    t.integer "default_current_machines", default: 80, null: false
+    t.integer "default_projected_machines", default: 325, null: false
     t.text "description"
     t.string "location"
     t.string "model"

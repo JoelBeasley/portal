@@ -71,7 +71,9 @@ class Admin::SitesController < ApplicationController
       :model,
       :size_mw,
       :status,
-      :power_cost
+      :power_cost,
+      :default_current_machines,
+      :default_projected_machines
     )
   end
 end
