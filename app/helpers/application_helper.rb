@@ -1,4 +1,25 @@
 module ApplicationHelper
+  def nav_user
+    current_user
+  end
+
+  def show_sites_nav_link?
+    nav_user&.can_access_sites?
+  end
+
+  def show_call_list_nav_link?
+    nav_user&.can_access_call_list?
+  end
+
+  def sites_nav_link_classes
+    base = "whitespace-nowrap transition"
+    if nav_user&.can_access_admin_area?
+      "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 #{base}"
+    else
+      "text-sm lg:text-base text-slate-200 hover:text-white #{base}"
+    end
+  end
+
   # e.g. Dec 11th, 2025
   def format_ordinal_date(value)
     return if value.blank?

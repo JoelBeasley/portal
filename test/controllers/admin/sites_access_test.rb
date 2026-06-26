@@ -51,6 +51,15 @@ class Admin::SitesAccessTest < ActionDispatch::IntegrationTest
     assert_includes [200, 502], response.status
   end
 
+  test "partner nav includes Sites link on investments page" do
+    sign_in @partner
+
+    get investments_path
+    assert_response :success
+    assert_match(/Sites/, response.body)
+    assert_match(/Call List/, response.body)
+  end
+
   private
 
   def sign_in(user)
