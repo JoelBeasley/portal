@@ -2,7 +2,7 @@ require "csv"
 
 class Admin::OfferingsController < ApplicationController
   before_action :authenticate_user!
-  before_action :require_admin
+  before_action :require_offerings_access
   before_action :require_super_admin, only: [:new, :create, :edit, :update]
   before_action :set_offering, only: [:show, :edit, :update, :export_addresses, :preview_export_addresses]
 
@@ -97,8 +97,8 @@ class Admin::OfferingsController < ApplicationController
         .order(investment_order)
   end
 
-  def require_admin
-    redirect_to root_path, alert: "Access denied." unless current_user.can_access_admin_area?
+  def require_offerings_access
+    redirect_to root_path, alert: "Access denied." unless true_current_user&.can_access_offerings?
   end
 
   def require_super_admin

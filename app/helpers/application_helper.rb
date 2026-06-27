@@ -7,11 +7,23 @@ module ApplicationHelper
     nav_user&.can_access_sites?
   end
 
+  def show_offerings_nav_link?
+    nav_user&.can_access_offerings?
+  end
+
   def show_call_list_nav_link?
     nav_user&.can_access_call_list?
   end
 
   def sites_nav_link_classes
+    admin_nav_link_classes
+  end
+
+  def offerings_nav_link_classes
+    admin_nav_link_classes
+  end
+
+  def admin_nav_link_classes
     base = "whitespace-nowrap transition"
     if nav_user&.can_access_admin_area?
       "text-sm lg:text-base text-blue-300 font-medium hover:text-blue-200 #{base}"

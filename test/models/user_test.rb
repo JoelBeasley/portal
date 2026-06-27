@@ -5,6 +5,7 @@ class UserTest < ActiveSupport::TestCase
     partner = User.new(role: :partner)
 
     assert partner.can_access_sites?
+    assert partner.can_access_offerings?
     assert partner.can_access_call_list?
     assert_not partner.can_access_admin_area?
     assert_not partner.can_manage_sites?

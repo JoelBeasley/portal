@@ -11,8 +11,10 @@ class ApplicationHelperTest < ActionView::TestCase
     end
 
     assert show_sites_nav_link?
+    assert show_offerings_nav_link?
     assert show_call_list_nav_link?
     assert_includes sites_nav_link_classes, "text-slate-200"
+    assert_includes offerings_nav_link_classes, "text-slate-200"
   end
 
   test "show_sites_nav_link for admin" do
@@ -22,7 +24,9 @@ class ApplicationHelperTest < ActionView::TestCase
     end
 
     assert show_sites_nav_link?
+    assert show_offerings_nav_link?
     assert_includes sites_nav_link_classes, "text-blue-300"
+    assert_includes offerings_nav_link_classes, "text-blue-300"
   end
 
   test "show_sites_nav_link for investor" do
