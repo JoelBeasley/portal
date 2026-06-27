@@ -15,6 +15,7 @@ class User < ApplicationRecord
 
   has_one :investor_profile, dependent: :destroy
   has_many :investments, dependent: :destroy
+  has_many :active_investments, -> { active }, class_name: "Investment", inverse_of: :user
   has_many :investment_documents, dependent: :destroy
   has_many :offerings, -> { distinct }, through: :investments
   has_many :sites, through: :offerings
@@ -23,19 +24,20 @@ class User < ApplicationRecord
   has_associated_audits
 
   generates_token_for :btc_address_reminder, expires_in: 14.days do
-    investments.where(bitcoin_address: [nil, ""]).count
+    active_investments.where(bitcoin_address: [nil, ""]).count
   end
 
   scope :investor_directory, lambda {
     where(role: :investor).or(where(id: Investment.select(:user_id)))
   }
 
+  scope :call_list_directory, lambda {
+    where(id: Investment.active.select(:user_id))
+  }
+
   scope :investors_needing_bitcoin_address, lambda {
-    investor_directory
-      .where.not(welcome_password_set_at: nil)
-      .joins(:investments)
-      .where(investments: { bitcoin_address: [nil, ""] })
-      .distinct
+    where.not(welcome_password_set_at: nil)
+      .where(id: Investment.active.where(bitcoin_address: [nil, ""]).select(:user_id))
   }
 
   def admin_or_super_admin?
@@ -72,11 +74,11 @@ class User < ApplicationRecord
   end
 
   def bitcoin_addresses_for_call_list
-    investments.map { |investment| investment.bitcoin_address.to_s.strip }.reject(&:blank?).uniq
+    active_investments.map { |investment| investment.bitcoin_address.to_s.strip }.reject(&:blank?).uniq
   end
 
   def bitcoin_address_status
-    return :no_investments if investments.empty?
+    return :no_investments if active_investments.empty?
     return :complete if investments_missing_bitcoin_address.empty?
 
     :missing
@@ -130,10 +132,10 @@ class User < ApplicationRecord
   end
 
   def investments_missing_bitcoin_address
-    investments.includes(:offering)
-               .references(:offering)
-               .where(bitcoin_address: [nil, ""])
-               .order("offerings.name")
+    active_investments.includes(:offering)
+                      .references(:offering)
+                      .where(bitcoin_address: [nil, ""])
+                      .order("offerings.name")
   end
 
   def investments_with_bitcoin_address

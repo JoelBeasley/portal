@@ -17,7 +17,7 @@ class CallListController < ApplicationController
   end
 
   def sorted_investors
-    scope = User.investor_directory
+    scope = User.call_list_directory
     direction = @direction.upcase
 
     case @sort
@@ -38,11 +38,14 @@ class CallListController < ApplicationController
     <<~SQL.squish
       CASE
         WHEN NOT EXISTS (
-          SELECT 1 FROM investments WHERE investments.user_id = users.id
+          SELECT 1 FROM investments
+          WHERE investments.user_id = users.id
+            AND investments.archived_at IS NULL
         ) THEN 1
         WHEN EXISTS (
           SELECT 1 FROM investments
           WHERE investments.user_id = users.id
+            AND investments.archived_at IS NULL
             AND (investments.bitcoin_address IS NULL OR investments.bitcoin_address = '')
         ) THEN 0
         ELSE 2
