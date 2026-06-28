@@ -1,0 +1,48 @@
+- modal_classes = @show_finders_modal ? "fixed inset-0 z-50" : "fixed inset-0 z-50 hidden"
+div class=modal_classes data-modal-target="modal" data-action="click->modal#closeOnBackdrop"
+  .flex.min-h-full.items-center.justify-center.p-4.bg-black/50
+    .bg-white.rounded-2xl.shadow-xl.w-full.max-w-4xl.flex.flex-col class="max-h-[90vh]" role="dialog" aria-modal="true" aria-labelledby="finders-modal-title"
+      .flex.items-center.justify-between.border-b.border-gray-200.px-6.py-4
+        h3#finders-modal-title.text-lg.font-semibold.text-gray-900 Manage finders
+        button.text-gray-500.hover:text-gray-700.text-2xl.leading-none type="button" data-action="modal#close" aria-label="Close"
+          | ×
+      .overflow-y-auto.px-6.py-4
+        p.text-sm.text-gray-600.mb-4 Add, edit, or remove finders and their fee percentages for this offering.
+
+        - if @finders.any?
+          .space-y-3.mb-6
+            - @finders.each do |finder|
+              - form_id = "finder-form-#{finder.id}"
+              .border-b.border-gray-100.pb-3
+                .flex.flex-wrap.items-end.gap-3
+                  = form_with model: [:admin, @offering, finder], local: true, html: { id: form_id }, class: "contents" do |f|
+                    .flex.flex-col.gap-1.5.flex-1 class="min-w-[8rem]"
+                      = f.label :name, class: "block text-xs font-medium text-gray-600 leading-none"
+                      = f.text_field :name, required: true, class: "block w-full h-10 rounded-xl border border-gray-300 px-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    .flex.flex-col.gap-1.5 class="flex-[1.5] min-w-[12rem]"
+                      = f.label :btc_address, "BTC address", class: "block text-xs font-medium text-gray-600 leading-none"
+                      = f.text_field :btc_address, autocomplete: "off", data: { lpignore: "true", "1p-ignore": "true" }, class: "block w-full h-10 rounded-xl border border-gray-300 px-3 text-sm font-mono outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                    .flex.flex-col.gap-1.5.w-24.shrink-0
+                      = f.label :fee_percent, "Fee %", class: "block text-xs font-medium text-gray-600 leading-none"
+                      = f.number_field :fee_percent, step: "0.01", min: "0", max: "100", required: true, class: "block w-full h-10 rounded-xl border border-gray-300 px-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+                  .flex.items-center.gap-2.shrink-0
+                    = hidden_field_tag :manage_finders, "1", form: form_id
+                    button.h-10.bg-white.border.border-gray-300.text-gray-800.px-4.rounded-xl.hover:bg-gray-50.text-sm.cursor-pointer type="submit" form=form_id
+                      | Save
+                    = button_to "Delete", admin_offering_finder_path(@offering, finder, manage_finders: true), method: :delete, form: { class: "inline-flex m-0" }, class: "h-10 bg-white border border-red-200 text-red-700 px-4 rounded-xl hover:bg-red-50 text-sm cursor-pointer", data: { turbo_confirm: "Remove #{finder.name}?" }
+        - else
+          p.text-gray-500.text-sm.mb-6 No finders yet.
+
+        h3.text-sm.font-semibold.text-gray-800.mb-3 Add finder
+        = form_with model: [:admin, @offering, Finder.new], local: true, class: "grid grid-cols-1 sm:grid-cols-[minmax(0,1fr)_minmax(0,1.5fr)_7rem_auto] gap-x-4 gap-y-4 items-end" do |f|
+          .flex.flex-col.gap-1.5
+            = f.label :name, class: "block text-sm font-medium text-gray-700 leading-none"
+            = f.text_field :name, required: true, class: "block w-full h-10 rounded-xl border border-gray-300 px-4 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+          .flex.flex-col.gap-1.5
+            = f.label :btc_address, "BTC address", class: "block text-sm font-medium text-gray-700 leading-none"
+            = f.text_field :btc_address, autocomplete: "off", data: { lpignore: "true", "1p-ignore": "true" }, class: "block w-full h-10 rounded-xl border border-gray-300 px-4 text-sm font-mono outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+          .flex.flex-col.gap-1.5
+            = f.label :fee_percent, "Fee %", class: "block text-sm font-medium text-gray-700 leading-none"
+            = f.number_field :fee_percent, step: "0.01", min: "0", max: "100", required: true, class: "block w-full h-10 rounded-xl border border-gray-300 px-4 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20"
+          = hidden_field_tag :manage_finders, "1"
+          = f.submit "Add finder", class: "h-10 bg-blue-600 text-white px-4 rounded-xl hover:bg-blue-700 cursor-pointer self-end"

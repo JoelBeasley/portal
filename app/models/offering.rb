@@ -2,6 +2,7 @@ class Offering < ApplicationRecord
   audited
 
   has_many :sites, dependent: :destroy
+  has_many :finders, dependent: :destroy
   has_many :investments, dependent: :destroy
   has_many :active_investments, -> { active }, class_name: "Investment"
   has_many :archived_investments, -> { archived }, class_name: "Investment"

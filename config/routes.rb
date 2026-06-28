@@ -41,9 +41,12 @@ Rails.application.routes.draw do
     post "sites/:site_id/analytics/data", to: "site_analytics#data", as: :site_analytics_site_data
     get "sites/:id/analytics", to: "site_analytics#show", as: :site_pool_dashboard
     resources :offerings, only: [:index, :show, :new, :create, :edit, :update] do
+      resources :finders, only: [:create, :update, :destroy]
       member do
         post :export_addresses
         post :preview_export_addresses
+        post :export_finder_fees
+        post :preview_export_finder_fees
       end
     end
     resources :sites, only: [:index, :show, :new, :create, :edit, :update]

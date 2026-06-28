@@ -21,7 +21,8 @@ class Admin::OfferingsExportTest < ActionDispatch::IntegrationTest
     assert_match "Export preview", response.body
     assert_match @investor.full_name, response.body
     assert_match "1.00000000", response.body
-    assert_no_match 'class="fixed inset-0 z-50 hidden"', response.body
+    assert_match 'id="export-preview-title">Export preview', response.body
+    assert_includes response.body, 'class="fixed inset-0 z-50" data-action="click-&gt;export-preview#closeOnBackdrop"'
   end
 
   test "preview export renders error in modal when btc missing" do

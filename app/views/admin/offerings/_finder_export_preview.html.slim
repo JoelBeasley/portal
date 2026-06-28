@@ -1,0 +1,26 @@
+- if local_assigns[:error].present?
+  .rounded-xl.border.border-red-200.bg-red-50.px-4.py-3.text-sm.text-red-800 = error
+- else
+  p.text-sm.text-gray-600.mb-4
+    | Preview for
+    strong = " #{number_with_precision(btc_amount, strip_insignificant_zeros: true)} BTC"
+    |  — split among finders by fee percent.
+  .overflow-x-auto.max-w-full
+    table.w-full.min-w-max.text-left.text-sm
+      thead.bg-gray-50.border-b.border-gray-200
+        tr
+          th.px-4.py-3.font-semibold.text-gray-700 Name
+          th.px-4.py-3.font-semibold.text-gray-700 Bitcoin address
+          th.px-4.py-3.font-semibold.text-gray-700 BTC amount
+          th.px-4.py-3.font-semibold.text-gray-700 Offering
+      tbody
+        - export_rows.each do |row|
+          tr.border-b.border-gray-100
+            td.px-4.py-3.text-gray-900 = row[:name]
+            td.px-4.py-3.text-gray-700.font-mono.text-xs = row[:bitcoin_address].presence || "—"
+            td.px-4.py-3.text-gray-900.font-mono = row[:btc_amount]
+            td.px-4.py-3.text-gray-700 = row[:offering_name]
+        tr.bg-gray-50.border-t.border-gray-200.font-semibold
+          td.px-4.py-3.text-gray-900 colspan=2 Total
+          td.px-4.py-3.text-gray-900.font-mono = total_btc_amount
+          td.px-4.py-3

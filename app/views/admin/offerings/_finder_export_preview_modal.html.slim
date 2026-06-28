@@ -1,0 +1,13 @@
+- modal_classes = @finder_show_preview ? "fixed inset-0 z-50" : "fixed inset-0 z-50 hidden"
+div class=modal_classes data-export-preview-target="modal" data-action="click->export-preview#closeOnBackdrop"
+  .flex.min-h-full.items-center.justify-center.p-4.bg-black/50
+    .bg-white.rounded-2xl.shadow-xl.w-full.max-w-5xl.flex.flex-col class="max-h-[90vh]" role="dialog" aria-modal="true" aria-labelledby="finder-export-preview-title"
+      .flex.items-center.justify-between.border-b.border-gray-200.px-6.py-4
+        h3#finder-export-preview-title.text-lg.font-semibold.text-gray-900 Finders fee export preview
+        button.text-gray-500.hover:text-gray-700.text-2xl.leading-none type="button" data-action="export-preview#close" aria-label="Close"
+          | ×
+      .overflow-y-auto.px-6.py-4
+        - if @finder_preview_error.present?
+          = render "finder_export_preview", error: @finder_preview_error
+        - elsif @finder_preview_rows.present?
+          = render "finder_export_preview", export_rows: @finder_preview_rows, btc_amount: BigDecimal(@finder_preview_btc_amount.to_s), total_btc_amount: @finder_preview_total_btc_amount

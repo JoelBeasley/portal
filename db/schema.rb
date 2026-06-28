@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_06_26_224617) do
+ActiveRecord::Schema[8.1].define(version: 2026_06_28_171443) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
   enable_extension "pg_stat_statements"
@@ -63,6 +63,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_26_224617) do
     t.index ["created_at"], name: "index_audits_on_created_at"
     t.index ["request_uuid"], name: "index_audits_on_request_uuid"
     t.index ["user_id", "user_type"], name: "user_index"
+  end
+
+  create_table "finders", force: :cascade do |t|
+    t.string "btc_address"
+    t.datetime "created_at", null: false
+    t.decimal "fee_percent", precision: 5, scale: 2, null: false
+    t.string "name", null: false
+    t.bigint "offering_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["offering_id"], name: "index_finders_on_offering_id"
   end
 
   create_table "impersonation_events", force: :cascade do |t|
@@ -243,6 +253,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_06_26_224617) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "finders", "offerings"
   add_foreign_key "impersonation_events", "users", column: "admin_user_id"
   add_foreign_key "impersonation_events", "users", column: "target_user_id"
   add_foreign_key "investment_documents", "investments"
