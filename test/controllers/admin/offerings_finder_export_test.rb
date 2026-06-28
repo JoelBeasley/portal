@@ -10,14 +10,23 @@ class Admin::OfferingsFinderExportTest < ActionDispatch::IntegrationTest
   end
 
   test "preview export renders show page with preview table" do
+    price = BtcUsdPrice::Result.new(usd: 97_234.56, source: "CoinGecko", fetched_at: Time.current.utc.iso8601)
     sign_in @admin
 
-    post preview_export_finder_fees_admin_offering_path(@offering), params: { btc_amount: "1.0" }
+    original_current = BtcUsdPrice.method(:current)
+    BtcUsdPrice.define_singleton_method(:current) { price }
+    begin
+      post preview_export_finder_fees_admin_offering_path(@offering), params: { btc_amount: "1.0" }
 
-    assert_response :success
-    assert_match "Finders fee export preview", response.body
-    assert_match "Fee Finder", response.body
-    assert_match "1.00000000", response.body
+      assert_response :success
+      assert_match "Finders fee export preview", response.body
+      assert_match "Fee Finder", response.body
+      assert_match "1.00000000", response.body
+      assert_match "USD amount", response.body
+      assert_match "$97,234.56", response.body
+    ensure
+      BtcUsdPrice.define_singleton_method(:current, original_current)
+    end
   end
 
   test "preview export renders error in modal when btc missing" do
@@ -38,6 +47,7 @@ class Admin::OfferingsFinderExportTest < ActionDispatch::IntegrationTest
     assert_equal "text/csv", response.media_type
     assert_match "Fee Finder", response.body
     assert_match "1.00000000", response.body
+    assert_no_match "USD amount", response.body
   end
 
   test "offering show includes side by side exports and manage finders modal" do

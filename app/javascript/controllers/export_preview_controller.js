@@ -1,10 +1,16 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["modal", "btcInput", "exportBtcInput"]
+  static targets = ["modal", "btcInput", "exportBtcInput", "usdHint"]
+  static values = { btcUsdPrice: Number }
 
   connect() {
     this.handleKeydown = this.handleKeydown.bind(this)
+    this.updateUsdHint = this.updateUsdHint.bind(this)
+    if (this.hasBtcInputTarget) {
+      this.btcInputTarget.addEventListener("input", this.updateUsdHint)
+      this.updateUsdHint()
+    }
     if (!this.modalTarget.classList.contains("hidden")) {
       document.body.classList.add("overflow-hidden")
       document.addEventListener("keydown", this.handleKeydown)
@@ -12,6 +18,9 @@ export default class extends Controller {
   }
 
   disconnect() {
+    if (this.hasBtcInputTarget) {
+      this.btcInputTarget.removeEventListener("input", this.updateUsdHint)
+    }
     document.removeEventListener("keydown", this.handleKeydown)
     document.body.classList.remove("overflow-hidden")
   }
@@ -28,6 +37,28 @@ export default class extends Controller {
     }
 
     this.exportBtcInputTarget.value = btcAmount
+  }
+
+  updateUsdHint() {
+    if (!this.hasBtcInputTarget || !this.hasUsdHintTarget || this.btcUsdPriceValue <= 0) return
+
+    const btc = parseFloat(this.btcInputTarget.value)
+    if (Number.isNaN(btc) || btc <= 0) {
+      this.usdHintTarget.textContent = ""
+      return
+    }
+
+    const usd = btc * this.btcUsdPriceValue
+    this.usdHintTarget.textContent = `${this.formatUsd(usd)} USD`
+  }
+
+  formatUsd(amount) {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(amount)
   }
 
   close() {

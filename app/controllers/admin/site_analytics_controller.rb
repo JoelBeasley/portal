@@ -7,7 +7,6 @@ class Admin::SiteAnalyticsController < ApplicationController
   before_action :require_sites_access
 
   CACHE_TTL = 6.hours
-  BTC_USD_CACHE_TTL = 5.minutes
   BRAIINS_PROFILE_ENDPOINT = "https://pool.braiins.com/accounts/profile/json/btc/"
   BRAIINS_WORKERS_ENDPOINT = "https://pool.braiins.com/accounts/workers/json/btc/"
 
@@ -19,21 +18,18 @@ class Admin::SiteAnalyticsController < ApplicationController
   end
 
   def btc_price
-    cache_key = "site_analytics/btc_usd/v1"
-
-    payload = Rails.cache.fetch(cache_key, expires_in: BTC_USD_CACHE_TTL) do
-      usd, source = fetch_btc_usd_from_public_apis
-      {
-        usd: usd,
-        source: source,
-        fetched_at: Time.current.utc.iso8601
-      }
+    price = BtcUsdPrice.current
+    if price.nil?
+      render json: { error: "Could not load BTC price." }, status: :bad_gateway
+      return
     end
 
-    render json: payload.merge(cache_ttl_minutes: (BTC_USD_CACHE_TTL / 1.minute).to_i)
-  rescue StandardError => e
-    Rails.logger.error("BTC USD price proxy failed: #{e.class}: #{e.message}")
-    render json: { error: "Could not load BTC price." }, status: :bad_gateway
+    render json: {
+      usd: price.usd,
+      source: price.source,
+      fetched_at: price.fetched_at,
+      cache_ttl_minutes: BtcUsdPrice.cache_ttl_minutes
+    }
   end
 
   def data
@@ -83,52 +79,6 @@ class Admin::SiteAnalyticsController < ApplicationController
   end
 
   private
-
-  def fetch_btc_usd_from_public_apis
-    fetch_coingecko_btc_usd
-  rescue StandardError => e
-    Rails.logger.warn("CoinGecko BTC/USD failed (#{e.class}), trying Coinbase: #{e.message}")
-    fetch_coinbase_btc_usd
-  end
-
-  def fetch_coingecko_btc_usd
-    uri = URI.parse("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd")
-    raise ArgumentError, "Invalid price API host" unless uri.is_a?(URI::HTTPS) && uri.host == "api.coingecko.com"
-
-    data = fetch_https_json(uri)
-    usd = data.dig("bitcoin", "usd")
-    raise "CoinGecko response missing bitcoin.usd" if usd.nil?
-
-    [usd.to_f, "CoinGecko"]
-  end
-
-  def fetch_coinbase_btc_usd
-    uri = URI.parse("https://api.coinbase.com/v2/prices/BTC-USD/spot")
-    raise ArgumentError, "Invalid price API host" unless uri.is_a?(URI::HTTPS) && uri.host == "api.coinbase.com"
-
-    data = fetch_https_json(uri)
-    amount = data.dig("data", "amount")
-    raise "Coinbase response missing spot amount" if amount.nil?
-
-    [amount.to_f, "Coinbase"]
-  end
-
-  def fetch_https_json(uri)
-    request = Net::HTTP::Get.new(uri)
-    request["Accept"] = "application/json"
-
-    response = Net::HTTP.start(uri.host, uri.port, use_ssl: true) do |http|
-      http.open_timeout = 5
-      http.read_timeout = 12
-      http.request(request)
-    end
-
-    unless response.is_a?(Net::HTTPSuccess)
-      raise "HTTP #{response.code}"
-    end
-
-    JSON.parse(response.body)
-  end
 
   def require_sites_access
     redirect_to root_path, alert: "Access denied." unless true_current_user&.can_access_sites?

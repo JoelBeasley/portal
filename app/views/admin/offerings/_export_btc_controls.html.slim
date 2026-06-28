@@ -1,19 +1,29 @@
 - preview_form_id = local_assigns[:preview_form_id] || "export-preview-#{btc_field_id}"
 - sync_target = local_assigns[:sync_target]
 - export_sync_target = local_assigns[:export_sync_target]
+- btc_usd_price = local_assigns[:btc_usd_price] || @btc_usd_price
 - btc_input_data = { export_preview_target: "btcInput" }
 - btc_input_data[:offering_export_sync_target] = sync_target if sync_target.present?
 - export_btc_input_data = { export_preview_target: "exportBtcInput" }
 - export_btc_input_data[:offering_export_sync_target] = export_sync_target if export_sync_target.present?
+- usd_hint = nil
+- if btc_usd_price.present? && btc_amount.present?
+  - btc_value = btc_amount.to_d
+  - if btc_value.positive?
+    - usd_hint = "#{number_to_currency(btc_value * btc_usd_price.usd, precision: 2)} USD"
 
-.flex.items-end.gap-4
-  = form_with url: preview_url, method: :post, local: true, data: { turbo: false }, html: { id: preview_form_id, class: "contents" } do |f|
-    .flex.flex-col.gap-1.5.shrink-0
-      = f.label :btc_amount, "Total BTC amount", class: "block text-sm font-medium text-gray-700 leading-none"
-      = f.number_field :btc_amount, value: btc_amount, step: "any", min: "0", required: true, class: "w-28 h-10 rounded-xl border border-gray-300 px-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20", data: btc_input_data
-  .flex.items-center.gap-2.shrink-0
-    button.h-10.shrink-0.bg-white.border.border-gray-300.text-gray-800.px-4.rounded-xl.hover:bg-gray-50.inline-flex.items-center.cursor-pointer.whitespace-nowrap.text-sm type="submit" form=preview_form_id
-      | Preview Export
-    = form_with url: export_url, method: :post, local: true, data: { turbo: false, action: "submit->export-preview#prepareExport" }, html: { class: "inline-flex m-0" } do |f|
-      = f.hidden_field :btc_amount, value: btc_amount, data: export_btc_input_data
-      = f.submit export_label, class: "h-10 shrink-0 bg-blue-600 text-white px-4 rounded-xl hover:bg-blue-700 inline-flex items-center cursor-pointer whitespace-nowrap text-sm"
+div
+  .flex.items-end.gap-4
+    = form_with url: preview_url, method: :post, local: true, data: { turbo: false }, html: { id: preview_form_id, class: "contents" } do |f|
+      .flex.flex-col.gap-1.5.shrink-0
+        = f.label :btc_amount, "Total BTC amount", class: "block text-sm font-medium text-gray-700 leading-none"
+        = f.number_field :btc_amount, value: btc_amount, step: "any", min: "0", required: true, class: "w-28 h-10 rounded-xl border border-gray-300 px-3 text-sm outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20", data: btc_input_data
+    .flex.items-center.gap-2.shrink-0
+      button.h-10.shrink-0.bg-white.border.border-gray-300.text-gray-800.px-4.rounded-xl.hover:bg-gray-50.inline-flex.items-center.cursor-pointer.whitespace-nowrap.text-sm type="submit" form=preview_form_id
+        | Preview Export
+      = form_with url: export_url, method: :post, local: true, data: { turbo: false, action: "submit->export-preview#prepareExport" }, html: { class: "inline-flex m-0" } do |f|
+        = f.hidden_field :btc_amount, value: btc_amount, data: export_btc_input_data
+        = f.submit export_label, class: "h-10 shrink-0 bg-blue-600 text-white px-4 rounded-xl hover:bg-blue-700 inline-flex items-center cursor-pointer whitespace-nowrap text-sm"
+  - if btc_usd_price.present?
+    p.text-xs.text-gray-500.mt-1.min-h-4 data-export-preview-target="usdHint"
+      = usd_hint

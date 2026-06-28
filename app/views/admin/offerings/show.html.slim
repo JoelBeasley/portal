@@ -18,14 +18,14 @@
   - if current_user.can_access_offerings?
     div data-controller="modal offering-export-sync" data-modal-open-value=(@show_finders_modal ? "true" : "false") data-offering-export-sync-carried-interest-percent-value=@offering.carried_interest.to_d data-offering-export-sync-finder-fee-percent-value=OfferingFinderFeeDistributionCalculator::FINDER_FEE_PERCENT
       .grid.grid-cols-1.lg:grid-cols-2.gap-6
-        div data-controller="export-preview"
+        div data-controller="export-preview" data-export-preview-btc-usd-price-value=(@btc_usd_price&.usd || 0)
           .border.border-gray-200.rounded-2xl.p-6.bg-white.h-full
             h2.text-lg.font-semibold.mb-2 Investor export
             p.text-sm.text-gray-600.mb-4 Enter a total BTC amount to export investor names, bitcoin addresses, calculated BTC payouts, and offering name to CSV. Carried interest is carved out first; the remainder is split among investors by percent of class (total raised).
             = render "export_btc_controls", preview_url: preview_export_addresses_admin_offering_path(@offering), export_url: export_addresses_admin_offering_path(@offering), btc_amount: @preview_btc_amount, export_label: "Export Addresses", btc_field_id: "investor-export-btc-amount", preview_form_id: "investor-export-preview-form", sync_target: "investorBtcInput"
           = render "export_preview_modal"
 
-        div data-controller="export-preview"
+        div data-controller="export-preview" data-export-preview-btc-usd-price-value=(@btc_usd_price&.usd || 0)
           .border.border-gray-200.rounded-2xl.p-6.bg-white.h-full
             .flex.flex-wrap.items-start.justify-between.gap-3.mb-2
               h2.text-lg.font-semibold Finders fee export

@@ -29,6 +29,7 @@ export default class extends Controller {
 
     if (this.hasFinderBtcInputTarget) {
       this.finderBtcInputTarget.value = formatted
+      this.finderBtcInputTarget.dispatchEvent(new Event("input", { bubbles: true }))
     }
     if (this.hasFinderExportBtcInputTarget) {
       this.finderExportBtcInputTarget.value = formatted

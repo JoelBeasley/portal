@@ -10,4 +10,4 @@ div class=modal_classes data-export-preview-target="modal" data-action="click->e
         - if @finder_preview_error.present?
           = render "finder_export_preview", error: @finder_preview_error
         - elsif @finder_preview_rows.present?
-          = render "finder_export_preview", export_rows: @finder_preview_rows, btc_amount: BigDecimal(@finder_preview_btc_amount.to_s), total_btc_amount: @finder_preview_total_btc_amount
+          = render "finder_export_preview", export_rows: @finder_preview_rows, btc_amount: BigDecimal(@finder_preview_btc_amount.to_s), total_btc_amount: @finder_preview_total_btc_amount, btc_usd_price: @btc_usd_price

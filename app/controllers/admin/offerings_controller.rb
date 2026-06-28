@@ -125,6 +125,7 @@ class Admin::OfferingsController < ApplicationController
   end
 
   def load_show_associations
+    @btc_usd_price = BtcUsdPrice.current
     @sites = @offering.sites.order(:name)
     @finders = @offering.finders.order(:name, :id)
     investment_order = "users.email ASC, investments.id ASC"

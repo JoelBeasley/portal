@@ -71,6 +71,27 @@ class Admin::OfferingsExportTest < ActionDispatch::IntegrationTest
     assert_match 'class="fixed inset-0 z-50 hidden"', response.body
   end
 
+  test "offering export shows usd value hint for entered btc amount" do
+    @offering.update!(
+      carried_interest: 20,
+      carried_interest_bitcoin_address: "bc1qtestaddress000000000000000000000000000"
+    )
+    price = BtcUsdPrice::Result.new(usd: 97_234.56, source: "CoinGecko", fetched_at: Time.current.utc.iso8601)
+    sign_in @admin
+
+    original_current = BtcUsdPrice.method(:current)
+    BtcUsdPrice.define_singleton_method(:current) { price }
+    begin
+      post preview_export_addresses_admin_offering_path(@offering), params: { btc_amount: "2" }
+
+      assert_response :success
+      assert_match "$194,469.12 USD", response.body
+      assert_match "USD amount", response.body
+    ensure
+      BtcUsdPrice.define_singleton_method(:current, original_current)
+    end
+  end
+
   private
 
   def sign_in(user)
