@@ -63,6 +63,7 @@ class Admin::OfferingsController < ApplicationController
   def preview_export_addresses
     load_show_associations
     @preview_btc_amount = params[:btc_amount]
+    assign_finder_fee_distribution_preview(params[:btc_amount])
     export_rows = build_export_rows(params[:btc_amount])
     @preview_total_btc_amount = OfferingBtcExportCalculator.format_btc_amount(
       export_rows.sum { |row| BigDecimal(row[:btc_amount]) }
@@ -73,6 +74,7 @@ class Admin::OfferingsController < ApplicationController
   rescue OfferingBtcExportCalculator::Error => e
     load_show_associations
     @preview_btc_amount = params[:btc_amount]
+    assign_finder_fee_distribution_preview(params[:btc_amount])
     @preview_error = e.message
     @show_preview = true
     render :show, status: :unprocessable_entity
@@ -189,5 +191,12 @@ class Admin::OfferingsController < ApplicationController
         offering_name: @offering.name
       }
     end
+  end
+
+  def assign_finder_fee_distribution_preview(total_btc)
+    amount = OfferingFinderFeeDistributionCalculator.calculate(offering: @offering, total_btc: total_btc)
+    return if amount.zero?
+
+    @finder_preview_btc_amount = OfferingFinderFeeDistributionCalculator.format_amount(amount)
   end
 end

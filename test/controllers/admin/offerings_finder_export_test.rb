@@ -49,7 +49,7 @@ class Admin::OfferingsFinderExportTest < ActionDispatch::IntegrationTest
     assert_match "Investor export", response.body
     assert_match "Finders fee export", response.body
     assert_match "Manage finders", response.body
-    assert_match 'data-controller="modal"', response.body
+    assert_match 'data-controller="modal offering-export-sync"', response.body
     assert_match "Add finder", response.body
     assert_match preview_export_finder_fees_admin_offering_path(@offering), response.body
     assert_match export_finder_fees_admin_offering_path(@offering), response.body

@@ -34,6 +34,30 @@ class Admin::OfferingsExportTest < ActionDispatch::IntegrationTest
     assert_match "Total BTC amount is required.", response.body
   end
 
+  test "preview export prefills finder fee amount from carried interest" do
+    @offering.update!(
+      carried_interest: 20,
+      carried_interest_bitcoin_address: "bc1qtestaddress000000000000000000000000000"
+    )
+    sign_in @admin
+
+    post preview_export_addresses_admin_offering_path(@offering), params: { btc_amount: "10" }
+
+    assert_response :success
+    assert_match 'data-offering-export-sync-target="finderBtcInput"', response.body
+    assert_match 'value="0.10000000"', response.body
+  end
+
+  test "offering show includes export sync controller" do
+    sign_in @admin
+
+    get admin_offering_path(@offering)
+
+    assert_response :success
+    assert_match 'data-controller="modal offering-export-sync"', response.body
+    assert_match 'data-offering-export-sync-target="investorBtcInput"', response.body
+  end
+
   test "offering show includes separate preview and export forms" do
     sign_in @admin
 
